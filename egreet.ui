@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkWindow" id="login_window">
+    <property name="visible">1</property>
+    <property name="child">
+      <object class="GtkBox">
+        <property name="width-request">500</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="orientation">vertical</property>
+        <property name="margin-top">50</property>
+        <property name="margin-bottom">50</property>
+        <property name="margin-start">50</property>
+        <property name="margin-end">50</property>
+        <property name="spacing">10</property>
+        <child>
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel" id="message_label">
+                <property name="hexpand">1</property>
+                <property name="margin-bottom">50</property>
+                <property name="label" translatable="1">[message]</property>
+                <attributes>
+                  <attribute name="weight" value="bold"></attribute>
+                </attributes>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="margin-bottom">25</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="width-request">100</property>
+                <property name="margin-end">10</property>
+                <property name="label" translatable="1">Session:</property>
+                <property name="xalign">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="sessions_cb">
+                <property name="hexpand">1</property>
+                <property name="receives-default">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel" id="label_username">
+                <property name="width-request">100</property>
+                <property name="margin-end">10</property>
+                <property name="label" translatable="1">User:</property>
+                <property name="xalign">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="usernames_cb">
+                <property name="hexpand">1</property>
+                <property name="receives-default">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel" id="password_label">
+                <property name="width-request">100</property>
+                <property name="margin-end">10</property>
+                <property name="label" translatable="1">Password:</property>
+                <property name="xalign">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="password_entry">
+                <property name="hexpand">1</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <property name="visibility">0</property>
+                <property name="input-purpose">password</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="halign">center</property>
+            <property name="margin-top">25</property>
+            <property name="spacing">20</property>
+            <child>
+              <object class="GtkButton" id="login_button">
+                <property name="label" translatable="1">Login</property>
+                <property name="width-request">100</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <property name="halign">center</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="reboot_button">
+                <property name="label" translatable="1">Reboot</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <style>
+                  <class name="destructive-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="poweroff_button">
+                <property name="label" translatable="1">Power Off</property>
+                <property name="focusable">1</property>
+                <property name="receives-default">1</property>
+                <style>
+                  <class name="destructive-action"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+  </object>
+</interface>

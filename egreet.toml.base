@@ -1,0 +1,6 @@
+ui_file_location=INSTALL_DIR/share/egreet/egreet.ui
+
+[gtk]
+theme_name=Adwaita
+application_prefer_dark_theme=true
+cursor_theme_name=Adwaita
