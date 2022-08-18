@@ -93,15 +93,15 @@ impl Greeter {
     /// Populate the user and session combo boxes with entries
     fn setup_users_sessions(&self) {
         // The user that is shown during initial login
-        let mut initial_user = None;
+        let mut initial_username = None;
 
         // Populate the usernames combo box
-        for username in self.imp().sys_util.get_users().keys() {
-            debug!("Found user: {}", username);
-            if initial_user.is_none() {
-                initial_user = Some(username.clone());
+        for (user, username) in self.imp().sys_util.get_users().iter() {
+            debug!("Found user: {}", user);
+            if initial_username.is_none() {
+                initial_username = Some(username.clone());
             }
-            self.imp().usernames_box.append(Some(username), username);
+            self.imp().usernames_box.append(Some(username), user);
         }
 
         // Populate the sessions combo box
@@ -112,8 +112,8 @@ impl Greeter {
 
         // If the last user is known, show their login initially
         if let Some(last_user) = self.imp().cache.borrow().get_last_user() {
-            initial_user = Some(last_user.to_string());
-        } else if let Some(user) = &initial_user {
+            initial_username = Some(last_user.to_string());
+        } else if let Some(user) = &initial_username {
             info!("Using first found user '{}' as initial user", user);
         }
 
@@ -121,9 +121,9 @@ impl Greeter {
         if !self
             .imp()
             .usernames_box
-            .set_active_id(initial_user.as_deref())
+            .set_active_id(initial_username.as_deref())
         {
-            if let Some(user) = initial_user {
+            if let Some(user) = initial_username {
                 warn!("Couldn't find user '{}' to set as the initial user", user);
             }
         }
