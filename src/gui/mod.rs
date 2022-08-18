@@ -190,7 +190,18 @@ impl Greeter {
 
         // Get the last session used by this user, and auto-select it in the session combo box
         if let Some(last_session) = self.imp().cache.borrow_mut().get_last_session(&username) {
-            self.imp().sessions_box.set_active_id(Some(last_session));
+            if !self.imp().sessions_box.set_active_id(Some(last_session)) {
+                warn!(
+                    "Last session '{}' for user '{}' missing",
+                    last_session, username
+                );
+            }
+        } else {
+            // Last session not found, so use the default session
+            let default_session = self.imp().config.get_default_session();
+            if !self.imp().sessions_box.set_active_id(Some(default_session)) {
+                warn!("Default session '{}' missing", default_session);
+            }
         };
     }
 
