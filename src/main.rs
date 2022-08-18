@@ -7,7 +7,7 @@ mod gui;
 mod lru;
 mod sysutil;
 
-use gtk4::{prelude::*, Application};
+use gtk::{prelude::*, Application};
 use gui::Greeter;
 
 fn main() {

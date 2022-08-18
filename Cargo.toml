@@ -3,14 +3,13 @@ name = "egreet"
 version = "0.1.0"
 edition = "2021"
 description = "Simple greetd greeter, based on GTK 4"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 const_format = "0.2.26"
 glob = "0.3.0"
 greetd_ipc = { version = "0.8.0", features = ["sync-codec"] }
-gtk4 = "0.4.8"
+gtk = { version = "0.4.8", package = "gtk4" }
 log = "0.4.17"
 lru = "0.7.8"
 passwd = "0.0.1"

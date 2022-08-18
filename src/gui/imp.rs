@@ -1,7 +1,7 @@
 /// Subclass of the greeter GUI that holds the state
 use std::cell::RefCell;
 
-use gtk4::{
+use gtk::{
     glib, subclass::prelude::*, ApplicationWindow, Builder, Button, ComboBoxText, Entry, Label,
     Window,
 };

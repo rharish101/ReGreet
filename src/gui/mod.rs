@@ -4,7 +4,7 @@ mod imp;
 use std::process::Command;
 
 use greetd_ipc::{ErrorType as GreetdErrorType, Response};
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*, Application, Button};
+use gtk::{gio, glib, prelude::*, subclass::prelude::*, Application, Button};
 use log::{debug, error, info, warn};
 
 use crate::client::AuthStatus;
@@ -14,9 +14,9 @@ use crate::common::capitalize;
 glib::wrapper! {
     /// Part of the greeter GUI that defines the behaviour
     pub struct Greeter(ObjectSubclass<imp::Greeter>)
-        @extends gtk4::ApplicationWindow, gtk4::Window, gtk4::Widget,
-        @implements gio::ActionGroup, gio::ActionMap, gtk4::Accessible, gtk4::Buildable,
-                    gtk4::ConstraintTarget, gtk4::Native, gtk4::Root, gtk4::ShortcutManager;
+        @extends gtk::ApplicationWindow, gtk::Window, gtk::Widget,
+        @implements gio::ActionGroup, gio::ActionMap, gtk::Accessible, gtk::Buildable,
+                    gtk::ConstraintTarget, gtk::Native, gtk::Root, gtk::ShortcutManager;
 }
 
 impl Greeter {
