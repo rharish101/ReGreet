@@ -6,9 +6,8 @@ use std::str::from_utf8;
 
 use glob::glob;
 use log::{debug, info, warn};
-use passwd::Passwd;
+use pwd::Passwd;
 use regex::Regex;
-use shadow::Shadow;
 
 use crate::constants::{LOGIN_FILE, SESSION_DIRS};
 
@@ -81,37 +80,24 @@ impl SysUtil {
 
         debug!("UID_MIN: {}, UID_MAX: {}", min_uid, max_uid);
 
-        // AFAIK there's no safe function to iterate over entries in /etc/passwd, but there's one
-        // for /etc/shadow
+        // Iterate over all users in /etc/passwd
         let mut users = HashMap::new();
-        for shadow_entry in Shadow::iter_all() {
-            let passwd_entry = if let Some(entry) = Passwd::from_name(&shadow_entry.name) {
-                entry
-            } else {
-                // No such user exists in /etc/passwd
-                debug!(
-                    "Found user {} in shadow file that's missing in passwd",
-                    shadow_entry.name
-                );
-                continue;
-            };
-            if passwd_entry.uid > max_uid || passwd_entry.uid < min_uid {
+        for entry in Passwd::iter() {
+            if entry.uid > max_uid || entry.uid < min_uid {
                 // Non-standard user, eg. git or root
                 continue;
             };
 
-            debug!(
-                "Found user '{}' with UID: '{}', full name: {}",
-                passwd_entry.name, passwd_entry.uid, passwd_entry.gecos
-            );
+            debug!("Found user '{}' with UID: '{}'", entry.name, entry.uid);
 
             // Use the actual system username if the "full name" is not available
-            let full_name = if passwd_entry.gecos.is_empty() {
-                &passwd_entry.name
+            let full_name = if let Some(gecos) = entry.gecos {
+                gecos
             } else {
-                &passwd_entry.gecos
+                debug!("Missing full name for user: {}", entry.name);
+                entry.name.clone()
             };
-            users.insert(full_name.clone(), passwd_entry.name);
+            users.insert(full_name, entry.name);
         }
         Ok(users)
     }

@@ -120,11 +120,10 @@ dependencies = [
  "gtk4",
  "log",
  "lru",
- "passwd",
  "pretty_env_logger",
+ "pwd",
  "regex",
  "serde",
- "shadow",
  "shlex",
  "thiserror",
  "toml",
@@ -599,15 +598,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "passwd"
-version = "0.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5499366e9469e62340d8c66d31b6c545483a28a41c97d82210703188bcd2f473"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "pest"
 version = "2.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -687,6 +677,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0a2ca2c61bc9f3d74d2886294ab7b9853abd9c1ad903a3ac7815c58989bb7bab"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "pwd"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72c71c0c79b9701efe4e1e4b563b2016dd4ee789eb99badcb09d61ac4b92e4a2"
+dependencies = [
+ "libc",
+ "thiserror",
 ]
 
 [[package]]
@@ -792,15 +792,6 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "shadow"
-version = "0.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dcaa1dbf13cc052b53af59e70dd467e8e94d6abf8d0eac1f1d15d3e165973b86"
-dependencies = [
- "libc",
 ]
 
 [[package]]
