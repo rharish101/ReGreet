@@ -58,8 +58,9 @@ impl Default for Greeter {
     /// Initialize the greeter
     fn default() -> Self {
         // Get the utilities that we use
-        let greetd_client = RefCell::new(GreetdClient::new().unwrap());
-        let sys_util = SysUtil::new().unwrap();
+        let greetd_client =
+            RefCell::new(GreetdClient::new().expect("Couldn't initialize greetd client"));
+        let sys_util = SysUtil::new().expect("Couldn't read available users and sessions");
         let cache = RefCell::new(Cache::new());
         let config = Config::new();
 

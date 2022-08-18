@@ -80,6 +80,7 @@ impl Greeter {
 
         // Populate the usernames combo box
         for username in self.imp().sys_util.get_users().keys() {
+            debug!("Found user: {}", username);
             if initial_user.is_none() {
                 initial_user = Some(username.clone());
             }
@@ -88,6 +89,7 @@ impl Greeter {
 
         // Populate the sessions combo box
         for session in self.imp().sys_util.get_sessions().keys() {
+            debug!("Found session: {}", session);
             self.imp().sessions_box.append(Some(session), session)
         }
 
@@ -136,6 +138,7 @@ impl Greeter {
     fn user_change_handler(&self) {
         // Handle the case when the user is changed in the middle of authenticating another user
         if let AuthStatus::InProgress = self.imp().greetd_client.borrow().get_auth_status() {
+            info!("Session already in progress; cancelling session");
             if let Err(err) = self.imp().greetd_client.borrow_mut().cancel_session() {
                 warn!("Couldn't cancel greetd session: {}", err);
             };
@@ -353,7 +356,7 @@ impl Greeter {
                     debug!("Updated cache with current user: {}", username);
                 }
 
-                debug!("Saving cache to disk");
+                info!("Saving cache to disk");
                 if let Err(err) = self.imp().cache.borrow_mut().save() {
                     error!("Error saving cache to disk: {}", err);
                 }
