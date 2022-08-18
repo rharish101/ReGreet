@@ -27,6 +27,11 @@ impl Greeter {
 
     /// Setup all GUI elements
     pub fn setup(&self) {
+        // Cancel any previous session, just in case someone started one
+        if let Err(err) = self.imp().greetd_client.borrow_mut().cancel_session() {
+            warn!("Couldn't cancel greetd session: {}", err);
+        };
+
         // Setup the welcome message
         self.imp().message_label.set_text("Welcome Back!");
 
