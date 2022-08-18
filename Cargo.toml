@@ -7,16 +7,17 @@ description = "Simple greetd greeter, based on GTK 4"
 
 [dependencies]
 const_format = "0.2.26"
+file-rotate = "0.7.0"
 glob = "0.3.0"
 greetd_ipc = { version = "0.8.0", features = ["sync-codec"] }
 gtk = { version = "0.4.8", package = "gtk4" }
 log = "0.4.17"
 lru = "0.7.8"
-pretty_env_logger = "0.4.0"
 pwd = "1.4.0"
 regex = "1.6.0"
 serde = { version = "1.0.142", features = ["derive"] }
 shlex = "1.1.0"
+simplelog = "0.12.0"
 thiserror = "1.0.32"
 toml = "0.5.9"
 

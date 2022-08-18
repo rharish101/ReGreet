@@ -32,6 +32,11 @@ const CACHE_DIR: &str = env_or!("CACHE_DIR", "/var/cache");
 /// Path to the cache file
 pub const CACHE_PATH: &str = concatcp!(CACHE_DIR, "/", GREETER_NAME, "/cache.toml");
 
+/// The directory for system log files
+const LOG_DIR: &str = env_or!("LOG_DIR", "/var/log");
+/// Path to the cache file
+pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/", GREETER_NAME, "/log");
+
 /// Path to the file that contains min/max UID of a regular user
 pub const LOGIN_FILE: &str = concatcp!(CONFIG_DIR, "/login.defs");
 
