@@ -42,9 +42,8 @@ impl Greeter {
             self.imp().usernames_box.grab_focus()
         };
 
-        // Show the login window and make it fullscreen
-        self.imp().login_window.show();
-        self.imp().login_window.fullscreen();
+        // Make the window fullscreen
+        self.fullscreen();
     }
 
     /// Register handlers for GUI elements
@@ -66,9 +65,7 @@ impl Greeter {
             .connect_clicked(glib::clone!(@weak self as gui => move |_| gui.login_click_handler()));
 
         // Set the default behaviour of pressing the Return key to act like the login button
-        self.imp()
-            .login_window
-            .set_default_widget(Some(&self.imp().login_button));
+        self.set_default_widget(Some(&self.imp().login_button.get()));
     }
 
     /// Populate the user and session combo boxes with entries

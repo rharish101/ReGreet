@@ -16,13 +16,8 @@ macro_rules! env_or {
 
 /// The name for this greeter
 pub const GREETER_NAME: &str = "egreet";
-
-/// The shared data directory (usually `/usr` or `/usr/local`)
-const INSTALL_DIR: &str = env_or!("INSTALL_DIR", "/usr");
-/// The directory where to install this greeter's files
-const GREETER_DIR: &str = concatcp!(INSTALL_DIR, "/share/", GREETER_NAME);
-/// Path to the UI file
-pub const UI_FILE_PATH: &str = concatcp!(GREETER_DIR, "/", GREETER_NAME, ".ui");
+/// The app ID for this GTK app
+pub const APP_ID: &str = concatcp!("apps.", GREETER_NAME);
 
 /// The directory where system-wide config files are located
 const CONFIG_DIR: &str = env_or!("CONFIG_DIR", "/etc");

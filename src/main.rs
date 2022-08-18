@@ -7,17 +7,20 @@ mod gui;
 mod lru;
 mod sysutil;
 
-use gtk::{prelude::*, Application};
+use gtk::{gio, prelude::*, Application};
 use gui::Greeter;
+
+use crate::constants::APP_ID;
 
 fn main() {
     // Setup the logger
     pretty_env_logger::init();
 
+    // Register and include resources
+    gio::resources_register_include!("compiled.gresource").expect("Failed to register resources.");
+
     // Create a new application
-    let app = Application::builder()
-        .application_id("egreet")
-        .build();
+    let app = Application::builder().application_id(APP_ID).build();
 
     // Connect to the "activate" signal of `app`
     app.connect_activate(build_ui);

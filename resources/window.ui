@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkWindow" id="login_window">
+  <template class="Greeter" parent="GtkApplicationWindow">
     <property name="visible">1</property>
     <property name="child">
       <object class="GtkBox">
@@ -40,7 +40,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkComboBoxText" id="sessions_cb">
+              <object class="GtkComboBoxText" id="sessions_box">
                 <property name="hexpand">1</property>
                 <property name="receives-default">1</property>
               </object>
@@ -50,7 +50,7 @@
         <child>
           <object class="GtkBox">
             <child>
-              <object class="GtkLabel" id="label_username">
+              <object class="GtkLabel">
                 <property name="width-request">100</property>
                 <property name="margin-end">10</property>
                 <property name="label" translatable="1">User:</property>
@@ -58,7 +58,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkComboBoxText" id="usernames_cb">
+              <object class="GtkComboBoxText" id="usernames_box">
                 <property name="hexpand">1</property>
                 <property name="receives-default">1</property>
               </object>
@@ -127,5 +127,5 @@
         </child>
       </object>
     </property>
-  </object>
+  </template>
 </interface>

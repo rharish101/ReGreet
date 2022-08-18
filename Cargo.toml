@@ -20,3 +20,6 @@ shadow = "0.0.1"
 shlex = "1.1.0"
 thiserror = "1.0.32"
 toml = "0.5.9"
+
+[build-dependencies]
+gtk = { version = "0.4.8", package = "gtk4" }

@@ -1,18 +1,20 @@
 /// Subclass of the greeter GUI that holds the state
 use std::cell::RefCell;
 
+use glib::subclass::InitializingObject;
 use gtk::{
-    glib, subclass::prelude::*, ApplicationWindow, Builder, Button, ComboBoxText, Entry, Label,
-    Window,
+    glib, prelude::*, subclass::prelude::*, ApplicationWindow, Button, ComboBoxText,
+    CompositeTemplate, Entry, Label,
 };
 
 use crate::cache::Cache;
 use crate::client::GreetdClient;
 use crate::config::Config;
-use crate::constants::UI_FILE_PATH;
 use crate::sysutil::SysUtil;
 
 /// Part of the greeter GUI that holds the greeter's state
+#[derive(CompositeTemplate)]
+#[template(resource = "/apps/egreet/window.ui")]
 pub struct Greeter {
     /// Client to communicate with greetd
     // RefCell is needed since we need to borrow the client as mutable
@@ -26,24 +28,30 @@ pub struct Greeter {
     pub(super) config: Config,
 
     /// The widget where the user enters the password
-    pub(super) password_entry: Entry,
+    #[template_child]
+    pub(super) password_entry: TemplateChild<Entry>,
     /// The label for the password widget
-    pub(super) password_label: Label,
+    #[template_child]
+    pub(super) password_label: TemplateChild<Label>,
     /// The widget to display messages to the user
-    pub(super) message_label: Label,
+    #[template_child]
+    pub(super) message_label: TemplateChild<Label>,
     /// The widget containing the usernames
-    pub(super) usernames_box: ComboBoxText,
+    #[template_child]
+    pub(super) usernames_box: TemplateChild<ComboBoxText>,
     /// The widget containing the sessions
-    pub(super) sessions_box: ComboBoxText,
+    #[template_child]
+    pub(super) sessions_box: TemplateChild<ComboBoxText>,
 
-    /// The default window
-    pub(super) login_window: Window,
     /// The button to enter the password and login
-    pub(super) login_button: Button,
+    #[template_child]
+    pub(super) login_button: TemplateChild<Button>,
     /// The button to reboot
-    pub(super) reboot_button: Button,
+    #[template_child]
+    pub(super) reboot_button: TemplateChild<Button>,
     /// The button to power-off
-    pub(super) poweroff_button: Button,
+    #[template_child]
+    pub(super) poweroff_button: TemplateChild<Button>,
 }
 
 impl Default for Greeter {
@@ -54,32 +62,16 @@ impl Default for Greeter {
         let sys_util = SysUtil::new().unwrap();
         let cache = RefCell::new(Cache::new());
         let config = Config::new();
-        let builder = Builder::from_file(UI_FILE_PATH);
 
-        // Get the GUI elements that we need references to
-        let password_entry: Entry = builder
-            .object("password_entry")
-            .expect("Invalid GTK UI file: missing password entry");
-        let password_label = builder
-            .object("password_label")
-            .expect("Invalid GTK UI file: missing password label");
-        let message_label: Label = builder
-            .object("message_label")
-            .expect("Invalid GTK UI file: missing message label");
-        let usernames_box: ComboBoxText = builder
-            .object("usernames_cb")
-            .expect("Invalid GTK UI file: missing username combo box");
-        let sessions_box: ComboBoxText = builder
-            .object("sessions_cb")
-            .expect("Invalid GTK UI file: missing session combo box");
-        let login_window: Window = builder.object("login_window").expect("Invalid GTK UI file");
-        let login_button: Button = builder.object("login_button").expect("Invalid GTK UI file");
-        let reboot_button: Button = builder
-            .object("reboot_button")
-            .expect("Invalid GTK UI file");
-        let poweroff_button: Button = builder
-            .object("poweroff_button")
-            .expect("Invalid GTK UI file");
+        // Use the template defaults, since the UI builder will load them anyway
+        let password_entry = TemplateChild::default();
+        let password_label = TemplateChild::default();
+        let message_label = TemplateChild::default();
+        let usernames_box = TemplateChild::default();
+        let sessions_box = TemplateChild::default();
+        let login_button = TemplateChild::default();
+        let reboot_button = TemplateChild::default();
+        let poweroff_button = TemplateChild::default();
 
         Self {
             greetd_client,
@@ -91,7 +83,6 @@ impl Default for Greeter {
             message_label,
             usernames_box,
             sessions_box,
-            login_window,
             login_button,
             reboot_button,
             poweroff_button,
@@ -101,9 +92,17 @@ impl Default for Greeter {
 
 #[glib::object_subclass]
 impl ObjectSubclass for Greeter {
-    const NAME: &'static str = "GreeterGUI";
+    const NAME: &'static str = "Greeter";
     type Type = super::Greeter;
     type ParentType = ApplicationWindow;
+
+    fn class_init(klass: &mut Self::Class) {
+        klass.bind_template();
+    }
+
+    fn instance_init(obj: &InitializingObject<Self>) {
+        obj.init_template();
+    }
 }
 
 impl ObjectImpl for Greeter {
