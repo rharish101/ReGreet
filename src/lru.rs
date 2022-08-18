@@ -3,7 +3,7 @@
 //! This is needed because `lru::LruCache` doesn't implement (de)serialization.
 use std::cmp::Eq;
 use std::fmt::{Formatter, Result as FmtResult};
-use std::hash::{Hash, BuildHasher};
+use std::hash::{BuildHasher, Hash};
 use std::marker::PhantomData;
 use std::ops::{Deref, DerefMut};
 

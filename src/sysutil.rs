@@ -178,7 +178,11 @@ impl SysUtil {
                 // Get the full name of this session
                 let name = if let Some(capture) = name_regex.captures(text) {
                     if let Some(name) = capture.get(1) {
-                        debug!("Found name '{}' for session: {}", name.as_str(), path.display());
+                        debug!(
+                            "Found name '{}' for session: {}",
+                            name.as_str(),
+                            path.display()
+                        );
                         Some(name.as_str())
                     } else {
                         debug!("No name found for session: {}", path.display());
@@ -189,7 +193,9 @@ impl SysUtil {
                     None
                 };
 
-                let name = if let Some(name) = name { name } else {
+                let name = if let Some(name) = name {
+                    name
+                } else {
                     // Get the stem of the filename of this desktop file.
                     // This is used as backup, in case the file name doesn't exist.
                     if let Some(stem) = path.file_stem() {
