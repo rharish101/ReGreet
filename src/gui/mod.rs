@@ -35,6 +35,7 @@ impl Greeter {
         // Setup the welcome message
         self.imp().message_label.set_text("Welcome Back!");
 
+        self.setup_settings();
         self.setup_callbacks();
         // NOTE: This starts login for the last user
         self.setup_users_sessions();
@@ -49,6 +50,22 @@ impl Greeter {
 
         // Make the window fullscreen
         self.fullscreen();
+    }
+
+    /// Load GTK settings from the greeter config
+    fn setup_settings(&self) {
+        let settings = self.settings();
+        let config = if let Some(config) = self.imp().config.get_gtk_settings() {
+            config
+        } else {
+            return;
+        };
+
+        settings.set_gtk_application_prefer_dark_theme(config.application_prefer_dark_theme);
+        settings.set_gtk_cursor_theme_name(config.cursor_theme_name.as_deref());
+        settings.set_gtk_font_name(config.font_name.as_deref());
+        settings.set_gtk_icon_theme_name(config.icon_theme_name.as_deref());
+        settings.set_gtk_theme_name(config.theme_name.as_deref());
     }
 
     /// Register handlers for GUI elements
