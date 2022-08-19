@@ -315,25 +315,14 @@ impl Greeter {
 
     /// Get the currently selected username
     fn get_current_username(&self) -> Option<String> {
-        // Get the currently selected user
-        let user = if let Some(user) = self.imp().usernames_box.active_text() {
-            user.to_string()
+        // Get the currently selected user's ID, which should be their username
+        let username = self.imp().usernames_box.active_id();
+        if let Some(username) = &username {
+            debug!("Retrieved current username: {}", username);
         } else {
-            // No username selected, so return None
-            return None;
-        };
-        debug!("Retrieved current user: {}", user);
-
-        // Get the actual username of the currently selected user
-        let username = if let Some(username) = self.imp().sys_util.get_users().get(&user) {
-            username.to_string()
-        } else {
-            error!("Unknown user '{}' selected", user);
-            user
-        };
-
-        debug!("Found username '{}' for current user", username);
-        Some(username)
+            error!("No current username found");
+        }
+        username.map(|x| x.to_string())
     }
 
     /// Enter or exit the password mode
