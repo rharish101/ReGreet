@@ -88,13 +88,26 @@ impl SysUtil {
                 continue;
             };
 
-            debug!("Found user '{}' with UID: '{}'", entry.name, entry.uid);
-
             // Use the actual system username if the "full name" is not available
             let full_name = if let Some(gecos) = entry.gecos {
-                gecos
+                if gecos.is_empty() {
+                    debug!(
+                        "Found user '{}' with UID '{}' and empty full name",
+                        entry.name, entry.uid
+                    );
+                    entry.name.clone()
+                } else {
+                    debug!(
+                        "Found user '{}' with UID '{}' and full name: {}",
+                        entry.name, entry.uid, gecos
+                    );
+                    gecos
+                }
             } else {
-                debug!("Missing full name for user: {}", entry.name);
+                debug!(
+                    "Found user '{}' with UID '{}' and missing full name",
+                    entry.name, entry.uid
+                );
                 entry.name.clone()
             };
             users.insert(full_name, entry.name);
