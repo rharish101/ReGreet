@@ -42,7 +42,7 @@ impl Default for GTKSettings {
 pub struct Config {
     #[serde(default = "get_default_session")]
     default_session: String,
-    #[serde(default)]
+    #[serde(default, rename = "GTK")]
     gtk: Option<GTKSettings>,
 }
 
