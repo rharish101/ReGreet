@@ -1,113 +1,148 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.10.3 -->
 <interface>
+  <!-- interface-name window.ui -->
   <requires lib="gtk" version="4.0"/>
   <template class="Greeter" parent="GtkApplicationWindow">
-    <property name="visible">1</property>
     <property name="child">
-      <object class="GtkBox">
-        <property name="width-request">500</property>
-        <property name="halign">center</property>
-        <property name="valign">center</property>
+      <object class="GtkCenterBox">
         <property name="orientation">vertical</property>
-        <property name="margin-top">50</property>
-        <property name="margin-bottom">50</property>
-        <property name="margin-start">50</property>
-        <property name="margin-end">50</property>
-        <property name="spacing">10</property>
-        <child>
-          <object class="GtkBox">
+        <child type="center">
+          <object class="GtkGrid">
+            <property name="column-spacing">10</property>
+            <property name="halign">center</property>
+            <property name="row-spacing">10</property>
+            <property name="valign">center</property>
+            <property name="width-request">500</property>
             <child>
               <object class="GtkLabel" id="message_label">
                 <property name="hexpand">1</property>
-                <property name="margin-bottom">50</property>
-                <property name="label" translatable="1">[message]</property>
+                <property name="label" translatable="yes">[message]</property>
+                <property name="margin-bottom">20</property>
+                <property name="xalign">0.0</property>
                 <attributes>
-                  <attribute name="weight" value="bold"></attribute>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">0</property>
+                </layout>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="margin-bottom">25</property>
             <child>
               <object class="GtkLabel">
-                <property name="width-request">100</property>
-                <property name="margin-end">10</property>
-                <property name="label" translatable="1">Session:</property>
+                <property name="label" translatable="yes">User:</property>
                 <property name="xalign">1</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                </layout>
               </object>
             </child>
             <child>
-              <object class="GtkComboBoxText" id="sessions_box">
-                <property name="hexpand">1</property>
-                <property name="receives-default">1</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <child>
-              <object class="GtkLabel">
-                <property name="width-request">100</property>
-                <property name="margin-end">10</property>
-                <property name="label" translatable="1">User:</property>
+              <object class="GtkLabel" id="sessions_label">
+                <property name="label" translatable="yes">Session:</property>
                 <property name="xalign">1</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                </layout>
               </object>
             </child>
             <child>
               <object class="GtkComboBoxText" id="usernames_box">
                 <property name="hexpand">1</property>
                 <property name="receives-default">1</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">1</property>
+                </layout>
               </object>
             </child>
-          </object>
-        </child>
-        <child>
-          <object class="GtkBox">
+            <child>
+              <object class="GtkComboBoxText" id="sessions_box">
+                <property name="hexpand">1</property>
+                <property name="receives-default">1</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
             <child>
               <object class="GtkLabel" id="password_label">
+                <property name="label" translatable="yes">Password:</property>
+                <property name="sensitive">False</property>
+                <property name="visible">False</property>
                 <property name="width-request">100</property>
-                <property name="margin-end">10</property>
-                <property name="label" translatable="1">Password:</property>
                 <property name="xalign">1</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                </layout>
               </object>
             </child>
             <child>
               <object class="GtkEntry" id="password_entry">
-                <property name="hexpand">1</property>
+                <property name="accessible-role">radio</property>
                 <property name="focusable">1</property>
-                <property name="receives-default">1</property>
-                <property name="visibility">0</property>
+                <property name="hexpand">1</property>
                 <property name="input-purpose">password</property>
+                <property name="receives-default">1</property>
+                <property name="sensitive">False</property>
+                <property name="visibility">0</property>
+                <property name="visible">False</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="halign">end</property>
+                <property name="spacing">20</property>
+                <child>
+                  <object class="GtkButton" id="cancel_button">
+                    <property name="focusable">1</property>
+                    <property name="label">Cancel</property>
+                    <property name="sensitive">False</property>
+                    <property name="visible">False</property>
+                    <property name="width-request">100</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="login_button">
+                    <property name="focusable">1</property>
+                    <property name="halign">center</property>
+                    <property name="label" translatable="yes">Login</property>
+                    <property name="receives-default">1</property>
+                    <property name="width-request">100</property>
+                    <style>
+                      <class name="suggested-action"/>
+                    </style>
+                  </object>
+                </child>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">3</property>
+                </layout>
               </object>
             </child>
           </object>
         </child>
-        <child>
+        <child type="end">
           <object class="GtkBox">
             <property name="halign">center</property>
-            <property name="margin-top">25</property>
+            <property name="margin-bottom">10</property>
             <property name="spacing">20</property>
             <child>
-              <object class="GtkButton" id="login_button">
-                <property name="label" translatable="1">Login</property>
-                <property name="width-request">100</property>
-                <property name="focusable">1</property>
-                <property name="receives-default">1</property>
-                <property name="halign">center</property>
-                <style>
-                  <class name="suggested-action"/>
-                </style>
-              </object>
-            </child>
-            <child>
               <object class="GtkButton" id="reboot_button">
-                <property name="label" translatable="1">Reboot</property>
                 <property name="focusable">1</property>
+                <property name="halign">center</property>
+                <property name="label" translatable="yes">Reboot</property>
                 <property name="receives-default">1</property>
+                <property name="width-request">100</property>
                 <style>
                   <class name="destructive-action"/>
                 </style>
@@ -115,9 +150,11 @@
             </child>
             <child>
               <object class="GtkButton" id="poweroff_button">
-                <property name="label" translatable="1">Power Off</property>
                 <property name="focusable">1</property>
+                <property name="halign">center</property>
+                <property name="label" translatable="yes">Power Off</property>
                 <property name="receives-default">1</property>
+                <property name="width-request">100</property>
                 <style>
                   <class name="destructive-action"/>
                 </style>
@@ -127,5 +164,6 @@
         </child>
       </object>
     </property>
+    <property name="visible">1</property>
   </template>
 </interface>

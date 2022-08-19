@@ -37,16 +37,7 @@ impl Greeter {
 
         self.setup_settings();
         self.setup_callbacks();
-        // NOTE: This starts login for the last user
         self.setup_users_sessions();
-
-        // If the selected user requires a password, (i.e the password entry is visible), focus the
-        // password entry. Otherwise, focus the user selection box.
-        if self.imp().password_entry.get_sensitive() {
-            self.imp().password_entry.grab_focus()
-        } else {
-            self.imp().usernames_box.grab_focus()
-        };
 
         // Make the window fullscreen
         self.fullscreen();
@@ -79,12 +70,15 @@ impl Greeter {
         self.imp()
             .usernames_box
             .connect_changed(glib::clone!(@weak self as gui => move |_| gui.user_change_handler()));
-        self.imp().password_entry.connect_activate(
-            glib::clone!(@weak self as gui => move |_| gui.login_click_handler()),
-        );
         self.imp()
             .login_button
             .connect_clicked(glib::clone!(@weak self as gui => move |_| gui.login_click_handler()));
+        self.imp().password_entry.connect_activate(
+            glib::clone!(@weak self as gui => move |_| gui.login_click_handler()),
+        );
+        self.imp().cancel_button.connect_clicked(
+            glib::clone!(@weak self as gui => move |_| gui.cancel_click_handler()),
+        );
 
         // Set the default behaviour of pressing the Return key to act like the login button
         self.set_default_widget(Some(&self.imp().login_button.get()));
@@ -117,7 +111,7 @@ impl Greeter {
             info!("Using first found user '{}' as initial user", user);
         }
 
-        // NOTE: This should call `self.user_change_handler`
+        // Set the user shown initially at login
         if !self
             .imp()
             .usernames_box
@@ -149,18 +143,24 @@ impl Greeter {
         }
     }
 
-    /// Event handler for selecting a different username in the ComboBox
+    /// Event handler for clicking the "Cancel" button
     ///
-    /// This creates a greetd session, i.e. starts a login attempt for the current user.
-    fn user_change_handler(&self) {
-        // Handle the case when the user is changed in the middle of authenticating another user
-        if let AuthStatus::InProgress = self.imp().greetd_client.borrow().get_auth_status() {
-            info!("Session already in progress; cancelling session");
-            if let Err(err) = self.imp().greetd_client.borrow_mut().cancel_session() {
-                warn!("Couldn't cancel greetd session: {}", err);
-            };
+    /// This cancels the created session and goes back to the user/session chooser.
+    fn cancel_click_handler(&self) {
+        // Cancel the current session
+        if let Err(err) = self.imp().greetd_client.borrow_mut().cancel_session() {
+            warn!("Couldn't cancel greetd session: {}", err);
         };
 
+        // Clear the password entry field
+        self.imp().password_entry.set_text("");
+
+        // Move out of the password mode
+        self.set_password_mode(false);
+    }
+
+    /// Create a greetd session, i.e. starts a login attempt for the current user
+    fn create_session(&self) {
         // Get the current username
         let username = if let Some(username) = self.get_current_username() {
             username
@@ -169,6 +169,8 @@ impl Greeter {
             error!("No username selected");
             return;
         };
+
+        info!("Creating session for user: {}", username);
 
         // Create a session for the current user
         let response = self
@@ -185,15 +187,16 @@ impl Greeter {
 
         match response {
             Response::Success => {
-                // User doesn't need a password
-                self.set_password_visibility(false);
+                // No password is needed, so directly start session
+                info!("No password needed for current user");
+                self.start_session();
             }
             Response::AuthMessage { auth_message, .. } => {
-                // Reset the password field, because a password is needed
-                self.set_password_visibility(true);
-                self.imp().password_entry.set_text("");
-
-                if !auth_message.to_lowercase().contains("password") {
+                if auth_message.to_lowercase().contains("password") {
+                    // Show the password field, because a password is needed
+                    self.set_password_mode(true);
+                    self.imp().password_entry.set_text("");
+                } else {
                     // greetd has requested something other than the password, so just display it
                     // to the user and let them figure it out
                     self.display_error(
@@ -212,9 +215,23 @@ impl Greeter {
                 );
             }
         };
+    }
 
-        // Get the last session used by this user, and auto-select it in the session combo box
+    /// Event handler for selecting a different username in the ComboBox
+    ///
+    /// This changes the session in the combo box according to the last used session of the current user.
+    fn user_change_handler(&self) {
+        // Get the current username
+        let username = if let Some(username) = self.get_current_username() {
+            username
+        } else {
+            // No username found (which shouldn't happend), so we can't start the session
+            error!("No username selected");
+            return;
+        };
+
         if let Some(last_session) = self.imp().cache.borrow_mut().get_last_session(&username) {
+            // Set the last session used by this user in the session combo box
             if !self.imp().sessions_box.set_active_id(Some(last_session)) {
                 warn!(
                     "Last session '{}' for user '{}' missing",
@@ -232,24 +249,30 @@ impl Greeter {
 
     /// Event handler for clicking the "Login" button
     ///
-    /// This submits the entered password for logging in.
+    /// This does one of the following, depending of the state of authentication:
+    ///     - Begins a login attempt for the given user
+    ///     - Submits the entered password for logging in and starts the session
     fn login_click_handler(&self) {
         // Check if a password is needed. If not, then directly start the session.
-        match self.imp().greetd_client.borrow().get_auth_status() {
+        let auth_status = self.imp().greetd_client.borrow().get_auth_status().clone();
+        match auth_status {
             AuthStatus::Done => {
-                // No password is needed, so directly start session
-                info!("No password needed for current user");
+                // No password is needed, but the session should've been already started by
+                // `create_session`
+                warn!("No password needed for current user, but session not already started");
                 self.start_session();
-                return;
             }
-            AuthStatus::InProgress => (),
+            AuthStatus::InProgress => {
+                self.send_password();
+            }
             AuthStatus::NotStarted => {
-                // Somehow, the session wasn't started, so do it here
-                warn!("Session not created for the current user before login; creating it now");
-                self.user_change_handler();
+                self.create_session();
             }
         };
+    }
 
+    /// Send the entered password for logging in
+    fn send_password(&self) {
         // Get the entered password
         let password = self.imp().password_entry.text().to_string();
         // Reset the password field, for convenience when the user has to re-enter a password
@@ -313,15 +336,33 @@ impl Greeter {
         Some(username)
     }
 
-    /// Show or hide the password entry field
-    fn set_password_visibility(&self, visible: bool) {
-        // Make the password field enabled and visible
-        self.imp().password_entry.set_sensitive(visible);
-        self.imp().password_entry.set_visible(visible);
+    /// Enter or exit the password mode
+    fn set_password_mode(&self, enter: bool) {
+        // Show the password entry and label
+        self.imp().password_entry.set_sensitive(enter);
+        self.imp().password_entry.set_visible(enter);
+        self.imp().password_label.set_sensitive(enter);
+        self.imp().password_label.set_visible(enter);
 
-        // Make the password label enabled and visible
-        self.imp().password_label.set_sensitive(visible);
-        self.imp().password_label.set_visible(visible);
+        // Show the cancel button
+        self.imp().cancel_button.set_sensitive(enter);
+        self.imp().cancel_button.set_visible(enter);
+
+        // Hide the session chooser and label
+        self.imp().sessions_box.set_sensitive(!enter);
+        self.imp().sessions_box.set_visible(!enter);
+        self.imp().sessions_label.set_sensitive(!enter);
+        self.imp().sessions_label.set_visible(!enter);
+
+        // Make the user chooser unchangeable
+        self.imp().usernames_box.set_sensitive(!enter);
+
+        // Focus on the most convenient element
+        if enter {
+            self.imp().password_entry.grab_focus();
+        } else {
+            self.imp().usernames_box.grab_focus();
+        }
     }
 
     /// Start the session for the selected user

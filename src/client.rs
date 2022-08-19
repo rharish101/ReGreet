@@ -15,6 +15,7 @@ const GREETD_SOCK_ENV_VAR: &str = "GREETD_SOCK";
 pub type GreetdResult = Result<Response, GreetdError>;
 
 /// The authentication status of the current greetd session
+#[derive(Clone)]
 pub enum AuthStatus {
     NotStarted,
     InProgress,

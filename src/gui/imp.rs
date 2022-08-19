@@ -42,10 +42,16 @@ pub struct Greeter {
     /// The widget containing the sessions
     #[template_child]
     pub(super) sessions_box: TemplateChild<ComboBoxText>,
+    /// The label for the sessions widget
+    #[template_child]
+    pub(super) sessions_label: TemplateChild<Label>,
 
     /// The button to enter the password and login
     #[template_child]
     pub(super) login_button: TemplateChild<Button>,
+    /// The button to cancel password entry
+    #[template_child]
+    pub(super) cancel_button: TemplateChild<Button>,
     /// The button to reboot
     #[template_child]
     pub(super) reboot_button: TemplateChild<Button>,
@@ -70,7 +76,9 @@ impl Default for Greeter {
         let message_label = TemplateChild::default();
         let usernames_box = TemplateChild::default();
         let sessions_box = TemplateChild::default();
+        let sessions_label = TemplateChild::default();
         let login_button = TemplateChild::default();
+        let cancel_button = TemplateChild::default();
         let reboot_button = TemplateChild::default();
         let poweroff_button = TemplateChild::default();
 
@@ -84,7 +92,9 @@ impl Default for Greeter {
             message_label,
             usernames_box,
             sessions_box,
+            sessions_label,
             login_button,
+            cancel_button,
             reboot_button,
             poweroff_button,
         }
