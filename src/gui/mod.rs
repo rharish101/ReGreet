@@ -166,7 +166,6 @@ impl Greeter {
             username
         } else {
             // No username found (which shouldn't happen), so we can't create the session
-            error!("No username selected");
             return;
         };
 
@@ -226,7 +225,6 @@ impl Greeter {
             username
         } else {
             // No username found (which shouldn't happen), so we can't change the session
-            error!("No username selected");
             return;
         };
 
@@ -316,13 +314,18 @@ impl Greeter {
     /// Get the currently selected username
     fn get_current_username(&self) -> Option<String> {
         // Get the currently selected user's ID, which should be their username
-        let username = self.imp().usernames_box.active_id();
-        if let Some(username) = &username {
-            debug!("Retrieved current username: {}", username);
+        if let Some(username) = self.imp().usernames_box.active_id() {
+            debug!("Retrieved username '{}' from options", username);
+            Some(username.to_string())
+        } else if let Some(username) = self.imp().usernames_box.active_text() {
+            // In case of manual entry, the ID should be missing
+            debug!("Retrieved username '{}' through manual entry", username);
+            Some(username.to_string())
         } else {
-            error!("No current username found");
+            // This shouldn't happen, since we have an entry within the usernames box
+            error!("No username entered");
+            None
         }
-        username.map(|x| x.to_string())
     }
 
     /// Enter or exit the password mode
