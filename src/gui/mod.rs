@@ -165,7 +165,7 @@ impl Greeter {
         let username = if let Some(username) = self.get_current_username() {
             username
         } else {
-            // No username found (which shouldn't happend), so we can't start the session
+            // No username found (which shouldn't happen), so we can't create the session
             error!("No username selected");
             return;
         };
@@ -225,7 +225,7 @@ impl Greeter {
         let username = if let Some(username) = self.get_current_username() {
             username
         } else {
-            // No username found (which shouldn't happend), so we can't start the session
+            // No username found (which shouldn't happen), so we can't change the session
             error!("No username selected");
             return;
         };
