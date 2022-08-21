@@ -63,10 +63,30 @@ impl Greeter {
             return;
         };
 
+        debug!(
+            "Setting dark theme: {}",
+            config.application_prefer_dark_theme
+        );
         settings.set_gtk_application_prefer_dark_theme(config.application_prefer_dark_theme);
+
+        if let Some(cursor_theme) = &config.cursor_theme_name {
+            debug!("Setting cursor theme: {}", cursor_theme);
+        };
         settings.set_gtk_cursor_theme_name(config.cursor_theme_name.as_deref());
+
+        if let Some(font) = &config.font_name {
+            debug!("Setting font: {}", font);
+        };
         settings.set_gtk_font_name(config.font_name.as_deref());
+
+        if let Some(icon_theme) = &config.icon_theme_name {
+            debug!("Setting icon theme: {}", icon_theme);
+        };
         settings.set_gtk_icon_theme_name(config.icon_theme_name.as_deref());
+
+        if let Some(theme) = &config.theme_name {
+            debug!("Setting theme: {}", theme);
+        };
         settings.set_gtk_theme_name(config.theme_name.as_deref());
     }
 
