@@ -1,4 +1,4 @@
-/// Subclass of the greeter GUI that holds the state
+//! Subclass of the greeter GUI that holds the state
 use std::cell::RefCell;
 
 use glib::subclass::InitializingObject;
