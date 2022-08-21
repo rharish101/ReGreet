@@ -25,14 +25,14 @@ const GREETD_CONFIG_DIR: &str = env_or!("GREETD_CONFIG_DIR", "/etc/greetd");
 pub const CONFIG_PATH: &str = concatcp!(GREETD_CONFIG_DIR, "/", GREETER_NAME, ".toml");
 
 /// The directory for system cache files
-const CACHE_DIR: &str = env_or!("CACHE_DIR", "/var/cache");
+const CACHE_DIR: &str = env_or!("CACHE_DIR", concatcp!("/var/cache/", GREETER_NAME));
 /// Path to the cache file
-pub const CACHE_PATH: &str = concatcp!(CACHE_DIR, "/", GREETER_NAME, "/cache.toml");
+pub const CACHE_PATH: &str = concatcp!(CACHE_DIR, "/cache.toml");
 
 /// The directory for system log files
-const LOG_DIR: &str = env_or!("LOG_DIR", "/var/log");
+const LOG_DIR: &str = env_or!("LOG_DIR", concatcp!("/var/log/", GREETER_NAME));
 /// Path to the cache file
-pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/", GREETER_NAME, "/log");
+pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/log");
 
 /// Directories separated by `:`, containing desktop files for X11/Wayland sessions
 pub const SESSION_DIRS: &str = env_or!(
