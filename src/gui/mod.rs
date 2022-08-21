@@ -2,15 +2,24 @@
 mod imp;
 
 use std::process::Command;
+use std::thread;
+use std::time::Duration;
 
 use greetd_ipc::{ErrorType as GreetdErrorType, Response};
-use gtk::{gio, glib, prelude::*, subclass::prelude::*, Application, Button};
+use gtk::{
+    gio, glib,
+    glib::{MainContext, PRIORITY_LOW},
+    prelude::*,
+    subclass::prelude::*,
+    Application, Button,
+};
 use log::{debug, error, info, warn};
 
 use crate::client::AuthStatus;
 use crate::common::capitalize;
 
 const DEFAULT_MSG: &str = "Welcome Back!";
+const ERROR_MSG_CLEAR_DELAY: u64 = 5;
 
 // Inherit from GtkApplicationWindow: https://docs.gtk.org/gtk4/class.ApplicationWindow.html
 glib::wrapper! {
@@ -477,9 +486,28 @@ impl Greeter {
         }
     }
 
-    /// Show the message from greetd to the user
+    /// Show an error message to the user
     fn display_error(&self, display_text: &str, log_text: &str) {
         self.imp().message_label.set_text(display_text);
         error!("{}", log_text);
+
+        let (sender, receiver) = MainContext::channel(PRIORITY_LOW);
+
+        // Set a timer in a separate thread that signals the main thread to reset the displayed
+        // message, so as to not block the GUI
+        thread::spawn(move || {
+            thread::sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY));
+            if sender.send(()).is_err() {
+                warn!("Couldn't reset error message");
+            };
+        });
+
+        // Resets the displayed message after getting the signal to do so
+        receiver.attach(
+            None,
+            glib::clone!(@weak self as gui => @default-return Continue(false), move |_| {
+                gui.imp().message_label.set_text(DEFAULT_MSG); Continue(false)
+            }),
+        );
     }
 }
