@@ -10,6 +10,8 @@ use log::{debug, error, info, warn};
 use crate::client::AuthStatus;
 use crate::common::capitalize;
 
+const DEFAULT_MSG: &str = "Welcome Back!";
+
 // Inherit from GtkApplicationWindow: https://docs.gtk.org/gtk4/class.ApplicationWindow.html
 glib::wrapper! {
     /// Part of the greeter GUI that defines the behaviour
@@ -33,7 +35,7 @@ impl Greeter {
         };
 
         // Setup the welcome message
-        self.imp().message_label.set_text("Welcome Back!");
+        self.imp().message_label.set_text(DEFAULT_MSG);
 
         self.setup_settings();
         self.setup_callbacks();
