@@ -237,11 +237,8 @@ impl Greeter {
                 );
             }
         } else {
-            // Last session not found, so use the default session
-            let default_session = self.imp().config.get_default_session();
-            if !self.imp().sessions_box.set_active_id(Some(default_session)) {
-                warn!("Default session '{}' missing", default_session);
-            }
+            // Last session not found, so skip changing the session
+            info!("Last session for user '{}' missing", username);
         };
     }
 
@@ -357,32 +354,49 @@ impl Greeter {
         }
     }
 
+    /// Get the currently selected session name and command
+    fn get_current_session_cmd(&self) -> (Option<String>, Option<Vec<String>>) {
+        // Get the currently selected session
+        if let Some(session) = self.imp().sessions_box.active_text() {
+            debug!("Retrieved current session: {}", session);
+            if let Some(cmd) = self.imp().sys_util.get_sessions().get(session.as_str()) {
+                (Some(session.to_string()), Some(cmd.clone()))
+            } else {
+                // Shouldn't happen, unless there are no sessions available
+                let error_msg = format!("Session '{}' not found", session);
+                self.display_error(&error_msg, &error_msg);
+                (None, None)
+            }
+        } else {
+            // No session selected, so use the login shell
+            let username = if let Some(username) = self.get_current_username() {
+                username
+            } else {
+                // This shouldn't happen, because a session should've been created with a username
+                unimplemented!("Trying to create session without a username");
+            };
+            warn!(
+                "No entry found; using default login shell of user: {}",
+                username
+            );
+            if let Some(cmd) = self.imp().sys_util.get_shells().get(username.as_str()) {
+                (None, Some(cmd.clone()))
+            } else {
+                // No login shell exists
+                let error_msg = "No session or login shell found";
+                self.display_error(error_msg, error_msg);
+                (None, None)
+            }
+        }
+    }
+
     /// Start the session for the selected user
     fn start_session(&self) {
-        // Get the currently selected session
-        let session = if let Some(session) = self.imp().sessions_box.active_text() {
-            session.to_string()
-        } else {
-            // No session selected
-            let default_session = self.imp().config.get_default_session().to_string();
-            info!(
-                "No session selected; using default session: {}",
-                default_session
-            );
-            default_session
-        };
-        debug!("Retrieved current session: {}", session);
-
         // Get the session command
-        let cmd = if let Some(cmd) = self.imp().sys_util.get_sessions().get(&session) {
-            cmd
+        let (session, cmd) = if let (session, Some(cmd)) = self.get_current_session_cmd() {
+            (session, cmd)
         } else {
-            // Shouldn't happen, unless there are no sessions available
-            let error_msg = format!("Session '{}' not found", session);
-            self.display_error(
-                &capitalize(&error_msg),
-                &format!("Session '{}' not found", session),
-            );
+            // Error handling should be inside `get_current_session_cmd`, so simply return
             return;
         };
 
@@ -391,7 +405,7 @@ impl Greeter {
             .imp()
             .greetd_client
             .borrow_mut()
-            .start_session(cmd.clone())
+            .start_session(cmd)
             .unwrap_or_else(|err| panic!("Failed to start session: {}", err));
 
         match response {
@@ -399,10 +413,12 @@ impl Greeter {
                 info!("Session successfully started");
                 if let Some(username) = self.get_current_username() {
                     self.imp().cache.borrow_mut().set_last_user(&username);
-                    self.imp()
-                        .cache
-                        .borrow_mut()
-                        .set_last_session(&username, &session);
+                    if let Some(session) = session {
+                        self.imp()
+                            .cache
+                            .borrow_mut()
+                            .set_last_session(&username, &session);
+                    }
                     debug!("Updated cache with current user: {}", username);
                 }
 

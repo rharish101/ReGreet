@@ -17,20 +17,25 @@ const DEFAULT_UID_MIN: u32 = 1000;
 const DEFAULT_UID_MAX: u32 = 60000;
 
 type UserMap = HashMap<String, String>;
+type ShellMap = HashMap<String, Vec<String>>;
 type SessionMap = HashMap<String, Vec<String>>;
 
 /// Stores info of all regular users and sessions
 pub struct SysUtil {
     /// Maps a user's full name to their system username
     users: UserMap,
+    /// Maps a system username to their shell
+    shells: ShellMap,
     /// Maps a session's full name to its command
     sessions: SessionMap,
 }
 
 impl SysUtil {
     pub fn new() -> IOResult<Self> {
+        let (users, shells) = Self::init_users()?;
         Ok(Self {
-            users: Self::init_users()?,
+            users,
+            shells,
             sessions: Self::init_sessions()?,
         })
     }
@@ -38,7 +43,7 @@ impl SysUtil {
     /// Get the list of regular users
     ///
     /// These are defined as a list of users with UID between UID_MIN and UID_MAX.
-    fn init_users() -> IOResult<UserMap> {
+    fn init_users() -> IOResult<(UserMap, ShellMap)> {
         let contents = read(LOGIN_FILE)?;
         let text = from_utf8(contents.as_slice())
             .unwrap_or_else(|err| panic!("Login file '{}' is not UTF-8: {}", LOGIN_FILE, err));
@@ -80,8 +85,10 @@ impl SysUtil {
 
         debug!("UID_MIN: {}, UID_MAX: {}", min_uid, max_uid);
 
-        // Iterate over all users in /etc/passwd
         let mut users = HashMap::new();
+        let mut shells = HashMap::new();
+
+        // Iterate over all users in /etc/passwd
         for entry in Passwd::iter() {
             if entry.uid > max_uid || entry.uid < min_uid {
                 // Non-standard user, eg. git or root
@@ -110,9 +117,20 @@ impl SysUtil {
                 );
                 entry.name.clone()
             };
-            users.insert(full_name, entry.name);
+            users.insert(full_name, entry.name.clone());
+
+            if let Some(cmd) = shlex::split(entry.shell.as_str()) {
+                shells.insert(entry.name, cmd);
+            } else {
+                // Skip this user, since a missing command means that we can't use it
+                warn!(
+                    "Couldn't split shell of username '{}' into arguments: {}",
+                    entry.name, entry.shell
+                );
+            };
         }
-        Ok(users)
+
+        Ok((users, shells))
     }
 
     /// Get available X11 and Wayland sessions
@@ -222,6 +240,11 @@ impl SysUtil {
     /// If the full name is not available, their system username is used.
     pub fn get_users(&self) -> &UserMap {
         &self.users
+    }
+
+    /// Get the mapping of a system username to their shell
+    pub fn get_shells(&self) -> &ShellMap {
+        &self.shells
     }
 
     /// Get the mapping of a session's full name to its command

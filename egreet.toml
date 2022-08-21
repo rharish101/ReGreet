@@ -1,5 +1,3 @@
-default_session = "Sway"
-
 [GTK]
 application_prefer_dark_theme = true
 cursor_theme_name = "Adwaita"

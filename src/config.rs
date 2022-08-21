@@ -5,7 +5,6 @@ use crate::common::load_toml;
 use crate::constants::CONFIG_PATH;
 
 /// Default session
-const DEFAULT_SESSION: &str = "Sway";
 const DEFAULT_GTK_PREFER_DARK_THEME: bool = true;
 const DEFAULT_GTK_CURSOR_THEME: &str = "Adwaita";
 const DEFAULT_GTK_THEME: &str = "Adwaita";
@@ -40,8 +39,6 @@ impl Default for GTKSettings {
 /// The configuration struct
 #[derive(Deserialize, Serialize)]
 pub struct Config {
-    #[serde(default = "get_default_session")]
-    default_session: String,
     #[serde(default, rename = "GTK")]
     gtk: Option<GTKSettings>,
 }
@@ -49,7 +46,6 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            default_session: DEFAULT_SESSION.to_string(),
             gtk: Some(GTKSettings::default()),
         }
     }
@@ -60,20 +56,12 @@ impl Config {
         load_toml(CONFIG_PATH)
     }
 
-    pub fn get_default_session(&self) -> &str {
-        self.default_session.as_str()
-    }
-
     pub fn get_gtk_settings(&self) -> &Option<GTKSettings> {
         &self.gtk
     }
 }
 
 // Functions used for defaults when deserializing
-
-fn get_default_session() -> String {
-    String::from(DEFAULT_SESSION)
-}
 
 fn get_default_gtk_prefer_dark_theme() -> bool {
     DEFAULT_GTK_PREFER_DARK_THEME
