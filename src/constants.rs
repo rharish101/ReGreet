@@ -19,11 +19,8 @@ pub const GREETER_NAME: &str = "egreet";
 /// The app ID for this GTK app
 pub const APP_ID: &str = concatcp!("apps.", GREETER_NAME);
 
-/// The directory where system-wide config files are located
-const CONFIG_DIR: &str = env_or!("CONFIG_DIR", "/etc");
-
 /// The greetd config directory
-const GREETD_CONFIG_DIR: &str = env_or!("GREETD_CONFIG_DIR", concatcp!(CONFIG_DIR, "/greetd"));
+const GREETD_CONFIG_DIR: &str = env_or!("GREETD_CONFIG_DIR", "/etc/greetd");
 /// Path to the config file
 pub const CONFIG_PATH: &str = concatcp!(GREETD_CONFIG_DIR, "/", GREETER_NAME, ".toml");
 
@@ -36,9 +33,6 @@ pub const CACHE_PATH: &str = concatcp!(CACHE_DIR, "/", GREETER_NAME, "/cache.tom
 const LOG_DIR: &str = env_or!("LOG_DIR", "/var/log");
 /// Path to the cache file
 pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/", GREETER_NAME, "/log");
-
-/// Path to the file that contains min/max UID of a regular user
-pub const LOGIN_FILE: &str = concatcp!(CONFIG_DIR, "/login.defs");
 
 /// Directories separated by `:`, containing desktop files for X11/Wayland sessions
 pub const SESSION_DIRS: &str = env_or!(

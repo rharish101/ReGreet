@@ -9,8 +9,10 @@ use log::{debug, info, warn};
 use pwd::Passwd;
 use regex::Regex;
 
-use crate::constants::{LOGIN_FILE, SESSION_DIRS};
+use crate::constants::SESSION_DIRS;
 
+/// Path to the file that contains min/max UID of a regular user
+pub const LOGIN_FILE: &str = "/etc/login.defs";
 /// Default minimum UID for `useradd` (a/c to my system)
 const DEFAULT_UID_MIN: u32 = 1000;
 /// Default maximum UID for `useradd` (a/c to my system)
