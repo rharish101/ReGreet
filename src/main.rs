@@ -4,7 +4,6 @@ mod common;
 mod config;
 mod constants;
 mod gui;
-mod lru;
 mod sysutil;
 
 use std::env;

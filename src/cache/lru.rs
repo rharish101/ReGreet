@@ -15,14 +15,14 @@ use serde::{
 };
 
 /// Wrapper to enable (de)serialization
-pub struct LRUCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);
+pub(super) struct LRUCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);
 
 impl<K: Hash + Eq, V> LRUCache<K, V> {
-    pub fn new(capacity: usize) -> Self {
+    pub(super) fn new(capacity: usize) -> Self {
         LRUCache(OrigLruCache::new(capacity))
     }
 
-    pub fn unbounded() -> Self {
+    pub(super) fn unbounded() -> Self {
         LRUCache(OrigLruCache::unbounded())
     }
 }

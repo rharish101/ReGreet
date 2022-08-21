@@ -1,13 +1,15 @@
 //! Utilities for caching info between logins
+mod lru;
+
 use std::fs::{create_dir_all, write};
 use std::path::Path;
 
 use log::info;
 use serde::{Deserialize, Serialize};
 
+use self::lru::LRUCache;
 use crate::common::{load_toml, TOMLFileResult};
 use crate::constants::CACHE_PATH;
-use crate::lru::LRUCache;
 
 /// Limit to the size of the user to last-used session mapping
 const CACHE_LIMIT: usize = 100;
