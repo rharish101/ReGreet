@@ -169,6 +169,23 @@ impl Greeter {
             return;
         };
 
+        // Before trying to create a session, check if the session command (if manually entered) is
+        // valid
+        if self.imp().sessions_box.active_id().is_none() {
+            if let Some(cmd) = self.imp().sessions_box.active_text() {
+                if shlex::split(cmd.as_str()).is_none() {
+                    // This must be an invalid command
+                    self.display_error(
+                        "Invalid session command",
+                        &format!("Invalid session command: {}", cmd),
+                    );
+                    return;
+                } else {
+                    debug!("Manually entered session command is parsable");
+                }
+            };
+        };
+
         info!("Creating session for user: {}", username);
 
         // Create a session for the current user
@@ -354,10 +371,10 @@ impl Greeter {
         }
     }
 
-    /// Get the currently selected session name and command
+    /// Get the currently selected session name (if available) and command
     fn get_current_session_cmd(&self) -> (Option<String>, Option<Vec<String>>) {
         // Get the currently selected session
-        if let Some(session) = self.imp().sessions_box.active_text() {
+        if let Some(session) = self.imp().sessions_box.active_id() {
             debug!("Retrieved current session: {}", session);
             if let Some(cmd) = self.imp().sys_util.get_sessions().get(session.as_str()) {
                 (Some(session.to_string()), Some(cmd.clone()))
@@ -367,8 +384,24 @@ impl Greeter {
                 self.display_error(&error_msg, &error_msg);
                 (None, None)
             }
+        } else if let Some(manual_cmd) = self.imp().sessions_box.active_text() {
+            // In case of manual entry, the ID should be missing
+            debug!(
+                "Retrieved session command '{}' through manual entry",
+                manual_cmd
+            );
+            if let Some(cmd) = shlex::split(manual_cmd.as_str()) {
+                (None, Some(cmd))
+            } else {
+                // This must be an invalid command
+                self.display_error(
+                    "Invalid session command",
+                    &format!("Invalid session command: {}", manual_cmd),
+                );
+                (None, None)
+            }
         } else {
-            // No session selected, so use the login shell
+            // This shouldn't happen, since we have an entry within the sessions box
             let username = if let Some(username) = self.get_current_username() {
                 username
             } else {

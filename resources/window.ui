@@ -62,6 +62,7 @@
             </child>
             <child>
               <object class="GtkComboBoxText" id="sessions_box">
+                <property name="has-entry">True</property>
                 <property name="hexpand">1</property>
                 <property name="receives-default">1</property>
                 <layout>
