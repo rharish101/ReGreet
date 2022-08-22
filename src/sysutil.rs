@@ -42,10 +42,8 @@ impl SysUtil {
         })
     }
 
-    /// Get the list of regular users
-    ///
-    /// These are defined as a list of users with UID between UID_MIN and UID_MAX.
-    fn init_users() -> IOResult<(UserMap, ShellMap)> {
+    /// Get the min and max UID for the current system
+    fn get_uid_limits() -> IOResult<(u32, u32)> {
         let contents = read(LOGIN_FILE)?;
         let text = from_utf8(contents.as_slice())
             .unwrap_or_else(|err| panic!("Login file '{}' is not UTF-8: {}", LOGIN_FILE, err));
@@ -85,6 +83,14 @@ impl SysUtil {
             DEFAULT_UID_MAX
         };
 
+        Ok((min_uid, max_uid))
+    }
+
+    /// Get the list of regular users
+    ///
+    /// These are defined as a list of users with UID between UID_MIN and UID_MAX.
+    fn init_users() -> IOResult<(UserMap, ShellMap)> {
+        let (min_uid, max_uid) = Self::get_uid_limits()?;
         debug!("UID_MIN: {}, UID_MAX: {}", min_uid, max_uid);
 
         let mut users = HashMap::new();

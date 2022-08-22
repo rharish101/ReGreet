@@ -70,33 +70,22 @@ impl Default for Greeter {
         let cache = RefCell::new(Cache::new());
         let config = Config::new();
 
-        // Use the template defaults, since the UI builder will load them anyway
-        let password_entry = TemplateChild::default();
-        let password_label = TemplateChild::default();
-        let message_label = TemplateChild::default();
-        let usernames_box = TemplateChild::default();
-        let sessions_box = TemplateChild::default();
-        let sessions_label = TemplateChild::default();
-        let login_button = TemplateChild::default();
-        let cancel_button = TemplateChild::default();
-        let reboot_button = TemplateChild::default();
-        let poweroff_button = TemplateChild::default();
-
         Self {
             greetd_client,
             sys_util,
             cache,
             config,
-            password_entry,
-            password_label,
-            message_label,
-            usernames_box,
-            sessions_box,
-            sessions_label,
-            login_button,
-            cancel_button,
-            reboot_button,
-            poweroff_button,
+            // Use the template defaults, since the UI builder will load them anyway
+            password_entry: TemplateChild::default(),
+            password_label: TemplateChild::default(),
+            message_label: TemplateChild::default(),
+            usernames_box: TemplateChild::default(),
+            sessions_box: TemplateChild::default(),
+            sessions_label: TemplateChild::default(),
+            login_button: TemplateChild::default(),
+            cancel_button: TemplateChild::default(),
+            reboot_button: TemplateChild::default(),
+            poweroff_button: TemplateChild::default(),
         }
     }
 }
