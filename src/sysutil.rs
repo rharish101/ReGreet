@@ -88,7 +88,7 @@ impl SysUtil {
 
     /// Get the list of regular users
     ///
-    /// These are defined as a list of users with UID between UID_MIN and UID_MAX.
+    /// These are defined as a list of users with UID between `UID_MIN` and `UID_MAX`.
     fn init_users() -> IOResult<(UserMap, ShellMap)> {
         let (min_uid, max_uid) = Self::get_uid_limits()?;
         debug!("UID_MIN: {}, UID_MAX: {}", min_uid, max_uid);

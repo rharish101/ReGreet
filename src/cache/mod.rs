@@ -25,7 +25,7 @@ pub struct Cache {
 
 impl Default for Cache {
     fn default() -> Self {
-        Cache {
+        Self {
             last_user: None,
             user_to_last_sess: LRUCache::new(CACHE_LIMIT),
         }
@@ -64,7 +64,7 @@ impl Cache {
 
     /// Get the last used session by the given user
     pub fn get_last_session(&mut self, user: &str) -> Option<&str> {
-        self.user_to_last_sess.get(user).map(|s| s.as_str())
+        self.user_to_last_sess.get(user).map(String::as_str)
     }
 
     /// Set the last user to login

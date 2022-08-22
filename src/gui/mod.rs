@@ -132,7 +132,7 @@ impl Greeter {
         // Populate the sessions combo box
         for session in self.imp().sys_util.get_sessions().keys() {
             debug!("Found session: {}", session);
-            self.imp().sessions_box.append(Some(session), session)
+            self.imp().sessions_box.append(Some(session), session);
         }
 
         // If the last user is known, show their login initially
@@ -211,9 +211,8 @@ impl Greeter {
                         &format!("Invalid session command: {}", cmd),
                     );
                     return;
-                } else {
-                    debug!("Manually entered session command is parsable");
-                }
+                };
+                debug!("Manually entered session command is parsable");
             };
         };
 
@@ -264,7 +263,7 @@ impl Greeter {
         };
     }
 
-    /// Event handler for selecting a different username in the ComboBox
+    /// Event handler for selecting a different username in the `ComboBoxText`
     ///
     /// This changes the session in the combo box according to the last used session of the current user.
     fn user_change_handler(&self) {

@@ -19,11 +19,11 @@ pub(super) struct LRUCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);
 
 impl<K: Hash + Eq, V> LRUCache<K, V> {
     pub(super) fn new(capacity: usize) -> Self {
-        LRUCache(OrigLruCache::new(capacity))
+        Self(OrigLruCache::new(capacity))
     }
 
     pub(super) fn unbounded() -> Self {
-        LRUCache(OrigLruCache::unbounded())
+        Self(OrigLruCache::unbounded())
     }
 }
 
@@ -55,7 +55,7 @@ struct LRUVisitor<K, V> {
 
 impl<K, V> LRUVisitor<K, V> {
     fn new() -> Self {
-        LRUVisitor {
+        Self {
             phantom_key: PhantomData,
             phantom_value: PhantomData,
         }
