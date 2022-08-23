@@ -13,17 +13,17 @@
           <object class="GtkFrame">
             <property name="child">
               <object class="GtkGrid">
-                <property name="column-spacing">10</property>
-                <property name="margin-bottom">10</property>
-                <property name="margin-end">10</property>
-                <property name="margin-start">10</property>
-                <property name="margin-top">10</property>
-                <property name="row-spacing">10</property>
+                <property name="column-spacing">15</property>
+                <property name="margin-bottom">15</property>
+                <property name="margin-end">15</property>
+                <property name="margin-start">15</property>
+                <property name="margin-top">15</property>
+                <property name="row-spacing">15</property>
                 <property name="width-request">500</property>
                 <child>
                   <object class="GtkLabel" id="message_label">
                     <property name="hexpand">1</property>
-                    <property name="margin-bottom">20</property>
+                    <property name="margin-bottom">15</property>
                     <property name="xalign">0.0</property>
                     <attributes>
                       <attribute name="weight" value="bold"/>
@@ -37,7 +37,7 @@
                 <child>
                   <object class="GtkLabel">
                     <property name="label" translatable="yes">User:</property>
-                    <property name="width-request">75</property>
+                    <property name="width-request">100</property>
                     <property name="xalign">1</property>
                     <layout>
                       <property name="column">0</property>
@@ -48,7 +48,7 @@
                 <child>
                   <object class="GtkLabel" id="sessions_label">
                     <property name="label" translatable="yes">Session:</property>
-                    <property name="width-request">75</property>
+                    <property name="width-request">100</property>
                     <property name="xalign">1</property>
                     <layout>
                       <property name="column">0</property>
@@ -79,7 +79,7 @@
                     <property name="label" translatable="yes">Password:</property>
                     <property name="sensitive">False</property>
                     <property name="visible">False</property>
-                    <property name="width-request">75</property>
+                    <property name="width-request">100</property>
                     <property name="xalign">1</property>
                     <layout>
                       <property name="column">0</property>
@@ -101,23 +101,20 @@
                 <child>
                   <object class="GtkBox">
                     <property name="halign">end</property>
-                    <property name="spacing">20</property>
+                    <property name="spacing">15</property>
                     <child>
                       <object class="GtkButton" id="cancel_button">
                         <property name="focusable">1</property>
                         <property name="label">Cancel</property>
                         <property name="sensitive">False</property>
                         <property name="visible">False</property>
-                        <property name="width-request">100</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="login_button">
                         <property name="focusable">1</property>
-                        <property name="halign">center</property>
                         <property name="label" translatable="yes">Login</property>
                         <property name="receives-default">1</property>
-                        <property name="width-request">100</property>
                         <style>
                           <class name="suggested-action"/>
                         </style>
@@ -151,15 +148,14 @@
         <child type="overlay">
           <object class="GtkBox">
             <property name="halign">center</property>
-            <property name="margin-bottom">10</property>
-            <property name="spacing">20</property>
+            <property name="homogeneous">True</property>
+            <property name="margin-bottom">15</property>
+            <property name="spacing">15</property>
             <property name="valign">end</property>
             <child>
               <object class="GtkButton" id="reboot_button">
                 <property name="focusable">1</property>
-                <property name="halign">center</property>
                 <property name="label" translatable="yes">Reboot</property>
-                <property name="width-request">100</property>
                 <style>
                   <class name="destructive-action"/>
                 </style>
@@ -168,9 +164,7 @@
             <child>
               <object class="GtkButton" id="poweroff_button">
                 <property name="focusable">1</property>
-                <property name="halign">center</property>
                 <property name="label" translatable="yes">Power Off</property>
-                <property name="width-request">100</property>
                 <style>
                   <class name="destructive-action"/>
                 </style>
