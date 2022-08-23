@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/apps/egreet/">
     <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
+    <file compressed="true">style.css</file>
   </gresource>
 </gresources>

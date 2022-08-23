@@ -1,6 +1,7 @@
 //! The main GUI for the greeter
 mod imp;
 
+use std::path::Path;
 use std::process::Command;
 use std::thread;
 use std::time::Duration;
@@ -46,12 +47,27 @@ impl Greeter {
         // Setup the welcome message
         self.imp().message_label.set_text(DEFAULT_MSG);
 
+        self.setup_background();
         self.setup_settings();
         self.setup_callbacks();
         self.setup_users_sessions();
 
         // Make the window fullscreen
         self.fullscreen();
+    }
+
+    /// Setup the image background
+    fn setup_background(&self) {
+        if let Some(bg_path) = self.imp().config.get_background() {
+            if Path::new(bg_path).exists() {
+                debug!("Setting background: {}", bg_path);
+                self.imp().background.set_filename(Some(bg_path));
+            } else {
+                warn!("Couldn't find requested background: {}", bg_path);
+            }
+        } else {
+            debug!("No background configured");
+        }
     }
 
     /// Load GTK settings from the greeter config

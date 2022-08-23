@@ -12,10 +12,11 @@ use std::path::Path;
 
 use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, FileRotate};
 use gtk::{
+    gdk::Display,
     gio,
     glib::{Char, OptionArg, OptionFlags, VariantDict},
     prelude::*,
-    Application,
+    Application, CssProvider, StyleContext,
 };
 use gui::Greeter;
 use simplelog::{ConfigBuilder, LevelFilter, WriteLogger};
@@ -28,6 +29,8 @@ const MAX_LOG_SIZE: usize = 1024 * 1024;
 const LOG_LEVEL_CLI_ARG: &str = "log-level";
 // NOTE: A change in this should also change the argument description
 const DEFAULT_LOG_LEVEL: LevelFilter = LevelFilter::Warn;
+
+const CSS_PATH: &str = "/apps/egreet/style.css";
 
 fn main() {
     // Register and include resources
@@ -47,7 +50,8 @@ fn main() {
     );
     app.connect_handle_local_options(handle_cli_args);
 
-    // Connect to the "activate" signal of `app`
+    // Connect to signals
+    app.connect_startup(|_| load_css());
     app.connect_activate(build_ui);
 
     // Run the application
@@ -109,6 +113,20 @@ fn init_logging(log_level: &str) {
         .set_time_format_rfc3339()
         .set_time_offset_to_local();
     WriteLogger::init(log_level, config_builder.build(), log).expect("Couldn't setup logging");
+}
+
+/// Load the CSS file
+fn load_css() {
+    // Load the CSS file and add it to the provider
+    let provider = CssProvider::new();
+    provider.load_from_resource(CSS_PATH);
+
+    // Add the provider to the default screen
+    StyleContext::add_provider_for_display(
+        &Display::default().expect("Could not connect to a display."),
+        &provider,
+        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+    );
 }
 
 /// Create a new greeter window and show it

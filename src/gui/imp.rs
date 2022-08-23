@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use glib::subclass::InitializingObject;
 use gtk::{
     glib, prelude::*, subclass::prelude::*, ApplicationWindow, Button, ComboBoxText,
-    CompositeTemplate, Label, PasswordEntry,
+    CompositeTemplate, Label, PasswordEntry, Picture,
 };
 
 use crate::cache::Cache;
@@ -26,6 +26,10 @@ pub struct Greeter {
     pub(super) cache: RefCell<Cache>,
     /// The config for this greeter
     pub(super) config: Config,
+
+    /// The background image
+    #[template_child]
+    pub(super) background: TemplateChild<Picture>,
 
     /// The widget where the user enters the password
     #[template_child]
@@ -76,6 +80,7 @@ impl Default for Greeter {
             cache,
             config,
             // Use the template defaults, since the UI builder will load them anyway
+            background: TemplateChild::default(),
             password_entry: TemplateChild::default(),
             password_label: TemplateChild::default(),
             message_label: TemplateChild::default(),

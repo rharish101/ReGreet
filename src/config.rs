@@ -22,6 +22,8 @@ pub struct GTKSettings {
 /// The configuration struct
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
+    #[serde(default)]
+    background: Option<String>,
     #[serde(default, rename = "GTK")]
     gtk: Option<GTKSettings>,
 }
@@ -29,6 +31,10 @@ pub struct Config {
 impl Config {
     pub fn new() -> Self {
         load_toml(CONFIG_PATH)
+    }
+
+    pub fn get_background(&self) -> &Option<String> {
+        &self.background
     }
 
     pub fn get_gtk_settings(&self) -> &Option<GTKSettings> {

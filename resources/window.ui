@@ -5,131 +5,143 @@
   <requires lib="gtk" version="4.0"/>
   <template class="Greeter" parent="GtkApplicationWindow">
     <property name="child">
-      <object class="GtkCenterBox">
-        <property name="orientation">vertical</property>
-        <child type="center">
-          <object class="GtkGrid">
-            <property name="column-spacing">10</property>
-            <property name="halign">center</property>
-            <property name="row-spacing">10</property>
-            <property name="valign">center</property>
-            <property name="width-request">500</property>
-            <child>
-              <object class="GtkLabel" id="message_label">
-                <property name="hexpand">1</property>
-                <property name="margin-bottom">20</property>
-                <property name="xalign">0.0</property>
-                <attributes>
-                  <attribute name="weight" value="bold"/>
-                </attributes>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">0</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="label" translatable="yes">User:</property>
-                <property name="width-request">75</property>
-                <property name="xalign">1</property>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="sessions_label">
-                <property name="label" translatable="yes">Session:</property>
-                <property name="width-request">75</property>
-                <property name="xalign">1</property>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">2</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="usernames_box">
-                <property name="has-entry">True</property>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">1</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkComboBoxText" id="sessions_box">
-                <property name="has-entry">True</property>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">2</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="password_label">
-                <property name="label" translatable="yes">Password:</property>
-                <property name="sensitive">False</property>
-                <property name="visible">False</property>
-                <property name="width-request">75</property>
-                <property name="xalign">1</property>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">2</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkPasswordEntry" id="password_entry">
-                <property name="sensitive">False</property>
-                <property name="show-peek-icon">True</property>
-                <property name="visible">False</property>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">2</property>
-                </layout>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="halign">end</property>
-                <property name="spacing">20</property>
+      <object class="GtkOverlay">
+        <property name="child">
+          <object class="GtkPicture" id="background"/>
+        </property>
+        <child type="overlay">
+          <object class="GtkFrame">
+            <property name="child">
+              <object class="GtkGrid">
+                <property name="column-spacing">10</property>
+                <property name="margin-bottom">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-start">10</property>
+                <property name="margin-top">10</property>
+                <property name="row-spacing">10</property>
+                <property name="width-request">500</property>
                 <child>
-                  <object class="GtkButton" id="cancel_button">
-                    <property name="focusable">1</property>
-                    <property name="label">Cancel</property>
+                  <object class="GtkLabel" id="message_label">
+                    <property name="hexpand">1</property>
+                    <property name="margin-bottom">20</property>
+                    <property name="xalign">0.0</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">User:</property>
+                    <property name="width-request">75</property>
+                    <property name="xalign">1</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="sessions_label">
+                    <property name="label" translatable="yes">Session:</property>
+                    <property name="width-request">75</property>
+                    <property name="xalign">1</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="usernames_box">
+                    <property name="has-entry">True</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkComboBoxText" id="sessions_box">
+                    <property name="has-entry">True</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="password_label">
+                    <property name="label" translatable="yes">Password:</property>
                     <property name="sensitive">False</property>
                     <property name="visible">False</property>
-                    <property name="width-request">100</property>
+                    <property name="width-request">75</property>
+                    <property name="xalign">1</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                    </layout>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="login_button">
-                    <property name="focusable">1</property>
-                    <property name="halign">center</property>
-                    <property name="label" translatable="yes">Login</property>
-                    <property name="receives-default">1</property>
-                    <property name="width-request">100</property>
-                    <style>
-                      <class name="suggested-action"/>
-                    </style>
+                  <object class="GtkPasswordEntry" id="password_entry">
+                    <property name="sensitive">False</property>
+                    <property name="show-peek-icon">True</property>
+                    <property name="visible">False</property>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">2</property>
+                    </layout>
                   </object>
                 </child>
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">3</property>
-                </layout>
+                <child>
+                  <object class="GtkBox">
+                    <property name="halign">end</property>
+                    <property name="spacing">20</property>
+                    <child>
+                      <object class="GtkButton" id="cancel_button">
+                        <property name="focusable">1</property>
+                        <property name="label">Cancel</property>
+                        <property name="sensitive">False</property>
+                        <property name="visible">False</property>
+                        <property name="width-request">100</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="login_button">
+                        <property name="focusable">1</property>
+                        <property name="halign">center</property>
+                        <property name="label" translatable="yes">Login</property>
+                        <property name="receives-default">1</property>
+                        <property name="width-request">100</property>
+                        <style>
+                          <class name="suggested-action"/>
+                        </style>
+                      </object>
+                    </child>
+                    <layout>
+                      <property name="column">1</property>
+                      <property name="row">3</property>
+                    </layout>
+                  </object>
+                </child>
               </object>
-            </child>
+            </property>
+            <property name="halign">center</property>
+            <property name="name">login-box</property>
+            <property name="valign">center</property>
           </object>
         </child>
-        <child type="end">
+        <child type="overlay">
           <object class="GtkBox">
             <property name="halign">center</property>
             <property name="margin-bottom">10</property>
             <property name="spacing">20</property>
+            <property name="valign">end</property>
             <child>
               <object class="GtkButton" id="reboot_button">
                 <property name="focusable">1</property>
