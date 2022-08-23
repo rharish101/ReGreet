@@ -32,6 +32,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="label" translatable="yes">User:</property>
+                <property name="width-request">75</property>
                 <property name="xalign">1</property>
                 <layout>
                   <property name="column">0</property>
@@ -42,6 +43,7 @@
             <child>
               <object class="GtkLabel" id="sessions_label">
                 <property name="label" translatable="yes">Session:</property>
+                <property name="width-request">75</property>
                 <property name="xalign">1</property>
                 <layout>
                   <property name="column">0</property>
@@ -76,7 +78,7 @@
                 <property name="label" translatable="yes">Password:</property>
                 <property name="sensitive">False</property>
                 <property name="visible">False</property>
-                <property name="width-request">100</property>
+                <property name="width-request">75</property>
                 <property name="xalign">1</property>
                 <layout>
                   <property name="column">0</property>
