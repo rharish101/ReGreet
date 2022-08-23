@@ -30,6 +30,9 @@ pub struct Greeter {
     /// The background image
     #[template_child]
     pub(super) background: TemplateChild<Picture>,
+    /// The datetime label
+    #[template_child]
+    pub(super) datetime_label: TemplateChild<Label>,
 
     /// The widget where the user enters the password
     #[template_child]
@@ -81,6 +84,7 @@ impl Default for Greeter {
             config,
             // Use the template defaults, since the UI builder will load them anyway
             background: TemplateChild::default(),
+            datetime_label: TemplateChild::default(),
             password_entry: TemplateChild::default(),
             password_label: TemplateChild::default(),
             message_label: TemplateChild::default(),

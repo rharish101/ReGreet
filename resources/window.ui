@@ -137,6 +137,18 @@
           </object>
         </child>
         <child type="overlay">
+          <object class="GtkFrame">
+            <property name="child">
+              <object class="GtkLabel" id="datetime_label">
+                <property name="width-request">150</property>
+              </object>
+            </property>
+            <property name="halign">center</property>
+            <property name="name">datetime-box</property>
+            <property name="valign">start</property>
+          </object>
+        </child>
+        <child type="overlay">
           <object class="GtkBox">
             <property name="halign">center</property>
             <property name="margin-bottom">10</property>

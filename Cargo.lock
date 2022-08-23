@@ -154,6 +154,7 @@ dependencies = [
 name = "egreet"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "const_format",
  "file-rotate",
  "glob",

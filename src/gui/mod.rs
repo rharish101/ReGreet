@@ -6,10 +6,11 @@ use std::process::Command;
 use std::thread;
 use std::time::Duration;
 
+use chrono::Local;
 use greetd_ipc::{ErrorType as GreetdErrorType, Response};
 use gtk::{
     gio, glib,
-    glib::{MainContext, PRIORITY_LOW},
+    glib::{MainContext, PRIORITY_DEFAULT, PRIORITY_LOW},
     prelude::*,
     subclass::prelude::*,
     Application, Button,
@@ -21,6 +22,9 @@ use crate::common::capitalize;
 
 const DEFAULT_MSG: &str = "Welcome Back!";
 const ERROR_MSG_CLEAR_DELAY: u64 = 5;
+
+const DATETIME_FMT: &str = "%a %R";
+const DATETIME_UPDATE_DELAY: u64 = 500;
 
 // Inherit from GtkApplicationWindow: https://docs.gtk.org/gtk4/class.ApplicationWindow.html
 glib::wrapper! {
@@ -51,6 +55,7 @@ impl Greeter {
         self.setup_settings();
         self.setup_callbacks();
         self.setup_users_sessions();
+        self.setup_datetime_display();
 
         // Make the window fullscreen
         self.fullscreen();
@@ -168,6 +173,29 @@ impl Greeter {
                 warn!("Couldn't find user '{}' to set as the initial user", user);
             }
         }
+    }
+
+    /// Setup auto updation for the datetime label
+    fn setup_datetime_display(&self) {
+        let (sender, receiver) = MainContext::channel(PRIORITY_DEFAULT);
+
+        // Set a timer in a separate thread that signals the main thread to reset the displayed
+        // message, so as to not block the GUI
+        thread::spawn(move || loop {
+            if sender.send(()).is_err() {
+                warn!("Couldn't update datetime");
+            };
+            thread::sleep(Duration::from_millis(DATETIME_UPDATE_DELAY));
+        });
+
+        // Resets the displayed message after getting the signal to do so
+        receiver.attach(
+            None,
+            glib::clone!(@weak self as gui => @default-return Continue(true), move |_| {
+                let datetime_str = &format!("{}", Local::now().format(DATETIME_FMT));
+                gui.imp().datetime_label.set_text(datetime_str); Continue(true)
+            }),
+        );
     }
 
     /// Event handler for clicking the "Reboot" button
