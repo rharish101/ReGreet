@@ -4,7 +4,7 @@ use std::cell::RefCell;
 use glib::subclass::InitializingObject;
 use gtk::{
     glib, prelude::*, subclass::prelude::*, ApplicationWindow, Button, ComboBoxText,
-    CompositeTemplate, Entry, Label,
+    CompositeTemplate, Label, PasswordEntry,
 };
 
 use crate::cache::Cache;
@@ -29,7 +29,7 @@ pub struct Greeter {
 
     /// The widget where the user enters the password
     #[template_child]
-    pub(super) password_entry: TemplateChild<Entry>,
+    pub(super) password_entry: TemplateChild<PasswordEntry>,
     /// The label for the password widget
     #[template_child]
     pub(super) password_label: TemplateChild<Label>,
