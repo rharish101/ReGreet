@@ -20,7 +20,7 @@ use log::{debug, error, info, warn};
 use crate::client::AuthStatus;
 use crate::common::capitalize;
 
-const DEFAULT_MSG: &str = "Welcome Back!";
+const DEFAULT_MSG: &str = "Welcome back!";
 const ERROR_MSG_CLEAR_DELAY: u64 = 5;
 
 const DATETIME_FMT: &str = "%a %R";
