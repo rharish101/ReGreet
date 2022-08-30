@@ -1,4 +1,5 @@
 //! Common stuff used by the codebase
+use std::ffi::OsStr;
 use std::fs::read;
 use std::path::Path;
 
@@ -26,9 +27,10 @@ fn load_raw_toml<T: DeserializeOwned>(path: &Path) -> TOMLFileResult<T> {
 /// Load the TOML file from disk
 ///
 /// If loading fails, then this returns the default value of the struct
-pub fn load_toml<T>(path: &str) -> T
+pub fn load_toml<P, R>(path: &P) -> R
 where
-    T: DeserializeOwned + Default,
+    P: AsRef<OsStr> + ?Sized,
+    R: DeserializeOwned + Default,
 {
     let path = Path::new(path);
     if path.exists() {
@@ -39,12 +41,12 @@ where
             }
             Err(err) => {
                 warn!("Error loading TOML file '{}': {}", path.display(), err);
-                T::default()
+                R::default()
             }
         }
     } else {
         warn!("Missing TOML file: {}", path.display());
-        T::default()
+        R::default()
     }
 }
 
