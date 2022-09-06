@@ -200,20 +200,22 @@ impl SysUtil {
                         name.as_str(),
                         path.display()
                     );
-                    Some(name.as_str())
-                } else {
-                    debug!("No name found for session: {}", path.display());
-                    None
-                };
-
-                let name = if let Some(name) = name {
-                    name
+                    name.as_str()
                 } else if let Some(stem) = path.file_stem() {
                     // Get the stem of the filename of this desktop file.
                     // This is used as backup, in case the file name doesn't exist.
-                    stem.to_str().unwrap_or_else(|| {
-                        panic!("Non-UTF-8 file stem in session file: {}", path.display())
-                    })
+                    if let Some(stem) = stem.to_str() {
+                        debug!(
+                            "Using file stem '{}', since no name was found for session: {}",
+                            stem,
+                            path.display()
+                        );
+                        stem
+                    } else {
+                        warn!("Non-UTF-8 file stem in session file: {}", path.display());
+                        // No way to display this session name, so just skip it
+                        continue;
+                    }
                 } else {
                     warn!("No file stem found for session: {}", path.display());
                     // No file stem implies no file name, which shouldn't happen.
