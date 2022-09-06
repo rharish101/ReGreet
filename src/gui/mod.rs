@@ -380,21 +380,20 @@ impl Greeter {
             // The client should raise an `unimplemented!`, so ignore it
             Response::AuthMessage { .. } => (),
             Response::Error {
-                error_type,
+                error_type: GreetdErrorType::AuthError,
+                ..
+            } => {
+                // Most likely entered the wrong password
+                self.display_error("Login failed", "Login failed");
+            }
+            Response::Error {
+                error_type: GreetdErrorType::Error,
                 description,
             } => {
-                match error_type {
-                    GreetdErrorType::AuthError => {
-                        // Most likely entered the wrong password
-                        self.display_error("Login failed", "Login failed");
-                    }
-                    GreetdErrorType::Error => {
-                        self.display_error(
-                            &capitalize(&description),
-                            &format!("Message from greetd: {}", description),
-                        );
-                    }
-                }
+                self.display_error(
+                    &capitalize(&description),
+                    &format!("Message from greetd: {}", description),
+                );
             }
         };
     }

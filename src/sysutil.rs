@@ -54,30 +54,26 @@ impl SysUtil {
         let max_uid_regex = Regex::new(r"UID_MAX\s+([0-9]+)").expect("Invalid regex for UID_MAX");
 
         // Get UID_MIN
-        let min_uid = if let Some(capture) = min_uid_regex.captures(text) {
-            if let Some(num) = capture.get(1) {
-                num.as_str()
-                    .parse()
-                    .expect("UID_MIN regex didn't capture an integer")
-            } else {
-                warn!("Failed to find UID_MIN in login file: {}", LOGIN_FILE);
-                DEFAULT_UID_MIN
-            }
+        let min_uid = if let Some(num) = min_uid_regex
+            .captures(text)
+            .and_then(|capture| capture.get(1))
+        {
+            num.as_str()
+                .parse()
+                .expect("UID_MIN regex didn't capture an integer")
         } else {
             warn!("Failed to find UID_MIN in login file: {}", LOGIN_FILE);
             DEFAULT_UID_MIN
         };
 
         // Get UID_MAX
-        let max_uid = if let Some(capture) = max_uid_regex.captures(text) {
-            if let Some(num) = capture.get(1) {
-                num.as_str()
-                    .parse()
-                    .expect("UID_MAX regex didn't capture an integer")
-            } else {
-                warn!("Failed to find UID_MAX in login file: {}", LOGIN_FILE);
-                DEFAULT_UID_MAX
-            }
+        let max_uid = if let Some(num) = max_uid_regex
+            .captures(text)
+            .and_then(|capture| capture.get(1))
+        {
+            num.as_str()
+                .parse()
+                .expect("UID_MAX regex didn't capture an integer")
         } else {
             warn!("Failed to find UID_MAX in login file: {}", LOGIN_FILE);
             DEFAULT_UID_MAX
@@ -174,24 +170,19 @@ impl SysUtil {
                 let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
 
                 // Parse the desktop file to get the session command
-                let cmd = if let Some(capture) = cmd_regex.captures(text) {
-                    if let Some(cmd_str) = capture.get(1) {
-                        if let Some(cmd) = shlex::split(cmd_str.as_str()) {
-                            cmd
-                        } else {
-                            warn!(
-                                "Couldn't split command of '{}' into arguments: {}",
-                                path.display(),
-                                cmd_str.as_str()
-                            );
-                            // Skip the desktop file, since a missing command means that we can't
-                            // use it
-                            continue;
-                        }
+                let cmd = if let Some(cmd_str) =
+                    cmd_regex.captures(text).and_then(|capture| capture.get(1))
+                {
+                    if let Some(cmd) = shlex::split(cmd_str.as_str()) {
+                        cmd
                     } else {
-                        warn!("Empty command found for session: {}", path.display());
-                        // Skip the desktop file, since a missing command means that we can't use
-                        // it
+                        warn!(
+                            "Couldn't split command of '{}' into arguments: {}",
+                            path.display(),
+                            cmd_str.as_str()
+                        );
+                        // Skip the desktop file, since a missing command means that we can't
+                        // use it
                         continue;
                     }
                 } else {
@@ -201,18 +192,15 @@ impl SysUtil {
                 };
 
                 // Get the full name of this session
-                let name = if let Some(capture) = name_regex.captures(text) {
-                    if let Some(name) = capture.get(1) {
-                        debug!(
-                            "Found name '{}' for session: {}",
-                            name.as_str(),
-                            path.display()
-                        );
-                        Some(name.as_str())
-                    } else {
-                        debug!("No name found for session: {}", path.display());
-                        None
-                    }
+                let name = if let Some(name) =
+                    name_regex.captures(text).and_then(|capture| capture.get(1))
+                {
+                    debug!(
+                        "Found name '{}' for session: {}",
+                        name.as_str(),
+                        path.display()
+                    );
+                    Some(name.as_str())
                 } else {
                     debug!("No name found for session: {}", path.display());
                     None
@@ -220,20 +208,18 @@ impl SysUtil {
 
                 let name = if let Some(name) = name {
                     name
-                } else {
+                } else if let Some(stem) = path.file_stem() {
                     // Get the stem of the filename of this desktop file.
                     // This is used as backup, in case the file name doesn't exist.
-                    if let Some(stem) = path.file_stem() {
-                        stem.to_str().unwrap_or_else(|| {
-                            panic!("Non-UTF-8 file stem in session file: {}", path.display())
-                        })
-                    } else {
-                        warn!("No file stem found for session: {}", path.display());
-                        // No file stem implies no file name, which shouldn't happen.
-                        // Since there's no full name nor file stem, just skip this anomalous
-                        // session.
-                        continue;
-                    }
+                    stem.to_str().unwrap_or_else(|| {
+                        panic!("Non-UTF-8 file stem in session file: {}", path.display())
+                    })
+                } else {
+                    warn!("No file stem found for session: {}", path.display());
+                    // No file stem implies no file name, which shouldn't happen.
+                    // Since there's no full name nor file stem, just skip this anomalous
+                    // session.
+                    continue;
                 };
 
                 sessions.insert(name.to_string(), cmd);
