@@ -1,6 +1,7 @@
 # egreet
 
-A clean and customizable GTK-based [greetd](https://git.sr.ht/~kennylevinsen/greetd) greeter, meant to be run under a Wayland compositor (like [Sway](https://github.com/swaywm/sway)).
+A clean and customizable GTK-based [greetd](https://git.sr.ht/~kennylevinsen/greetd) greeter written in Rust using [Relm4](https://relm4.org/).
+This is meant to be run under a Wayland compositor (like [Sway](https://github.com/swaywm/sway)).
 
 It is based on [Max Moser's LightDM Elephant greeter](https://github.com/max-moser/lightdm-elephant-greeter), which is based on [Matt ~~Shultz's~~ Fischer's example LightDM greeter](https://web.archive.org/web/20210923235052/https://www.mattfischer.com/blog/archives/5).
 

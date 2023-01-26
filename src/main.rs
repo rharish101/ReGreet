@@ -6,18 +6,11 @@ mod constants;
 mod gui;
 mod sysutil;
 
-use std::env;
 use std::fs::create_dir_all;
 use std::path::Path;
 
+use clap::{Parser, ValueEnum};
 use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, FileRotate};
-use gtk::{
-    gdk::Display,
-    gio,
-    glib::{Char, OptionArg, OptionFlags, VariantDict},
-    prelude::*,
-    Application, CssProvider, StyleContext,
-};
 use gui::Greeter;
 use simplelog::{ConfigBuilder, LevelFilter, WriteLogger};
 
@@ -26,58 +19,34 @@ use crate::constants::{APP_ID, LOG_PATH};
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
 
-const LOG_LEVEL_CLI_ARG: &str = "log-level";
-// NOTE: A change in this should also change the argument description
-const DEFAULT_LOG_LEVEL: LevelFilter = LevelFilter::Warn;
-
-const CSS_PATH: &str = "/apps/egreet/style.css";
-
-fn main() {
-    // Register and include resources
-    gio::resources_register_include!("compiled.gresource").expect("Failed to register resources.");
-
-    // Create a new application
-    let app = Application::builder().application_id(APP_ID).build();
-
-    // Specify CLI args and the handler
-    app.add_main_option(
-        LOG_LEVEL_CLI_ARG,
-        Char::from(b'l'),
-        OptionFlags::NONE,
-        OptionArg::String,
-        "The verbosity level of the logs [allowed: off, error, warn, info, debug, trace] [default: warn]",
-        Some("LEVEL"),
-    );
-    app.connect_handle_local_options(handle_cli_args);
-
-    // Connect to signals
-    app.connect_startup(|_| load_css());
-    app.connect_activate(build_ui);
-
-    // Run the application
-    app.run();
+#[derive(Clone, Debug, ValueEnum)]
+enum LogLevel {
+    Off,
+    Error,
+    Warn,
+    Info,
+    Debug,
+    Trace,
 }
 
-/// Handle the CLI arguments
-fn handle_cli_args(_: &Application, args: &VariantDict) -> i32 {
-    let log_level = if let Ok(value) = args.lookup::<String>(LOG_LEVEL_CLI_ARG) {
-        if let Some(value) = value {
-            value
-        } else {
-            String::new()
-        }
-    } else {
-        // Invalid argument type, so return a positive number indicating that the app should crash
-        return 1;
-    };
-    init_logging(&log_level);
+#[derive(Parser, Debug)]
+#[command(author, version, about)]
+struct Args {
+    /// The verbosity level of the logs
+    #[arg(short, long, value_name = "LEVEL", default_value = "warn")]
+    log_level: LogLevel,
+}
 
-    // This denotes that the app should continue to function
-    -1
+fn main() {
+    let args = Args::parse();
+    init_logging(args.log_level);
+
+    let app = relm4::RelmApp::new(APP_ID);
+    app.run::<Greeter>(());
 }
 
 /// Initialize logging with file rotation
-fn init_logging(log_level: &str) {
+fn init_logging(log_level: LogLevel) {
     let log_path = Path::new(LOG_PATH);
     if !log_path.exists() {
         // Create the log directory
@@ -96,14 +65,13 @@ fn init_logging(log_level: &str) {
     );
 
     // Parse the log level string
-    let log_level = match log_level {
-        "off" => LevelFilter::Off,
-        "error" => LevelFilter::Error,
-        "warn" => LevelFilter::Warn,
-        "info" => LevelFilter::Info,
-        "debug" => LevelFilter::Debug,
-        "trace" => LevelFilter::Trace,
-        _ => DEFAULT_LOG_LEVEL,
+    let filter = match log_level {
+        LogLevel::Off => LevelFilter::Off,
+        LogLevel::Error => LevelFilter::Error,
+        LogLevel::Warn => LevelFilter::Warn,
+        LogLevel::Info => LevelFilter::Info,
+        LogLevel::Debug => LevelFilter::Debug,
+        LogLevel::Trace => LevelFilter::Trace,
     };
 
     // Setup the logger
@@ -112,25 +80,5 @@ fn init_logging(log_level: &str) {
     let _ = config_builder
         .set_time_format_rfc3339()
         .set_time_offset_to_local();
-    WriteLogger::init(log_level, config_builder.build(), log).expect("Couldn't setup logging");
-}
-
-/// Load the CSS file
-fn load_css() {
-    // Load the CSS file and add it to the provider
-    let provider = CssProvider::new();
-    provider.load_from_resource(CSS_PATH);
-
-    // Add the provider to the default screen
-    StyleContext::add_provider_for_display(
-        &Display::default().expect("Could not connect to a display."),
-        &provider,
-        gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
-}
-
-/// Create a new greeter window and show it
-fn build_ui(app: &Application) {
-    let window = Greeter::new(app);
-    window.present();
+    WriteLogger::init(filter, config_builder.build(), log).expect("Couldn't setup logging");
 }
