@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 //! Templates for various GUI components
 use gtk::prelude::*;
 use relm4::{gtk, RelmWidgetExt, WidgetTemplate};

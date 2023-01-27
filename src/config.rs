@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 //! Configuration for the greeter
 use serde::{Deserialize, Serialize};
 

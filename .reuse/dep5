@@ -1,0 +1,12 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: egreet
+Upstream-Contact: Harish Rajagopal <harish.rajagopals@gmail.com>
+Source: https://github.com/rharish101/egreet
+
+Files: screenshot.png
+Copyright: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+License: CC-BY-SA-4.0
+
+Files: Cargo.lock
+Copyright: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+License: CC0-1.0

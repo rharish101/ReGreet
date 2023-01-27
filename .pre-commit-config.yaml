@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 repos:
   - repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0
@@ -9,3 +13,7 @@ repos:
     rev: v1.0.7
     hooks:
     - id: cargo-sort
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v1.1.0
+    hooks:
+    - id: reuse

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 //! Common stuff used by the codebase
 use std::ffi::OsStr;
 use std::fs::read;

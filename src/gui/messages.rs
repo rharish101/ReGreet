@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 //! Message definitions for communication between the view and the model
 use std::fmt::{Debug, Error as FmtError, Formatter};
 

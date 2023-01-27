@@ -1,3 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+<!--
+SPDX-FileCopyrightText: 2021 Maximilian Moser <maximilian.moser@tuwien.ac.at>
+
+SPDX-License-Identifier: MIT
+-->
+
 # egreet
 
 A clean and customizable GTK-based [greetd](https://git.sr.ht/~kennylevinsen/greetd) greeter written in Rust using [Relm4](https://relm4.org/).
@@ -88,3 +100,10 @@ After reaching a limit, the oldest log file is removed.
 The configuration file must be named `egreet.toml`, and in the [TOML](https://toml.io/) format.
 It should be located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
 A sample configuration is provided along with sample values for all available options in [`egreet.sample.toml`](egreet.sample.toml).
+
+## Licenses
+This repository uses [REUSE](https://reuse.software/) to document licenses.
+Each file either has a header containing copyright and license information, or has an entry in the [DEP5 file](https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/) at [.reuse/dep5](./.reuse/dep5).
+The license files that are used in this project can be found in the [LICENSES](./LICENSES) directory.
+
+A copy of the GPL-3.0-or-later license is placed in [LICENSE](./LICENSE), to signify that it constitutes the majority of the codebase, and for compatibility with GitHub.

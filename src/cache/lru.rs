@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 //! Wrapper for `lru::LruCache`
 //!
 //! This is needed because `lru::LruCache` doesn't implement (de)serialization.

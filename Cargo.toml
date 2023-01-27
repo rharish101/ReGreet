@@ -1,9 +1,13 @@
+# SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 [package]
 name = "egreet"
 version = "0.1.0"
 edition = "2021"
 description = "Simple greetd greeter, based on Relm4"
-license = "MIT"
+license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
