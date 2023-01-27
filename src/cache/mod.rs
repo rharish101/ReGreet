@@ -8,8 +8,8 @@ use std::path::Path;
 use log::info;
 use serde::{Deserialize, Serialize};
 
-use self::lru::LRUCache;
-use crate::common::{load_toml, TOMLFileResult};
+use self::lru::LruCache;
+use crate::common::{load_toml, TomlFileResult};
 use crate::constants::CACHE_PATH;
 
 /// Limit to the size of the user to last-used session mapping.
@@ -21,14 +21,14 @@ pub struct Cache {
     /// The last user who logged in
     last_user: Option<String>,
     /// The last-used session for each user
-    user_to_last_sess: LRUCache<String, String>,
+    user_to_last_sess: LruCache<String, String>,
 }
 
 impl Default for Cache {
     fn default() -> Self {
         Self {
             last_user: None,
-            user_to_last_sess: LRUCache::new(CACHE_LIMIT),
+            user_to_last_sess: LruCache::new(CACHE_LIMIT),
         }
     }
 }
@@ -45,7 +45,7 @@ impl Cache {
     }
 
     /// Save the cache file to disk.
-    pub fn save(&self) -> TOMLFileResult<()> {
+    pub fn save(&self) -> TomlFileResult<()> {
         let cache_path = Path::new(CACHE_PATH);
         if !cache_path.exists() {
             // Create the cache directory.

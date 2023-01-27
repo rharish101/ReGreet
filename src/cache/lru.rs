@@ -17,9 +17,9 @@ use serde::{
 };
 
 /// Wrapper to enable (de)serialization
-pub(super) struct LRUCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);
+pub(super) struct LruCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);
 
-impl<K: Hash + Eq, V> LRUCache<K, V> {
+impl<K: Hash + Eq, V> LruCache<K, V> {
     pub(super) fn new(capacity: usize) -> Self {
         if let Some(capacity) = NonZeroUsize::new(capacity) {
             Self(OrigLruCache::new(capacity))
@@ -39,14 +39,14 @@ impl<K: Hash + Eq, V> LRUCache<K, V> {
 /// Avoid usage of self.0 with self.
 ///
 /// This makes life easier when using the wrapper struct.
-impl<K, V, S> Deref for LRUCache<K, V, S> {
+impl<K, V, S> Deref for LruCache<K, V, S> {
     type Target = OrigLruCache<K, V, S>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
-impl<K, V, S> DerefMut for LRUCache<K, V, S> {
+impl<K, V, S> DerefMut for LruCache<K, V, S> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
@@ -55,14 +55,14 @@ impl<K, V, S> DerefMut for LRUCache<K, V, S> {
 // Deserialization code heavily "inspired" by: https://serde.rs/deserialize-map.html
 
 /// Helper struct to deserialize a map into an LRU cache
-struct LRUVisitor<K, V> {
+struct LruVisitor<K, V> {
     // Use phantoms to "use" the generic params without actually using them.
     // They're needed to correspond to an LRUCache<K, V>.
     phantom_key: PhantomData<K>,
     phantom_value: PhantomData<V>,
 }
 
-impl<K, V> LRUVisitor<K, V> {
+impl<K, V> LruVisitor<K, V> {
     fn new() -> Self {
         Self {
             phantom_key: PhantomData,
@@ -72,12 +72,12 @@ impl<K, V> LRUVisitor<K, V> {
 }
 
 /// Allow the LRU visitor to talk to the deserializer and deserialize a map into an LRU cache.
-impl<'de, K, V> Visitor<'de> for LRUVisitor<K, V>
+impl<'de, K, V> Visitor<'de> for LruVisitor<K, V>
 where
     K: Deserialize<'de> + Hash + Eq,
     V: Deserialize<'de>,
 {
-    type Value = LRUCache<K, V>;
+    type Value = LruCache<K, V>;
 
     fn expecting(&self, formatter: &mut Formatter) -> FmtResult {
         write!(formatter, "a map of String keys and String values")
@@ -86,8 +86,8 @@ where
     fn visit_map<A: MapAccess<'de>>(self, mut access: A) -> Result<Self::Value, A::Error> {
         // If the size is unknown, use an unbounded LRU to be on the safe side.
         let mut lru = match access.size_hint() {
-            Some(size) => LRUCache::new(size),
-            None => LRUCache::unbounded(),
+            Some(size) => LruCache::new(size),
+            None => LruCache::unbounded(),
         };
 
         // Add all map entries one-by-one.
@@ -99,13 +99,13 @@ where
 }
 
 /// Make the LRU cache deserializable as a map.
-impl<'de, K, V> Deserialize<'de> for LRUCache<K, V>
+impl<'de, K, V> Deserialize<'de> for LruCache<K, V>
 where
     K: Deserialize<'de> + Hash + Eq,
     V: Deserialize<'de>,
 {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        deserializer.deserialize_map(LRUVisitor::new())
+        deserializer.deserialize_map(LruVisitor::new())
     }
 }
 
@@ -113,7 +113,7 @@ where
 // https://serde.rs/impl-serialize.html#serializing-a-sequence-or-map
 
 /// Make the LRU cache serializable as a map.
-impl<K, V, H> Serialize for LRUCache<K, V, H>
+impl<K, V, H> Serialize for LruCache<K, V, H>
 where
     K: Serialize + Hash + Eq,
     V: Serialize,

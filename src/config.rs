@@ -6,7 +6,7 @@ use crate::constants::CONFIG_PATH;
 
 /// Struct holding all supported GTK settings
 #[derive(Default, Deserialize, Serialize)]
-pub struct GTKSettings {
+pub struct GtkSettings {
     #[serde(default)]
     pub application_prefer_dark_theme: bool,
     #[serde(default)]
@@ -25,7 +25,7 @@ pub struct Config {
     #[serde(default)]
     background: Option<String>,
     #[serde(default, rename = "GTK")]
-    gtk: Option<GTKSettings>,
+    gtk: Option<GtkSettings>,
 }
 
 impl Config {
@@ -37,7 +37,7 @@ impl Config {
         &self.background
     }
 
-    pub fn get_gtk_settings(&self) -> &Option<GTKSettings> {
+    pub fn get_gtk_settings(&self) -> &Option<GtkSettings> {
         &self.gtk
     }
 }
