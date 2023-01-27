@@ -7,7 +7,7 @@ use greetd_ipc::{
     codec::{Error as GreetdError, SyncCodec},
     Request, Response,
 };
-use log::info;
+use tracing::info;
 
 /// Environment variable containing the path to the greetd socket
 const GREETD_SOCK_ENV_VAR: &str = "GREETD_SOCK";

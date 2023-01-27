@@ -5,9 +5,9 @@ use std::io::Result as IOResult;
 use std::str::from_utf8;
 
 use glob::glob;
-use log::{debug, info, warn};
 use pwd::Passwd;
 use regex::Regex;
+use tracing::{debug, info, warn};
 
 use crate::constants::SESSION_DIRS;
 

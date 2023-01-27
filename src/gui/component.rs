@@ -1,7 +1,7 @@
 //! Setup for using the greeter as a Relm4 component
 use chrono::Local;
-use log::{debug, info, warn};
 use std::time::Duration;
+use tracing::{debug, info, warn};
 
 use gtk::prelude::*;
 use relm4::{gtk, Component, ComponentParts, ComponentSender, Sender, ShutdownReceiver};

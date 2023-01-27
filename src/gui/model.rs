@@ -3,8 +3,8 @@ use std::process::Command;
 use std::time::Duration;
 
 use greetd_ipc::{ErrorType as GreetdErrorType, Response};
-use log::{debug, error, info, warn};
 use relm4::ComponentSender;
+use tracing::{debug, error, info, instrument, warn};
 
 use crate::cache::Cache;
 use crate::client::{AuthStatus, GreetdClient};
@@ -85,6 +85,7 @@ impl Greeter {
     /// Event handler for clicking the "Reboot" button
     ///
     /// This reboots the PC.
+    #[instrument(skip_all)]
     pub(super) fn reboot_click_handler(sender: &ComponentSender<Self>) {
         info!("Rebooting");
         Self::systemctl_cmd("reboot".to_string(), sender);
@@ -93,6 +94,7 @@ impl Greeter {
     /// Event handler for clicking the "Power-Off" button
     ///
     /// This shuts down the PC.
+    #[instrument(skip_all)]
     pub(super) fn poweroff_click_handler(sender: &ComponentSender<Self>) {
         info!("Shutting down");
         Self::systemctl_cmd("poweroff".to_string(), sender);
@@ -101,6 +103,7 @@ impl Greeter {
     /// Event handler for clicking the "Cancel" button
     ///
     /// This cancels the created session and goes back to the user/session chooser.
+    #[instrument(skip_all)]
     pub(super) fn cancel_click_handler(&mut self) {
         if let Err(err) = self.greetd_client.cancel_session() {
             warn!("Couldn't cancel greetd session: {err}");
@@ -181,6 +184,7 @@ impl Greeter {
     /// Event handler for selecting a different username in the `ComboBoxText`
     ///
     /// This changes the session in the combo box according to the last used session of the current user.
+    #[instrument(skip_all)]
     pub(super) fn user_change_handler(&mut self, info: &UserSessInfo) {
         let username = if let Some(username) = self.get_current_username(info) {
             username
@@ -204,6 +208,7 @@ impl Greeter {
     /// This does one of the following, depending of the state of authentication:
     ///     - Begins a login attempt for the given user
     ///     - Submits the entered password for logging in and starts the session
+    #[instrument(skip_all)]
     pub(super) fn login_click_handler(
         &mut self,
         sender: &ComponentSender<Self>,

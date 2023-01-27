@@ -5,8 +5,8 @@ use std::fs::{create_dir_all, write};
 use std::num::NonZeroUsize;
 use std::path::Path;
 
-use log::info;
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 use self::lru::LruCache;
 use crate::common::{load_toml, TomlFileResult};
