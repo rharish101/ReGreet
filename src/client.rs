@@ -93,7 +93,10 @@ impl GreetdClient {
     /// On success, the session will start when this greeter terminates.
     pub fn start_session(&mut self, command: Vec<String>) -> GreetdResult {
         info!("Starting greetd session with command: {command:?}");
-        let msg = Request::StartSession { cmd: command };
+        let msg = Request::StartSession {
+            cmd: command,
+            env: Vec::new(),
+        };
         msg.write_to(&mut self.socket)?;
 
         let resp = Response::read_from(&mut self.socket)?;

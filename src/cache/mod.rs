@@ -2,6 +2,7 @@
 mod lru;
 
 use std::fs::{create_dir_all, write};
+use std::num::NonZeroUsize;
 use std::path::Path;
 
 use log::info;
@@ -37,7 +38,9 @@ impl Cache {
     pub fn new() -> Self {
         let mut cache: Self = load_toml(CACHE_PATH);
         // Make sure that the LRU can contain the needed amount of mappings
-        cache.user_to_last_sess.resize(CACHE_LIMIT);
+        cache
+            .user_to_last_sess
+            .resize(NonZeroUsize::new(CACHE_LIMIT).expect("Cache limit cannot be zero"));
         cache
     }
 

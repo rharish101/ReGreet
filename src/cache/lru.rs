@@ -5,8 +5,10 @@ use std::cmp::Eq;
 use std::fmt::{Formatter, Result as FmtResult};
 use std::hash::{BuildHasher, Hash};
 use std::marker::PhantomData;
+use std::num::NonZeroUsize;
 use std::ops::{Deref, DerefMut};
 
+use log::warn;
 use lru::{DefaultHasher, LruCache as OrigLruCache};
 use serde::{
     de::{MapAccess, Visitor},
@@ -19,7 +21,14 @@ pub(super) struct LRUCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);
 
 impl<K: Hash + Eq, V> LRUCache<K, V> {
     pub(super) fn new(capacity: usize) -> Self {
-        Self(OrigLruCache::new(capacity))
+        if let Some(capacity) = NonZeroUsize::new(capacity) {
+            Self(OrigLruCache::new(capacity))
+        } else {
+            // In case of an erroneous capacity, revert to the safe behaviour of an unbounded
+            // cache.
+            warn!("Zero capacity cache requested; instead using an unbounded cache");
+            Self(OrigLruCache::unbounded())
+        }
     }
 
     pub(super) fn unbounded() -> Self {

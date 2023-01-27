@@ -11,6 +11,8 @@ use serde::de::DeserializeOwned;
 pub enum TOMLFileError {
     #[error("I/O error")]
     IO(#[from] std::io::Error),
+    #[error("Error decoding UTF-8")]
+    Utf8(#[from] std::str::Utf8Error),
     #[error("Error decoding TOML file contents")]
     TOMLDecode(#[from] toml::de::Error),
     #[error("Error encoding into TOML")]
@@ -21,7 +23,9 @@ pub type TOMLFileResult<T> = Result<T, TOMLFileError>;
 
 /// Load the TOML file from disk without any checks
 fn load_raw_toml<T: DeserializeOwned>(path: &Path) -> TOMLFileResult<T> {
-    Ok(toml::from_slice(read(path)?.as_slice())?)
+    Ok(toml::from_str(std::str::from_utf8(
+        read(path)?.as_slice(),
+    )?)?)
 }
 
 /// Load the TOML file from disk
