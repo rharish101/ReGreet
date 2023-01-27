@@ -142,11 +142,6 @@ impl Component for Greeter {
                 usernames_box {
                     #[track(model.updates.changed(Updates::password_mode()))]
                     set_sensitive: !model.updates.password_mode,
-                    #[track(
-                        model.updates.changed(Updates::password_mode())
-                        && !model.updates.password_mode
-                    )]
-                    grab_focus: (),
                     connect_changed[sender, sessions_box] => move |this| sender.input(
                         Self::Input::UserChanged(
                             UserSessInfo::extract(this, &sessions_box)
@@ -199,6 +194,11 @@ impl Component for Greeter {
                 },
                 #[template_child]
                 login_button {
+                    #[track(
+                        model.updates.changed(Updates::password_mode())
+                        && !model.updates.password_mode
+                    )]
+                    grab_focus: (),
                     connect_clicked[
                         sender, password_entry, usernames_box, sessions_box
                     ] => move |_| {
