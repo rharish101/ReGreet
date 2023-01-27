@@ -31,7 +31,7 @@ pub struct GreetdClient {
 }
 
 impl GreetdClient {
-    /// Initialize the socket to communicate with greetd
+    /// Initialize the socket to communicate with greetd.
     pub fn new() -> IOResult<Self> {
         let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
             panic!("Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",)
@@ -43,7 +43,7 @@ impl GreetdClient {
         })
     }
 
-    /// Initialize a greetd session
+    /// Initialize a greetd session.
     pub fn create_session(&mut self, username: &str) -> GreetdResult {
         info!("Creating session for username: {username}");
         let msg = Request::CreateSession {
@@ -66,7 +66,7 @@ impl GreetdClient {
         Ok(resp)
     }
 
-    /// Send password to a greetd session
+    /// Send password to a greetd session.
     pub fn send_password(&mut self, password: Option<String>) -> GreetdResult {
         info!("Sending password to greetd");
         let msg = Request::PostAuthMessageResponse { response: password };
@@ -88,7 +88,7 @@ impl GreetdClient {
         Ok(resp)
     }
 
-    /// Schedule starting a greetd session
+    /// Schedule starting a greetd session.
     ///
     /// On success, the session will start when this greeter terminates.
     pub fn start_session(&mut self, command: Vec<String>) -> GreetdResult {
@@ -106,7 +106,7 @@ impl GreetdClient {
         Ok(resp)
     }
 
-    /// Cancel an initialized greetd session
+    /// Cancel an initialized greetd session.
     pub fn cancel_session(&mut self) -> GreetdResult {
         info!("Cancelling greetd session");
         self.auth_status = AuthStatus::NotStarted;
@@ -130,7 +130,7 @@ impl GreetdClient {
 
 impl Drop for GreetdClient {
     fn drop(&mut self) {
-        // Cancel any created session, just to be safe
+        // Cancel any created session, just to be safe.
         self.cancel_session()
             .expect("Couldn't cancel session on exit.");
     }

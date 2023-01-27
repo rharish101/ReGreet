@@ -18,6 +18,7 @@ const DEFAULT_UID_MIN: u32 = 1000;
 /// Default maximum UID for `useradd` (a/c to my system)
 const DEFAULT_UID_MAX: u32 = 60000;
 
+// Convenient aliases for used maps
 type UserMap = HashMap<String, String>;
 type ShellMap = HashMap<String, Vec<String>>;
 type SessionMap = HashMap<String, Vec<String>>;
@@ -42,7 +43,7 @@ impl SysUtil {
         })
     }
 
-    /// Get the min and max UID for the current system
+    /// Get the min and max UID for the current system.
     fn get_uid_limits() -> IOResult<(u32, u32)> {
         let contents = read(LOGIN_FILE)?;
         let text = from_utf8(contents.as_slice())
@@ -53,7 +54,7 @@ impl SysUtil {
         let min_uid_regex = Regex::new(r"UID_MIN\s+([0-9]+)").expect("Invalid regex for UID_MIN");
         let max_uid_regex = Regex::new(r"UID_MAX\s+([0-9]+)").expect("Invalid regex for UID_MAX");
 
-        // Get UID_MIN
+        // Get UID_MIN.
         let min_uid = if let Some(num) = min_uid_regex
             .captures(text)
             .and_then(|capture| capture.get(1))
@@ -66,7 +67,7 @@ impl SysUtil {
             DEFAULT_UID_MIN
         };
 
-        // Get UID_MAX
+        // Get UID_MAX.
         let max_uid = if let Some(num) = max_uid_regex
             .captures(text)
             .and_then(|capture| capture.get(1))
@@ -82,7 +83,7 @@ impl SysUtil {
         Ok((min_uid, max_uid))
     }
 
-    /// Get the list of regular users
+    /// Get the list of regular users.
     ///
     /// These are defined as a list of users with UID between `UID_MIN` and `UID_MAX`.
     fn init_users() -> IOResult<(UserMap, ShellMap)> {
@@ -92,14 +93,14 @@ impl SysUtil {
         let mut users = HashMap::new();
         let mut shells = HashMap::new();
 
-        // Iterate over all users in /etc/passwd
+        // Iterate over all users in /etc/passwd.
         for entry in Passwd::iter() {
             if entry.uid > max_uid || entry.uid < min_uid {
                 // Non-standard user, eg. git or root
                 continue;
             };
 
-            // Use the actual system username if the "full name" is not available
+            // Use the actual system username if the "full name" is not available.
             let full_name = if let Some(gecos) = entry.gecos {
                 if gecos.is_empty() {
                     debug!(
@@ -126,7 +127,7 @@ impl SysUtil {
             if let Some(cmd) = shlex::split(entry.shell.as_str()) {
                 shells.insert(entry.name, cmd);
             } else {
-                // Skip this user, since a missing command means that we can't use it
+                // Skip this user, since a missing command means that we can't use it.
                 warn!(
                     "Couldn't split shell of username '{}' into arguments: {}",
                     entry.name, entry.shell
@@ -137,7 +138,7 @@ impl SysUtil {
         Ok((users, shells))
     }
 
-    /// Get available X11 and Wayland sessions
+    /// Get available X11 and Wayland sessions.
     ///
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
@@ -145,7 +146,7 @@ impl SysUtil {
         let mut sessions = HashMap::new();
 
         for sess_dir in SESSION_DIRS.split(':') {
-            // Iterate over all '.desktop' files
+            // Iterate over all '.desktop' files.
             for glob_path in glob(&format!("{sess_dir}/*.desktop"))
                 .expect("Invalid glob pattern for session desktop files")
             {
@@ -169,7 +170,7 @@ impl SysUtil {
                 // The session name is specified as: Name=My Session
                 let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
 
-                // Parse the desktop file to get the session command
+                // Parse the desktop file to get the session command.
                 let cmd = if let Some(cmd_str) =
                     cmd_regex.captures(text).and_then(|capture| capture.get(1))
                 {
@@ -182,16 +183,16 @@ impl SysUtil {
                             cmd_str.as_str()
                         );
                         // Skip the desktop file, since a missing command means that we can't
-                        // use it
+                        // use it.
                         continue;
                     }
                 } else {
                     warn!("No command found for session: {}", path.display());
-                    // Skip the desktop file, since a missing command means that we can't use it
+                    // Skip the desktop file, since a missing command means that we can't use it.
                     continue;
                 };
 
-                // Get the full name of this session
+                // Get the full name of this session.
                 let name = if let Some(name) =
                     name_regex.captures(text).and_then(|capture| capture.get(1))
                 {
@@ -212,7 +213,7 @@ impl SysUtil {
                         stem
                     } else {
                         warn!("Non-UTF-8 file stem in session file: {}", path.display());
-                        // No way to display this session name, so just skip it
+                        // No way to display this session name, so just skip it.
                         continue;
                     }
                 } else {
@@ -230,19 +231,19 @@ impl SysUtil {
         Ok(sessions)
     }
 
-    /// Get the mapping of a user's full name to their system username
+    /// Get the mapping of a user's full name to their system username.
     ///
     /// If the full name is not available, their system username is used.
     pub fn get_users(&self) -> &UserMap {
         &self.users
     }
 
-    /// Get the mapping of a system username to their shell
+    /// Get the mapping of a system username to their shell.
     pub fn get_shells(&self) -> &ShellMap {
         &self.shells
     }
 
-    /// Get the mapping of a session's full name to its command
+    /// Get the mapping of a session's full name to its command.
     ///
     /// If the full name is not available, the filename stem is used.
     pub fn get_sessions(&self) -> &SessionMap {

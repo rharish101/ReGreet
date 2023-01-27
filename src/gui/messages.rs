@@ -4,14 +4,20 @@ use std::fmt::{Debug, Error as FmtError, Formatter};
 use relm4::gtk::{glib, prelude::*, ComboBoxText};
 
 #[derive(Debug)]
+/// Info about the current user and chosen session
 pub struct UserSessInfo {
+    /// The ID for the currently chosen user
     pub(super) user_id: Option<glib::GString>,
+    /// The entry text for the currently chosen user
     pub(super) user_text: Option<glib::GString>,
+    /// The ID for the currently chosen session
     pub(super) sess_id: Option<glib::GString>,
+    /// The entry text for the currently chosen session
     pub(super) sess_text: Option<glib::GString>,
 }
 
 impl UserSessInfo {
+    /// Extract session and user info from the relevant widgets.
     pub(super) fn extract(usernames_box: &ComboBoxText, sessions_box: &ComboBoxText) -> Self {
         Self {
             user_id: usernames_box.active_id(),
@@ -22,12 +28,16 @@ impl UserSessInfo {
     }
 }
 
+/// The messages sent by the view to the model
 pub enum InputMsg {
+    /// Login request
     Login {
         password: String,
         info: UserSessInfo,
     },
+    /// Cancel the login request
     Cancel,
+    /// The current user was changed in the GUI.
     UserChanged(UserSessInfo),
     Reboot,
     PowerOff,
@@ -50,8 +60,12 @@ impl Debug for InputMsg {
 }
 
 #[derive(Debug)]
+/// The messages sent to the sender to run tasks in the background
 pub enum CommandMsg {
+    /// Update the clock.
     UpdateTime,
+    /// Clear the error message.
     ClearErr,
+    /// Do nothing.
     Noop,
 }

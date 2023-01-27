@@ -12,7 +12,7 @@ use self::lru::LRUCache;
 use crate::common::{load_toml, TOMLFileResult};
 use crate::constants::CACHE_PATH;
 
-/// Limit to the size of the user to last-used session mapping
+/// Limit to the size of the user to last-used session mapping.
 const CACHE_LIMIT: usize = 100;
 
 /// Holds info needed to persist between logins
@@ -34,21 +34,21 @@ impl Default for Cache {
 }
 
 impl Cache {
-    /// Load the cache file from disk
+    /// Load the cache file from disk.
     pub fn new() -> Self {
         let mut cache: Self = load_toml(CACHE_PATH);
-        // Make sure that the LRU can contain the needed amount of mappings
+        // Make sure that the LRU can contain the needed amount of mappings.
         cache
             .user_to_last_sess
             .resize(NonZeroUsize::new(CACHE_LIMIT).expect("Cache limit cannot be zero"));
         cache
     }
 
-    /// Save the cache file to disk
+    /// Save the cache file to disk.
     pub fn save(&self) -> TOMLFileResult<()> {
         let cache_path = Path::new(CACHE_PATH);
         if !cache_path.exists() {
-            // Create the cache directory
+            // Create the cache directory.
             if let Some(cache_dir) = cache_path.parent() {
                 info!("Creating missing cache directory: {}", cache_dir.display());
                 create_dir_all(cache_dir)?;
@@ -60,22 +60,22 @@ impl Cache {
         Ok(())
     }
 
-    /// Get the last user to login
+    /// Get the last user to login.
     pub fn get_last_user(&self) -> Option<&str> {
         self.last_user.as_deref()
     }
 
-    /// Get the last used session by the given user
+    /// Get the last used session by the given user.
     pub fn get_last_session(&mut self, user: &str) -> Option<&str> {
         self.user_to_last_sess.get(user).map(String::as_str)
     }
 
-    /// Set the last user to login
+    /// Set the last user to login.
     pub fn set_last_user(&mut self, user: &str) {
         self.last_user = Some(String::from(user));
     }
 
-    /// Set the last used session by the given user
+    /// Set the last used session by the given user.
     pub fn set_last_session(&mut self, user: &str, session: &str) {
         self.user_to_last_sess
             .push(String::from(user), String::from(session));

@@ -45,17 +45,17 @@ fn main() {
     app.run::<Greeter>(());
 }
 
-/// Initialize logging with file rotation
+/// Initialize logging with file rotation.
 fn init_logging(log_level: LogLevel) {
     let log_path = Path::new(LOG_PATH);
     if !log_path.exists() {
-        // Create the log directory
+        // Create the log directory.
         if let Some(log_dir) = log_path.parent() {
             create_dir_all(log_dir).expect("Couldn't create missing log directory");
         };
     }
 
-    // Setup the log file rotation
+    // Set up the log file rotation.
     let log = FileRotate::new(
         log_path,
         AppendCount::new(MAX_LOG_FILES),
@@ -64,7 +64,7 @@ fn init_logging(log_level: LogLevel) {
         None,
     );
 
-    // Parse the log level string
+    // Parse the log level string.
     let filter = match log_level {
         LogLevel::Off => LevelFilter::Off,
         LogLevel::Error => LevelFilter::Error,
@@ -74,9 +74,9 @@ fn init_logging(log_level: LogLevel) {
         LogLevel::Trace => LevelFilter::Trace,
     };
 
-    // Setup the logger
+    // Set up the logger.
     let mut config_builder = ConfigBuilder::new();
-    // Ignore failure in getting the local time zone
+    // Ignore failure in getting the local time zone.
     let _ = config_builder
         .set_time_format_rfc3339()
         .set_time_offset_to_local();

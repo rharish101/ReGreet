@@ -1,7 +1,7 @@
 //! Stores constants that can be configured at compile time
 use const_format::concatcp;
 
-/// Get an environment variable during compile time, else return a default
+/// Get an environment variable during compile time, else return a default.
 macro_rules! env_or {
     ($name:expr, $default:expr) => {
         // This is needed because `Option.unwrap_or` is not a const fn:

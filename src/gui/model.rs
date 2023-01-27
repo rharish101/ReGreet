@@ -20,9 +20,9 @@ const ERROR_MSG_CLEAR_DELAY: u64 = 5;
 // Fields only set by the model, that are meant to be read only by the widgets
 #[tracker::track]
 pub(super) struct Updates {
-    /// The message to be shown to the user
+    /// Message to be shown to the user
     pub(super) message: String,
-    /// The text in the password field
+    /// Text in the password field
     pub(super) password: String,
     /// Whether the password is being entered
     pub(super) password_mode: bool,
@@ -102,34 +102,28 @@ impl Greeter {
     ///
     /// This cancels the created session and goes back to the user/session chooser.
     pub(super) fn cancel_click_handler(&mut self) {
-        // Cancel the current session
         if let Err(err) = self.greetd_client.cancel_session() {
             warn!("Couldn't cancel greetd session: {err}");
         };
-
-        // Clear the password entry field
         self.updates.set_password(String::new());
-
-        // Move out of the password mode
         self.updates.set_password_mode(false);
     }
 
-    /// Create a greetd session, i.e. starts a login attempt for the current user
+    /// Create a greetd session, i.e. start a login attempt for the current user.
     fn create_session(&mut self, sender: &ComponentSender<Self>, info: &UserSessInfo) {
-        // Get the current username
         let username = if let Some(username) = self.get_current_username(info) {
             username
         } else {
-            // No username found (which shouldn't happen), so we can't create the session
+            // No username found (which shouldn't happen), so we can't create the session.
             return;
         };
 
         // Before trying to create a session, check if the session command (if manually entered) is
-        // valid
+        // valid.
         if info.sess_id.is_none() {
             if let Some(cmd) = &info.sess_text {
                 if shlex::split(cmd.as_str()).is_none() {
-                    // This must be an invalid command
+                    // This must be an invalid command.
                     self.display_error(
                         sender,
                         "Invalid session command",
@@ -143,7 +137,7 @@ impl Greeter {
 
         info!("Creating session for user: {username}");
 
-        // Create a session for the current user
+        // Create a session for the current user.
         let response = self
             .greetd_client
             .create_session(&username)
@@ -153,18 +147,18 @@ impl Greeter {
 
         match response {
             Response::Success => {
-                // No password is needed, so directly start session
+                // No password is needed, so directly start the session.
                 info!("No password needed for current user");
                 self.start_session(sender, info);
             }
             Response::AuthMessage { auth_message, .. } => {
                 if auth_message.to_lowercase().contains("password") {
-                    // Show the password field, because a password is needed
+                    // Show the password field, because a password is needed.
                     self.updates.set_password_mode(true);
                     self.updates.set_password(String::new());
                 } else {
                     // greetd has requested something other than the password, so just display it
-                    // to the user and let them figure it out
+                    // to the user and let them figure it out.
                     self.display_error(
                         sender,
                         &capitalize(&auth_message),
@@ -188,20 +182,19 @@ impl Greeter {
     ///
     /// This changes the session in the combo box according to the last used session of the current user.
     pub(super) fn user_change_handler(&mut self, info: &UserSessInfo) {
-        // Get the current username
         let username = if let Some(username) = self.get_current_username(info) {
             username
         } else {
-            // No username found (which shouldn't happen), so we can't change the session
+            // No username found (which shouldn't happen), so we can't change the session.
             return;
         };
 
         if let Some(last_session) = self.cache.get_last_session(&username) {
-            // Set the last session used by this user in the session combo box
+            // Set the last session used by this user in the session combo box.
             self.updates
                 .set_active_session_id(Some(last_session.to_string()));
         } else {
-            // Last session not found, so skip changing the session
+            // Last session not found, so skip changing the session.
             info!("Last session for user '{username}' missing");
         };
     }
@@ -222,7 +215,7 @@ impl Greeter {
         match auth_status {
             AuthStatus::Done => {
                 // No password is needed, but the session should've been already started by
-                // `create_session`
+                // `create_session`.
                 warn!("No password needed for current user, but session not already started");
                 self.start_session(sender, info);
             }
@@ -235,17 +228,17 @@ impl Greeter {
         };
     }
 
-    /// Send the entered password for logging in
+    /// Send the entered password for logging in.
     fn send_password(
         &mut self,
         sender: &ComponentSender<Self>,
         password: String,
         info: &UserSessInfo,
     ) {
-        // Reset the password field, for convenience when the user has to re-enter a password
+        // Reset the password field, for convenience when the user has to re-enter a password.
         self.updates.set_password(String::new());
 
-        // Send the password, as authentication for the current user
+        // Send the password, as authentication for the current user.
         let resp = self
             .greetd_client
             .send_password(Some(password))
@@ -256,13 +249,13 @@ impl Greeter {
                 info!("Successfully logged in; starting session");
                 self.start_session(sender, info);
             }
-            // The client should raise an `unimplemented!`, so ignore it
+            // The client should raise an `unimplemented!`, so ignore it.
             Response::AuthMessage { .. } => (),
             Response::Error {
                 error_type: GreetdErrorType::AuthError,
                 ..
             } => {
-                // Most likely entered the wrong password
+                // The user most likely entered the wrong password.
                 self.display_error(sender, "Login failed", "Login failed");
             }
             Response::Error {
@@ -278,47 +271,47 @@ impl Greeter {
         };
     }
 
-    /// Get the currently selected username
+    /// Get the currently selected username.
     fn get_current_username(&self, info: &UserSessInfo) -> Option<String> {
-        // Get the currently selected user's ID, which should be their username
+        // Get the currently selected user's ID, which should be their username.
         if let Some(username) = &info.user_id {
             debug!("Retrieved username '{username}' from options");
             Some(username.to_string())
         } else if let Some(username) = &info.user_text {
-            // In case of manual entry, the ID should be missing
+            // In case of manual entry, the ID should be missing.
             debug!("Retrieved username '{username}' through manual entry");
             Some(username.to_string())
         } else {
-            // This shouldn't happen, since we have an entry within the usernames box
+            // This shouldn't happen, since we have an entry within the usernames box.
             error!("No username entered");
             None
         }
     }
 
-    /// Get the currently selected session name (if available) and command
+    /// Get the currently selected session name (if available) and command.
     fn get_current_session_cmd(
         &mut self,
         sender: &ComponentSender<Self>,
         info: &UserSessInfo,
     ) -> (Option<String>, Option<Vec<String>>) {
-        // Get the currently selected session
+        // Get the currently selected session.
         if let Some(session) = &info.sess_id {
             debug!("Retrieved current session: {session}");
             if let Some(cmd) = self.sys_util.get_sessions().get(session.as_str()) {
                 (Some(session.to_string()), Some(cmd.clone()))
             } else {
-                // Shouldn't happen, unless there are no sessions available
+                // Shouldn't happen, unless there are no sessions available.
                 let error_msg = format!("Session '{session}' not found");
                 self.display_error(sender, &error_msg, &error_msg);
                 (None, None)
             }
         } else if let Some(manual_cmd) = &info.sess_text {
-            // In case of manual entry, the ID should be missing
+            // In case of manual entry, the ID should be missing.
             debug!("Retrieved session command '{manual_cmd}' through manual entry",);
             if let Some(cmd) = shlex::split(manual_cmd.as_str()) {
                 (None, Some(cmd))
             } else {
-                // This must be an invalid command
+                // This must be an invalid command.
                 self.display_error(
                     sender,
                     "Invalid session command",
@@ -327,18 +320,18 @@ impl Greeter {
                 (None, None)
             }
         } else {
-            // This shouldn't happen, since we have an entry within the sessions box
+            // This shouldn't happen, since we have an entry within the sessions box.
             let username = if let Some(username) = self.get_current_username(info) {
                 username
             } else {
-                // This shouldn't happen, because a session should've been created with a username
+                // This shouldn't happen, because a session should've been created with a username.
                 unimplemented!("Trying to create session without a username");
             };
             warn!("No entry found; using default login shell of user: {username}",);
             if let Some(cmd) = self.sys_util.get_shells().get(username.as_str()) {
                 (None, Some(cmd.clone()))
             } else {
-                // No login shell exists
+                // No login shell exists.
                 let error_msg = "No session or login shell found";
                 self.display_error(sender, error_msg, error_msg);
                 (None, None)
@@ -346,18 +339,18 @@ impl Greeter {
         }
     }
 
-    /// Start the session for the selected user
+    /// Start the session for the selected user.
     fn start_session(&mut self, sender: &ComponentSender<Self>, info: &UserSessInfo) {
-        // Get the session command
+        // Get the session command.
         let (session, cmd) =
             if let (session, Some(cmd)) = self.get_current_session_cmd(sender, info) {
                 (session, cmd)
             } else {
-                // Error handling should be inside `get_current_session_cmd`, so simply return
+                // Error handling should be inside `get_current_session_cmd`, so simply return.
                 return;
             };
 
-        // Start the session
+        // Start the session.
         let response = self
             .greetd_client
             .start_session(cmd)
@@ -382,7 +375,7 @@ impl Greeter {
                 self.updates.set_message("Logging in...".to_string());
             }
 
-            // The client should raise an `unimplemented!`, so ignore it
+            // The client should raise an `unimplemented!`, so ignore it.
             Response::AuthMessage { .. } => (),
 
             Response::Error { description, .. } => {
@@ -395,7 +388,7 @@ impl Greeter {
         }
     }
 
-    /// Show an error message to the user
+    /// Show an error message to the user.
     fn display_error(
         &mut self,
         sender: &ComponentSender<Self>,
@@ -406,7 +399,7 @@ impl Greeter {
         error!("{log_text}");
 
         // Set a timer in a separate thread that signals the main thread to reset the displayed
-        // message, so as to not block the GUI
+        // message, so as to not block the GUI.
         sender.spawn_command(move |sender| {
             std::thread::sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY));
             sender.emit(CommandMsg::ClearErr);

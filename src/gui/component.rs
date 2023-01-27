@@ -13,7 +13,7 @@ use super::templates::Ui;
 const DATETIME_FMT: &str = "%a %R";
 const DATETIME_UPDATE_DELAY: u64 = 500;
 
-/// Load GTK settings from the greeter config
+/// Load GTK settings from the greeter config.
 fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
     let settings = root.settings();
     let config = if let Some(config) = model.config.get_gtk_settings() {
@@ -49,12 +49,12 @@ fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
     settings.set_gtk_theme_name(config.theme_name.as_deref());
 }
 
-/// Populate the user and session combo boxes with entries
+/// Populate the user and session combo boxes with entries.
 fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     // The user that is shown during initial login
     let mut initial_username = None;
 
-    // Populate the usernames combo box
+    // Populate the usernames combo box.
     for (user, username) in model.sys_util.get_users().iter() {
         debug!("Found user: {user}");
         if initial_username.is_none() {
@@ -63,20 +63,20 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
         widgets.ui.usernames_box.append(Some(username), user);
     }
 
-    // Populate the sessions combo box
+    // Populate the sessions combo box.
     for session in model.sys_util.get_sessions().keys() {
         debug!("Found session: {session}");
         widgets.ui.sessions_box.append(Some(session), session);
     }
 
-    // If the last user is known, show their login initially
+    // If the last user is known, show their login initially.
     if let Some(last_user) = model.cache.get_last_user() {
         initial_username = Some(last_user.to_string());
     } else if let Some(user) = &initial_username {
         info!("Using first found user '{user}' as initial user");
     }
 
-    // Set the user shown initially at login
+    // Set the user shown initially at login.
     if !widgets
         .ui
         .usernames_box
@@ -88,13 +88,14 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     }
 }
 
-/// Setup auto updation for the datetime label
+/// Set up auto updation for the datetime label.
 fn setup_datetime_display(sender: ComponentSender<Greeter>) {
     // Set a timer in a separate thread that signals the main thread to update the time, so as
     // not to block the GUI.
     sender.command(|sender: Sender<CommandMsg>, receiver: ShutdownReceiver| {
         receiver
             .register(async move {
+                // Run it infinitely, since the clock always needs to stay updated.
                 loop {
                     if sender.send(CommandMsg::UpdateTime).is_err() {
                         warn!("Couldn't update datetime");
@@ -114,10 +115,12 @@ impl Component for Greeter {
     type CommandOutput = CommandMsg;
 
     view! {
+        // The `view!` macro needs a proper widget, not a template, as the root.
         gtk::ApplicationWindow {
             set_fullscreened: true,
             set_visible: true,
 
+            // Name the UI widget, otherwise the inner children cannot be accessed by name.
             #[name = "ui"]
             #[template]
             Ui {
@@ -215,7 +218,7 @@ impl Component for Greeter {
         }
     }
 
-    /// Initialize the greeter
+    /// Initialize the greeter.
     fn init(
         _: Self::Init,
         root: &Self::Root,
@@ -224,7 +227,7 @@ impl Component for Greeter {
         let mut model = Self::new();
         let widgets = view_output!();
 
-        // Cancel any previous session, just in case someone started one
+        // Cancel any previous session, just in case someone started one.
         if let Err(err) = model.greetd_client.cancel_session() {
             warn!("Couldn't cancel greetd session: {err}");
         };
@@ -233,13 +236,14 @@ impl Component for Greeter {
         setup_users_sessions(&model, &widgets);
         setup_datetime_display(sender);
 
-        // Set the default behaviour of pressing the Return key to act like the login button
+        // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
 
         ComponentParts { model, widgets }
     }
 
     fn update(&mut self, msg: Self::Input, sender: ComponentSender<Self>, _root: &Self::Root) {
+        // Reset the tracker for update changes.
         self.updates.reset();
 
         match msg {
@@ -253,6 +257,7 @@ impl Component for Greeter {
         }
     }
 
+    /// Perform the requested changes when a background task sends a message.
     fn update_cmd_with_view(
         &mut self,
         widgets: &mut Self::Widgets,

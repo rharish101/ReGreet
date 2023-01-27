@@ -2,7 +2,7 @@
 use gtk::prelude::*;
 use relm4::{gtk, RelmWidgetExt, WidgetTemplate};
 
-/// Button that ends the greeter
+/// Button that ends the greeter (eg. Reboot)
 #[relm4::widget_template(pub)]
 impl WidgetTemplate for EndButton {
     view! {
@@ -24,15 +24,16 @@ impl WidgetTemplate for EntryLabel {
     }
 }
 
-/// The main UI of the greeter
+/// Main UI of the greeter
 #[relm4::widget_template(pub)]
 impl WidgetTemplate for Ui {
     view! {
         gtk::Overlay {
-            /// The background image
+            /// Background image
             #[name = "background"]
             gtk::Picture,
 
+            /// Main login box
             add_overlay = &gtk::Frame {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Center,
@@ -47,13 +48,14 @@ impl WidgetTemplate for Ui {
                     set_row_spacing: 15,
                     set_width_request: 500,
 
-                    /// The widget to display messages to the user
+                    /// Widget to display messages to the user
                     #[name = "message_label"]
                     attach[1, 0, 1, 1] = &gtk::Label {
                         set_hexpand: true,
                         set_margin_bottom: 15,
                         set_xalign: 0.0,
 
+                        // Format all messages in boldface.
                         #[wrap(Some)]
                         set_attributes = &gtk::pango::AttrList {
                             insert: {
@@ -67,40 +69,41 @@ impl WidgetTemplate for Ui {
                     #[template]
                     attach[0, 1, 1, 1] = &EntryLabel { set_label: "User:" },
 
-                    /// The label for the sessions widget
+                    /// Label for the sessions widget
                     #[name = "session_label"]
                     #[template]
                     attach[0, 2, 1, 1] = &EntryLabel { set_label: "Session:" },
 
-                    /// The widget containing the usernames
+                    /// Widget containing the usernames
                     #[name = "usernames_box"]
                     attach[1, 1, 1, 1] = &gtk::ComboBoxText::with_entry(),
 
-                    /// The widget containing the sessions
+                    /// Widget containing the sessions
                     #[name = "sessions_box"]
                     attach[1, 2, 1, 1] = &gtk::ComboBoxText::with_entry(),
 
-                    /// The label for the password widget
+                    /// Label for the password widget
                     #[name = "password_label"]
                     #[template]
                     attach[0, 2, 1, 1] = &EntryLabel { set_label: "Password:" },
 
-                    /// The widget where the user enters the password
+                    /// Widget where the user enters the password
                     #[name = "password_entry"]
                     attach[1, 2, 1, 1] = &gtk::PasswordEntry { set_show_peek_icon: true },
 
+                    /// Collection of action buttons (eg. Login)
                     attach[1, 3, 1, 1] = &gtk::Box {
                         set_halign: gtk::Align::End,
                         set_spacing: 15,
 
-                        /// The button to cancel password entry
+                        /// Button to cancel password entry
                         #[name = "cancel_button"]
                         gtk::Button {
                             set_focusable: true,
                             set_label: "Cancel",
                         },
 
-                        /// The button to enter the password and login
+                        /// Button to enter the password and login
                         #[name = "login_button"]
                         gtk::Button {
                             set_focusable: true,
@@ -112,9 +115,11 @@ impl WidgetTemplate for Ui {
                 }
             },
 
+            /// Clock widget
             add_overlay = &gtk::Frame {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Start,
+                // Make it fit cleanly onto the top edge of the screen.
                 inline_css: "
                     border-top-right-radius: 0px;
                     border-top-left-radius: 0px;
@@ -122,11 +127,12 @@ impl WidgetTemplate for Ui {
                     background-color: @theme_bg_color;
                 ",
 
-                /// The datetime label
+                /// Label displaying the current date & time
                 #[name = "datetime_label"]
                 gtk::Label { set_width_request: 150 },
             },
 
+            /// Collection of buttons that close the greeter (eg. Reboot)
             add_overlay = &gtk::Box {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::End,
@@ -134,12 +140,12 @@ impl WidgetTemplate for Ui {
                 set_margin_bottom: 15,
                 set_spacing: 15,
 
-                /// The button to reboot
+                /// Button to reboot
                 #[name = "reboot_button"]
                 #[template]
                 EndButton { set_label: "Reboot" },
 
-                /// The button to power-off
+                /// Button to power-off
                 #[name = "poweroff_button"]
                 #[template]
                 EndButton { set_label: "Power Off" },

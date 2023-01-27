@@ -21,16 +21,16 @@ pub enum TOMLFileError {
 
 pub type TOMLFileResult<T> = Result<T, TOMLFileError>;
 
-/// Load the TOML file from disk without any checks
+/// Load the TOML file from disk without any checks.
 fn load_raw_toml<T: DeserializeOwned>(path: &Path) -> TOMLFileResult<T> {
     Ok(toml::from_str(std::str::from_utf8(
         read(path)?.as_slice(),
     )?)?)
 }
 
-/// Load the TOML file from disk
+/// Load the TOML file from disk.
 ///
-/// If loading fails, then this returns the default value of the struct
+/// If loading fails, then this returns the default value of the struct.
 pub fn load_toml<P, R>(path: &P) -> R
 where
     P: AsRef<OsStr> + ?Sized,
@@ -54,7 +54,7 @@ where
     }
 }
 
-/// Capitalize the first letter of the string
+/// Capitalize the first letter of the string.
 pub fn capitalize(string: &str) -> String {
     string[0..1].to_uppercase() + &string[1..]
 }
