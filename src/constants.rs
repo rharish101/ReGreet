@@ -15,7 +15,7 @@ macro_rules! env_or {
 }
 
 /// The name for this greeter
-pub const GREETER_NAME: &str = "egreet";
+const GREETER_NAME: &str = "egreet";
 /// The app ID for this GTK app
 pub const APP_ID: &str = concatcp!("apps.", GREETER_NAME);
 
