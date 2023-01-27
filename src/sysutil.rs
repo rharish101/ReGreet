@@ -46,7 +46,7 @@ impl SysUtil {
     fn get_uid_limits() -> IOResult<(u32, u32)> {
         let contents = read(LOGIN_FILE)?;
         let text = from_utf8(contents.as_slice())
-            .unwrap_or_else(|err| panic!("Login file '{}' is not UTF-8: {}", LOGIN_FILE, err));
+            .unwrap_or_else(|err| panic!("Login file '{LOGIN_FILE}' is not UTF-8: {err}"));
 
         // UID_MIN/MAX are limits to a UID for a regular user i.e. a user created with `useradd`.
         // Thus, to find regular users, we filter the list of users with these UID limits.
@@ -62,7 +62,7 @@ impl SysUtil {
                 .parse()
                 .expect("UID_MIN regex didn't capture an integer")
         } else {
-            warn!("Failed to find UID_MIN in login file: {}", LOGIN_FILE);
+            warn!("Failed to find UID_MIN in login file: {LOGIN_FILE}");
             DEFAULT_UID_MIN
         };
 
@@ -75,7 +75,7 @@ impl SysUtil {
                 .parse()
                 .expect("UID_MAX regex didn't capture an integer")
         } else {
-            warn!("Failed to find UID_MAX in login file: {}", LOGIN_FILE);
+            warn!("Failed to find UID_MAX in login file: {LOGIN_FILE}");
             DEFAULT_UID_MAX
         };
 
@@ -87,7 +87,7 @@ impl SysUtil {
     /// These are defined as a list of users with UID between `UID_MIN` and `UID_MAX`.
     fn init_users() -> IOResult<(UserMap, ShellMap)> {
         let (min_uid, max_uid) = Self::get_uid_limits()?;
-        debug!("UID_MIN: {}, UID_MAX: {}", min_uid, max_uid);
+        debug!("UID_MIN: {min_uid}, UID_MAX: {max_uid}");
 
         let mut users = HashMap::new();
         let mut shells = HashMap::new();
@@ -109,8 +109,8 @@ impl SysUtil {
                     entry.name.clone()
                 } else {
                     debug!(
-                        "Found user '{}' with UID '{}' and full name: {}",
-                        entry.name, entry.uid, gecos
+                        "Found user '{}' with UID '{}' and full name: {gecos}",
+                        entry.name, entry.uid
                     );
                     gecos
                 }
@@ -146,13 +146,13 @@ impl SysUtil {
 
         for sess_dir in SESSION_DIRS.split(':') {
             // Iterate over all '.desktop' files
-            for glob_path in glob(&format!("{}/*.desktop", sess_dir))
+            for glob_path in glob(&format!("{sess_dir}/*.desktop"))
                 .expect("Invalid glob pattern for session desktop files")
             {
                 let path = match glob_path {
                     Ok(path) => path,
                     Err(err) => {
-                        warn!("Error when globbing: {}", err);
+                        warn!("Error when globbing: {err}");
                         continue;
                     }
                 };
@@ -206,8 +206,7 @@ impl SysUtil {
                     // This is used as backup, in case the file name doesn't exist.
                     if let Some(stem) = stem.to_str() {
                         debug!(
-                            "Using file stem '{}', since no name was found for session: {}",
-                            stem,
+                            "Using file stem '{stem}', since no name was found for session: {}",
                             path.display()
                         );
                         stem

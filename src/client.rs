@@ -34,10 +34,7 @@ impl GreetdClient {
     /// Initialize the socket to communicate with greetd
     pub fn new() -> IOResult<Self> {
         let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
-            panic!(
-                "Missing environment variable '{}'. Is greetd running?",
-                GREETD_SOCK_ENV_VAR
-            )
+            panic!("Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",)
         });
         let socket = UnixStream::connect(sock_path)?;
         Ok(Self {
@@ -48,7 +45,7 @@ impl GreetdClient {
 
     /// Initialize a greetd session
     pub fn create_session(&mut self, username: &str) -> GreetdResult {
-        info!("Creating session for username: {}", username);
+        info!("Creating session for username: {username}");
         let msg = Request::CreateSession {
             username: username.to_string(),
         };
@@ -95,7 +92,7 @@ impl GreetdClient {
     ///
     /// On success, the session will start when this greeter terminates.
     pub fn start_session(&mut self, command: Vec<String>) -> GreetdResult {
-        info!("Starting greetd session with command: {:?}", command);
+        info!("Starting greetd session with command: {command:?}");
         let msg = Request::StartSession { cmd: command };
         msg.write_to(&mut self.socket)?;
 

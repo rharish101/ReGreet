@@ -29,22 +29,22 @@ fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
     settings.set_gtk_application_prefer_dark_theme(config.application_prefer_dark_theme);
 
     if let Some(cursor_theme) = &config.cursor_theme_name {
-        debug!("Setting cursor theme: {}", cursor_theme);
+        debug!("Setting cursor theme: {cursor_theme}");
     };
     settings.set_gtk_cursor_theme_name(config.cursor_theme_name.as_deref());
 
     if let Some(font) = &config.font_name {
-        debug!("Setting font: {}", font);
+        debug!("Setting font: {font}");
     };
     settings.set_gtk_font_name(config.font_name.as_deref());
 
     if let Some(icon_theme) = &config.icon_theme_name {
-        debug!("Setting icon theme: {}", icon_theme);
+        debug!("Setting icon theme: {icon_theme}");
     };
     settings.set_gtk_icon_theme_name(config.icon_theme_name.as_deref());
 
     if let Some(theme) = &config.theme_name {
-        debug!("Setting theme: {}", theme);
+        debug!("Setting theme: {theme}");
     };
     settings.set_gtk_theme_name(config.theme_name.as_deref());
 }
@@ -56,7 +56,7 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
 
     // Populate the usernames combo box
     for (user, username) in model.sys_util.get_users().iter() {
-        debug!("Found user: {}", user);
+        debug!("Found user: {user}");
         if initial_username.is_none() {
             initial_username = Some(username.clone());
         }
@@ -65,7 +65,7 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
 
     // Populate the sessions combo box
     for session in model.sys_util.get_sessions().keys() {
-        debug!("Found session: {}", session);
+        debug!("Found session: {session}");
         widgets.ui.sessions_box.append(Some(session), session);
     }
 
@@ -73,7 +73,7 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     if let Some(last_user) = model.cache.get_last_user() {
         initial_username = Some(last_user.to_string());
     } else if let Some(user) = &initial_username {
-        info!("Using first found user '{}' as initial user", user);
+        info!("Using first found user '{user}' as initial user");
     }
 
     // Set the user shown initially at login
@@ -83,7 +83,7 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
         .set_active_id(initial_username.as_deref())
     {
         if let Some(user) = initial_username {
-            warn!("Couldn't find user '{}' to set as the initial user", user);
+            warn!("Couldn't find user '{user}' to set as the initial user");
         }
     }
 }
@@ -226,7 +226,7 @@ impl Component for Greeter {
 
         // Cancel any previous session, just in case someone started one
         if let Err(err) = model.greetd_client.cancel_session() {
-            warn!("Couldn't cancel greetd session: {}", err);
+            warn!("Couldn't cancel greetd session: {err}");
         };
 
         setup_settings(&model, root);

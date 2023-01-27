@@ -40,7 +40,7 @@ where
                 item
             }
             Err(err) => {
-                warn!("Error loading TOML file '{}': {}", path.display(), err);
+                warn!("Error loading TOML file '{}': {err}", path.display());
                 R::default()
             }
         }
