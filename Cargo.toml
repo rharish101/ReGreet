@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: CC0-1.0
 
 [package]
-name = "egreet"
+name = "rgreet"
 version = "0.1.0"
 edition = "2021"
-description = "Simple greetd greeter, based on Relm4"
+description = "Clean and customizable greeter for greetd"
 license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -279,30 +279,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "egreet"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "const_format",
- "file-rotate",
- "glob",
- "greetd_ipc",
- "lru",
- "pwd",
- "regex",
- "relm4",
- "serde",
- "shlex",
- "thiserror",
- "toml 0.6.0",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "tracker",
-]
-
-[[package]]
 name = "errno"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1195,6 +1171,30 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "rgreet"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "const_format",
+ "file-rotate",
+ "glob",
+ "greetd_ipc",
+ "lru",
+ "pwd",
+ "regex",
+ "relm4",
+ "serde",
+ "shlex",
+ "thiserror",
+ "toml 0.6.0",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "tracker",
 ]
 
 [[package]]

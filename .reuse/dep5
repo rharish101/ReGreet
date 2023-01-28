@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: egreet
+Upstream-Name: rgreet
 Upstream-Contact: Harish Rajagopal <harish.rajagopals@gmail.com>
-Source: https://github.com/rharish101/egreet
+Source: https://github.com/rharish101/rgreet
 
 Files: screenshot.png
 Copyright: 2023 Harish Rajagopal <harish.rajagopals@gmail.com>
