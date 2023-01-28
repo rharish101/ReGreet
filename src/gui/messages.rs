@@ -5,7 +5,7 @@
 //! Message definitions for communication between the view and the model
 use std::fmt::{Debug, Error as FmtError, Formatter};
 
-use relm4::gtk::{glib, prelude::*, ComboBoxText};
+use relm4::gtk::{glib, prelude::*, ComboBoxText, Entry};
 
 #[derive(Debug)]
 /// Info about the current user and chosen session
@@ -13,21 +13,26 @@ pub struct UserSessInfo {
     /// The ID for the currently chosen user
     pub(super) user_id: Option<glib::GString>,
     /// The entry text for the currently chosen user
-    pub(super) user_text: Option<glib::GString>,
+    pub(super) user_text: glib::GString,
     /// The ID for the currently chosen session
     pub(super) sess_id: Option<glib::GString>,
     /// The entry text for the currently chosen session
-    pub(super) sess_text: Option<glib::GString>,
+    pub(super) sess_text: glib::GString,
 }
 
 impl UserSessInfo {
     /// Extract session and user info from the relevant widgets.
-    pub(super) fn extract(usernames_box: &ComboBoxText, sessions_box: &ComboBoxText) -> Self {
+    pub(super) fn extract(
+        usernames_box: &ComboBoxText,
+        username_entry: &Entry,
+        sessions_box: &ComboBoxText,
+        session_entry: &Entry,
+    ) -> Self {
         Self {
             user_id: usernames_box.active_id(),
-            user_text: usernames_box.active_text(),
+            user_text: username_entry.text(),
             sess_id: sessions_box.active_id(),
-            sess_text: sessions_box.active_text(),
+            sess_text: session_entry.text(),
         }
     }
 }
@@ -43,6 +48,10 @@ pub enum InputMsg {
     Cancel,
     /// The current user was changed in the GUI.
     UserChanged(UserSessInfo),
+    /// Toggle manual entry of user.
+    ToggleManualUser,
+    /// Toggle manual entry of session.
+    ToggleManualSess,
     Reboot,
     PowerOff,
 }
@@ -57,6 +66,8 @@ impl Debug for InputMsg {
             }
             Self::Cancel => f.write_str("Cancel"),
             Self::UserChanged(info) => f.debug_tuple("UserChanged").field(info).finish(),
+            Self::ToggleManualUser => f.write_str("ToggleManualUser"),
+            Self::ToggleManualSess => f.write_str("ToggleManualSess"),
             Self::Reboot => f.write_str("Reboot"),
             Self::PowerOff => f.write_str("PowerOff"),
         }

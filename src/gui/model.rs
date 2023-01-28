@@ -32,6 +32,10 @@ pub(super) struct Updates {
     pub(super) message: String,
     /// Text in the password field
     pub(super) password: String,
+    /// Whether the username is being entered manually
+    pub(super) manual_user_mode: bool,
+    /// Whether the session is being entered manually
+    pub(super) manual_sess_mode: bool,
     /// Whether the password is being entered
     pub(super) password_mode: bool,
     /// ID of the active session
@@ -57,6 +61,8 @@ impl Greeter {
         let updates = Updates {
             message: DEFAULT_MSG.to_string(),
             password: String::new(),
+            manual_user_mode: false,
+            manual_sess_mode: false,
             password_mode: false,
             active_session_id: None,
             tracker: 0,
@@ -131,19 +137,17 @@ impl Greeter {
 
         // Before trying to create a session, check if the session command (if manually entered) is
         // valid.
-        if info.sess_id.is_none() {
-            if let Some(cmd) = &info.sess_text {
-                if shlex::split(cmd.as_str()).is_none() {
-                    // This must be an invalid command.
-                    self.display_error(
-                        sender,
-                        "Invalid session command",
-                        &format!("Invalid session command: {cmd}"),
-                    );
-                    return;
-                };
-                debug!("Manually entered session command is parsable");
+        if self.updates.manual_sess_mode {
+            if shlex::split(info.sess_text.as_str()).is_none() {
+                // This must be an invalid command.
+                self.display_error(
+                    sender,
+                    "Invalid session command",
+                    &format!("Invalid session command: {}", info.sess_text),
+                );
+                return;
             };
+            debug!("Manually entered session command is parsable");
         };
 
         info!("Creating session for user: {username}");
@@ -286,16 +290,17 @@ impl Greeter {
 
     /// Get the currently selected username.
     fn get_current_username(&self, info: &UserSessInfo) -> Option<String> {
-        // Get the currently selected user's ID, which should be their username.
-        if let Some(username) = &info.user_id {
+        if self.updates.manual_user_mode {
+            debug!(
+                "Retrieved username '{}' through manual entry",
+                info.user_text
+            );
+            Some(info.user_text.to_string())
+        } else if let Some(username) = &info.user_id {
+            // Get the currently selected user's ID, which should be their username.
             debug!("Retrieved username '{username}' from options");
             Some(username.to_string())
-        } else if let Some(username) = &info.user_text {
-            // In case of manual entry, the ID should be missing.
-            debug!("Retrieved username '{username}' through manual entry");
-            Some(username.to_string())
         } else {
-            // This shouldn't happen, since we have an entry within the usernames box.
             error!("No username entered");
             None
         }
@@ -307,8 +312,24 @@ impl Greeter {
         sender: &ComponentSender<Self>,
         info: &UserSessInfo,
     ) -> (Option<String>, Option<Vec<String>>) {
-        // Get the currently selected session.
-        if let Some(session) = &info.sess_id {
+        if self.updates.manual_sess_mode {
+            debug!(
+                "Retrieved session command '{}' through manual entry",
+                info.sess_text
+            );
+            if let Some(cmd) = shlex::split(info.sess_text.as_str()) {
+                (None, Some(cmd))
+            } else {
+                // This must be an invalid command.
+                self.display_error(
+                    sender,
+                    "Invalid session command",
+                    &format!("Invalid session command: {}", info.sess_text),
+                );
+                (None, None)
+            }
+        } else if let Some(session) = &info.sess_id {
+            // Get the currently selected session.
             debug!("Retrieved current session: {session}");
             if let Some(cmd) = self.sys_util.get_sessions().get(session.as_str()) {
                 (Some(session.to_string()), Some(cmd.clone()))
@@ -318,22 +339,7 @@ impl Greeter {
                 self.display_error(sender, &error_msg, &error_msg);
                 (None, None)
             }
-        } else if let Some(manual_cmd) = &info.sess_text {
-            // In case of manual entry, the ID should be missing.
-            debug!("Retrieved session command '{manual_cmd}' through manual entry",);
-            if let Some(cmd) = shlex::split(manual_cmd.as_str()) {
-                (None, Some(cmd))
-            } else {
-                // This must be an invalid command.
-                self.display_error(
-                    sender,
-                    "Invalid session command",
-                    &format!("Invalid session command: {manual_cmd}"),
-                );
-                (None, None)
-            }
         } else {
-            // This shouldn't happen, since we have an entry within the sessions box.
             let username = if let Some(username) = self.get_current_username(info) {
                 username
             } else {

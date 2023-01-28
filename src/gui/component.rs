@@ -144,22 +144,58 @@ impl Component for Greeter {
                 },
                 #[template_child]
                 usernames_box {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: !model.updates.password_mode,
-                    connect_changed[sender, sessions_box] => move |this| sender.input(
+                    #[track(
+                        model.updates.changed(Updates::manual_user_mode())
+                        || model.updates.changed(Updates::password_mode())
+                    )]
+                    set_sensitive: !model.updates.manual_user_mode && !model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::manual_user_mode()))]
+                    set_visible: !model.updates.manual_user_mode,
+                    connect_changed[
+                        sender, username_entry, sessions_box, session_entry
+                    ] => move |this| sender.input(
                         Self::Input::UserChanged(
-                            UserSessInfo::extract(this, &sessions_box)
+                            UserSessInfo::extract(this, &username_entry, &sessions_box, &session_entry)
                         )
                     ),
                 },
                 #[template_child]
+                username_entry {
+                    #[track(
+                        model.updates.changed(Updates::manual_user_mode())
+                        || model.updates.changed(Updates::password_mode())
+                    )]
+                    set_sensitive: model.updates.manual_user_mode && !model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::manual_user_mode()))]
+                    set_visible: model.updates.manual_user_mode,
+                },
+                #[template_child]
                 sessions_box {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: !model.updates.password_mode,
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_visible: !model.updates.password_mode,
+                    #[track(
+                        model.updates.changed(Updates::manual_sess_mode())
+                        || model.updates.changed(Updates::password_mode())
+                    )]
+                    set_sensitive: !model.updates.manual_sess_mode && !model.updates.password_mode,
+                    #[track(
+                        model.updates.changed(Updates::manual_sess_mode())
+                        || model.updates.changed(Updates::password_mode())
+                    )]
+                    set_visible: !model.updates.manual_sess_mode && !model.updates.password_mode,
                     #[track(model.updates.changed(Updates::active_session_id()))]
                     set_active_id: model.updates.active_session_id.as_deref(),
+                },
+                #[template_child]
+                session_entry {
+                    #[track(
+                        model.updates.changed(Updates::manual_sess_mode())
+                        || model.updates.changed(Updates::password_mode())
+                    )]
+                    set_sensitive: model.updates.manual_sess_mode && !model.updates.password_mode,
+                    #[track(
+                        model.updates.changed(Updates::manual_sess_mode())
+                        || model.updates.changed(Updates::password_mode())
+                    )]
+                    set_visible: model.updates.manual_sess_mode && !model.updates.password_mode,
                 },
                 #[template_child]
                 password_label {
@@ -181,12 +217,30 @@ impl Component for Greeter {
                     grab_focus: (),
                     #[track(model.updates.changed(Updates::password()))]
                     set_text: &model.updates.password,
-                    connect_activate[sender, usernames_box, sessions_box] => move |this| {
+                    connect_activate[
+                        sender, usernames_box, username_entry, sessions_box, session_entry
+                    ] => move |this| {
                         sender.input(InputMsg::Login {
                             password: this.text().to_string(),
-                            info: UserSessInfo::extract(&usernames_box, &sessions_box),
+                            info: UserSessInfo::extract(
+                                &usernames_box, &username_entry, &sessions_box, &session_entry
+                            ),
                         })
                     }
+                },
+                #[template_child]
+                user_toggle {
+                    #[track(model.updates.changed(Updates::password_mode()))]
+                    set_sensitive: !model.updates.password_mode,
+                    connect_clicked => Self::Input::ToggleManualUser,
+                },
+                #[template_child]
+                sess_toggle {
+                    #[track(model.updates.changed(Updates::password_mode()))]
+                    set_sensitive: !model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::password_mode()))]
+                    set_visible: !model.updates.password_mode,
+                    connect_clicked => Self::Input::ToggleManualSess,
                 },
                 #[template_child]
                 cancel_button {
@@ -204,11 +258,18 @@ impl Component for Greeter {
                     )]
                     grab_focus: (),
                     connect_clicked[
-                        sender, password_entry, usernames_box, sessions_box
+                        sender,
+                        password_entry,
+                        usernames_box,
+                        username_entry,
+                        sessions_box,
+                        session_entry,
                     ] => move |_| {
                         sender.input(InputMsg::Login {
                             password: password_entry.text().to_string(),
-                            info: UserSessInfo::extract(&usernames_box, &sessions_box),
+                            info: UserSessInfo::extract(
+                                &usernames_box, &username_entry, &sessions_box, &session_entry
+                            ),
                         })
                     }
                 },
@@ -256,6 +317,12 @@ impl Component for Greeter {
             }
             Self::Input::Cancel => self.cancel_click_handler(),
             Self::Input::UserChanged(info) => self.user_change_handler(&info),
+            Self::Input::ToggleManualUser => self
+                .updates
+                .set_manual_user_mode(!self.updates.manual_user_mode),
+            Self::Input::ToggleManualSess => self
+                .updates
+                .set_manual_sess_mode(!self.updates.manual_sess_mode),
             Self::Input::Reboot => Self::reboot_click_handler(&sender),
             Self::Input::PowerOff => Self::poweroff_click_handler(&sender),
         }

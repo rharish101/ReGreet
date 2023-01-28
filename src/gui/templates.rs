@@ -71,32 +71,63 @@ impl WidgetTemplate for Ui {
                     },
 
                     #[template]
-                    attach[0, 1, 1, 1] = &EntryLabel { set_label: "User:" },
+                    attach[0, 1, 1, 1] = &EntryLabel {
+                        set_label: "User:",
+                        set_height_request: 45,
+                    },
 
                     /// Label for the sessions widget
                     #[name = "session_label"]
                     #[template]
-                    attach[0, 2, 1, 1] = &EntryLabel { set_label: "Session:" },
+                    attach[0, 2, 1, 1] = &EntryLabel {
+                        set_label: "Session:",
+                        set_height_request: 45,
+                    },
 
                     /// Widget containing the usernames
                     #[name = "usernames_box"]
-                    attach[1, 1, 1, 1] = &gtk::ComboBoxText::with_entry(),
+                    attach[1, 1, 1, 1] = &gtk::ComboBoxText,
+
+                    /// Widget where the user enters the password
+                    #[name = "username_entry"]
+                    attach[1, 1, 1, 1] = &gtk::Entry,
 
                     /// Widget containing the sessions
                     #[name = "sessions_box"]
-                    attach[1, 2, 1, 1] = &gtk::ComboBoxText::with_entry(),
+                    attach[1, 2, 1, 1] = &gtk::ComboBoxText,
+
+                    /// Widget where the user enters the password
+                    #[name = "session_entry"]
+                    attach[1, 2, 1, 1] = &gtk::Entry,
 
                     /// Label for the password widget
                     #[name = "password_label"]
                     #[template]
-                    attach[0, 2, 1, 1] = &EntryLabel { set_label: "Password:" },
+                    attach[0, 2, 1, 1] = &EntryLabel {
+                        set_label: "Password:",
+                        set_height_request: 45,
+                    },
 
                     /// Widget where the user enters the password
                     #[name = "password_entry"]
                     attach[1, 2, 1, 1] = &gtk::PasswordEntry { set_show_peek_icon: true },
 
+                    /// Button to toggle manual user entry
+                    #[name = "user_toggle"]
+                    attach[2, 1, 1, 1] = &gtk::ToggleButton {
+                        set_icon_name: "document-edit-symbolic",
+                        set_tooltip_text: Some("Manually enter username"),
+                    },
+
+                    /// Button to toggle manual session entry
+                    #[name = "sess_toggle"]
+                    attach[2, 2, 1, 1] = &gtk::ToggleButton {
+                        set_icon_name: "document-edit-symbolic",
+                        set_tooltip_text: Some("Manually enter session command"),
+                    },
+
                     /// Collection of action buttons (eg. Login)
-                    attach[1, 3, 1, 1] = &gtk::Box {
+                    attach[1, 3, 2, 1] = &gtk::Box {
                         set_halign: gtk::Align::End,
                         set_spacing: 15,
 
