@@ -62,7 +62,7 @@ SESSION\_DIR | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) 
 The greeter can be installed by copying the file `target/release/rgreet` to `/usr/bin` (or similar directories like `/bin`).
 
 ## Usage
-## Set as Default Session
+### Set as Default Session
 Edit the greetd config file (`/etc/greetd/config.toml`) to set rgreet with a Wayland compositor as the default session.
 For example, if using Cage:
 ```toml
@@ -87,7 +87,12 @@ user = "greeter"
 
 Restart greetd to use the new config.
 
-### Generated Files
+### Configuration
+The configuration file must be named `rgreet.toml`, and in the [TOML](https://toml.io/) format.
+It should be located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
+A sample configuration is provided along with sample values for all available options in [`rgreet.sample.toml`](rgreet.sample.toml).
+
+### Logging and Caching
 The cache is are stored in `/var/cache/rgreet/cache.toml`.
 It contains the last authenticated user and the last used session per user.
 
@@ -95,11 +100,6 @@ The log file is stored in `/var/log/rgreet/log`.
 Once the log file reaches a limit, it is compressed and rotated to `/var/log/rgreet/log.X.gz`, where `X` is the index of the log file.
 The higher the index, the older the log file.
 After reaching a limit, the oldest log file is removed.
-
-## Configuration
-The configuration file must be named `rgreet.toml`, and in the [TOML](https://toml.io/) format.
-It should be located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
-A sample configuration is provided along with sample values for all available options in [`rgreet.sample.toml`](rgreet.sample.toml).
 
 ## Licenses
 This repository uses [REUSE](https://reuse.software/) to document licenses.
