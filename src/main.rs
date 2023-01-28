@@ -11,6 +11,7 @@ mod gui;
 mod sysutil;
 
 use std::fs::create_dir_all;
+use std::io::Result as IoResult;
 use std::path::Path;
 
 use clap::{Parser, ValueEnum};
@@ -51,28 +52,30 @@ fn main() {
     app.run::<Greeter>(());
 }
 
-/// Initialize logging with file rotation.
-fn init_logging(log_level: LogLevel) -> WorkerGuard {
+/// Initialize the log file with file rotation.
+fn setup_log_file() -> IoResult<FileRotate<AppendCount>> {
     let log_path = Path::new(LOG_PATH);
     if !log_path.exists() {
-        // Create the log directory.
         if let Some(log_dir) = log_path.parent() {
-            create_dir_all(log_dir).expect("Couldn't create missing log directory");
+            create_dir_all(log_dir)?;
         };
-    }
+    };
 
-    // Load the timer before spawning threads, otherwise getting the local time offset will fail.
-    let timer = OffsetTime::local_rfc_3339().expect("Couldn't get local time offset");
+    // Manually write to the log file, since `FileRotate` will silently fail if the log file can't
+    // be written to.
+    std::fs::write(log_path, [])?;
 
-    // Set up the log file rotation in a separate non-blocking thread.
-    let (log_file, guard) = non_blocking(FileRotate::new(
+    Ok(FileRotate::new(
         log_path,
         AppendCount::new(MAX_LOG_FILES),
         ContentLimit::Bytes(MAX_LOG_SIZE),
         Compression::OnRotate(0),
         None,
-    ));
+    ))
+}
 
+/// Initialize logging with file rotation.
+fn init_logging(log_level: LogLevel) -> WorkerGuard {
     // Parse the log level string.
     let filter = match log_level {
         LogLevel::Off => LevelFilter::OFF,
@@ -84,13 +87,26 @@ fn init_logging(log_level: LogLevel) -> WorkerGuard {
     };
 
     // Set up the logger.
-    tracing_subscriber::fmt()
-        .with_writer(log_file)
+    let logger = tracing_subscriber::fmt()
         .with_max_level(filter)
-        .with_ansi(false)
-        .with_timer(timer)
-        .init();
+        // Load the timer before spawning threads, otherwise getting the local time offset will
+        // fail.
+        .with_timer(OffsetTime::local_rfc_3339().expect("Couldn't get local time offset"));
 
-    // Return this guard, otherwise the non-blocking writer will immediately stop.
-    guard
+    // Log in a separate non-blocking thread, then return the guard (otherise the non-blocking
+    // writer will immediately stop).
+    match setup_log_file() {
+        Ok(file) => {
+            let (file, guard) = non_blocking(file);
+            // Disable colouring through ANSI escape sequences in log files.
+            logger.with_writer(file).with_ansi(false).init();
+            guard
+        }
+        Err(err) => {
+            println!("ERROR: Couldn't create log file '{LOG_PATH}': {err}");
+            let (file, guard) = non_blocking(std::io::stdout());
+            logger.with_writer(file).init();
+            guard
+        }
+    }
 }
