@@ -201,7 +201,7 @@ impl Component for Greeter {
                     connect_activate[
                         sender, usernames_box, username_entry, sessions_box, session_entry
                     ] => move |this| {
-                        sender.input(InputMsg::Login {
+                        sender.input(Self::Input::Login {
                             password: this.text().to_string(),
                             info: UserSessInfo::extract(
                                 &usernames_box, &username_entry, &sessions_box, &session_entry
@@ -242,7 +242,7 @@ impl Component for Greeter {
                         sessions_box,
                         session_entry,
                     ] => move |_| {
-                        sender.input(InputMsg::Login {
+                        sender.input(Self::Input::Login {
                             password: password_entry.text().to_string(),
                             info: UserSessInfo::extract(
                                 &usernames_box, &username_entry, &sessions_box, &session_entry
@@ -253,9 +253,9 @@ impl Component for Greeter {
                 #[template_child]
                 datetime_label { set_label: &Local::now().format(DATETIME_FMT).to_string() },
                 #[template_child]
-                reboot_button { connect_clicked => InputMsg::Reboot },
+                reboot_button { connect_clicked => Self::Input::Reboot },
                 #[template_child]
-                poweroff_button { connect_clicked => InputMsg::PowerOff },
+                poweroff_button { connect_clicked => Self::Input::PowerOff },
             }
         }
     }
