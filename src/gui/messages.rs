@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Message definitions for communication between the view and the model
-use std::fmt::{Debug, Error as FmtError, Formatter};
-
+use derivative::Derivative;
 use relm4::gtk::{glib, prelude::*, ComboBoxText, Entry};
 
 #[derive(Debug)]
@@ -38,9 +37,12 @@ impl UserSessInfo {
 }
 
 /// The messages sent by the view to the model
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub enum InputMsg {
     /// Login request
     Login {
+        #[derivative(Debug = "ignore")]
         password: String,
         info: UserSessInfo,
     },
@@ -54,24 +56,6 @@ pub enum InputMsg {
     ToggleManualSess,
     Reboot,
     PowerOff,
-}
-
-// Manually implement Debug so that the password isn't accidentally logged.
-impl Debug for InputMsg {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), FmtError> {
-        match self {
-            Self::Login { password: _, info } => {
-                // Skip the password field.
-                f.debug_struct("Login").field("info", info).finish()
-            }
-            Self::Cancel => f.write_str("Cancel"),
-            Self::UserChanged(info) => f.debug_tuple("UserChanged").field(info).finish(),
-            Self::ToggleManualUser => f.write_str("ToggleManualUser"),
-            Self::ToggleManualSess => f.write_str("ToggleManualSess"),
-            Self::Reboot => f.write_str("Reboot"),
-            Self::PowerOff => f.write_str("PowerOff"),
-        }
-    }
 }
 
 #[derive(Debug)]
