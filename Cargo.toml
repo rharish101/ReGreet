@@ -5,10 +5,12 @@
 [package]
 name = "rgreet"
 version = "0.1.0"
+authors = ["Harish Rajagopal <harish.rajagopals@gmail.com>"]
 edition = "2021"
-description = "Clean and customizable greeter for greetd"
-license = "GPL-3.0-or-later"
 rust-version = "1.64"
+description = "Clean and customizable greeter for greetd"
+repository = "https://github.com/rharish101/rgreet/"
+license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
