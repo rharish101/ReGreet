@@ -251,8 +251,6 @@ impl Component for Greeter {
                     }
                 },
                 #[template_child]
-                datetime_label { set_label: &Local::now().format(DATETIME_FMT).to_string() },
-                #[template_child]
                 reboot_button { connect_clicked => Self::Input::Reboot },
                 #[template_child]
                 poweroff_button { connect_clicked => Self::Input::PowerOff },
