@@ -8,6 +8,7 @@ version = "0.1.0"
 edition = "2021"
 description = "Clean and customizable greeter for greetd"
 license = "GPL-3.0-or-later"
+rust-version = "1.64"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

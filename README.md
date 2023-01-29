@@ -35,7 +35,7 @@ This uses the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in d
     - Font
 
 ## Requirements
-* Rust 1.57.0+ (for compilation only)
+* Rust 1.64.0+ (for compilation only)
 * greetd
 * GTK 4.0+
 * A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or [Sway](https://swaywm.org/))
