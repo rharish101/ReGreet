@@ -81,6 +81,4 @@ pub enum CommandMsg {
     UpdateTime,
     /// Clear the error message.
     ClearErr,
-    /// Do nothing.
-    Noop,
 }

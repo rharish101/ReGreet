@@ -8,6 +8,7 @@
 
 //! The main logic for the greeter
 use std::process::Command;
+use std::thread::sleep;
 use std::time::Duration;
 
 use greetd_ipc::{ErrorType as GreetdErrorType, Response};
@@ -79,8 +80,8 @@ impl Greeter {
     /// Run a systemctl command and log any errors in a background thread.
     fn systemctl_cmd(command: String, sender: &ComponentSender<Self>) {
         // Run the command and check its output in a separate thread, so as to not block the GUI.
-        sender.spawn_oneshot_command(move || {
-            match Command::new("systemctl").arg(&command).output() {
+        sender.spawn_command(
+            move |_| match Command::new("systemctl").arg(&command).output() {
                 Ok(output) => {
                     if !output.status.success() {
                         if let Ok(err) = std::str::from_utf8(&output.stderr) {
@@ -91,9 +92,8 @@ impl Greeter {
                     }
                 }
                 Err(err) => error!("Failed to launch {command}: {err}"),
-            };
-            CommandMsg::Noop
-        });
+            },
+        );
     }
 
     /// Event handler for clicking the "Reboot" button
@@ -419,9 +419,9 @@ impl Greeter {
 
         // Set a timer in a separate thread that signals the main thread to reset the displayed
         // message, so as to not block the GUI.
-        sender.spawn_command(move |sender| {
-            std::thread::sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY));
-            sender.emit(CommandMsg::ClearErr);
+        sender.spawn_oneshot_command(|| {
+            sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY));
+            CommandMsg::ClearErr
         });
     }
 }

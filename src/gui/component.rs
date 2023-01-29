@@ -8,7 +8,8 @@ use std::time::Duration;
 use tracing::{debug, info, warn};
 
 use gtk::prelude::*;
-use relm4::{gtk, Component, ComponentParts, ComponentSender, Sender, ShutdownReceiver};
+use relm4::{gtk, Component, ComponentParts, ComponentSender};
+use std::thread::sleep;
 
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
 use super::model::{Greeter, Updates, DEFAULT_MSG};
@@ -94,20 +95,16 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
 
 /// Set up auto updation for the datetime label.
 fn setup_datetime_display(sender: ComponentSender<Greeter>) {
-    // Set a timer in a separate thread that signals the main thread to update the time, so as
-    // not to block the GUI.
-    sender.command(|sender: Sender<CommandMsg>, receiver: ShutdownReceiver| {
-        receiver
-            .register(async move {
-                // Run it infinitely, since the clock always needs to stay updated.
-                loop {
-                    if sender.send(CommandMsg::UpdateTime).is_err() {
-                        warn!("Couldn't update datetime");
-                    };
-                    std::thread::sleep(Duration::from_millis(DATETIME_UPDATE_DELAY));
-                }
-            })
-            .drop_on_shutdown()
+    // Set a timer in a separate thread that signals the main thread to update the time, so as to
+    // not block the GUI.
+    sender.spawn_command(|sender| {
+        // Run it infinitely, since the clock always needs to stay updated.
+        loop {
+            if sender.send(CommandMsg::UpdateTime).is_err() {
+                warn!("Couldn't update datetime");
+            };
+            sleep(Duration::from_millis(DATETIME_UPDATE_DELAY));
+        }
     });
 }
 
@@ -322,7 +319,6 @@ impl Component for Greeter {
                 .datetime_label
                 .set_label(&Local::now().format(DATETIME_FMT).to_string()),
             Self::CommandOutput::ClearErr => widgets.ui.message_label.set_label(DEFAULT_MSG),
-            Self::CommandOutput::Noop => (),
         };
     }
 }
