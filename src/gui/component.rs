@@ -138,8 +138,6 @@ impl Component for Greeter {
                 #[template_child]
                 session_label {
                     #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: !model.updates.password_mode,
-                    #[track(model.updates.changed(Updates::password_mode()))]
                     set_visible: !model.updates.password_mode,
                 },
                 #[template_child]
@@ -175,11 +173,6 @@ impl Component for Greeter {
                         model.updates.changed(Updates::manual_sess_mode())
                         || model.updates.changed(Updates::password_mode())
                     )]
-                    set_sensitive: !model.updates.manual_sess_mode && !model.updates.password_mode,
-                    #[track(
-                        model.updates.changed(Updates::manual_sess_mode())
-                        || model.updates.changed(Updates::password_mode())
-                    )]
                     set_visible: !model.updates.manual_sess_mode && !model.updates.password_mode,
                     #[track(model.updates.changed(Updates::active_session_id()))]
                     set_active_id: model.updates.active_session_id.as_deref(),
@@ -190,24 +183,15 @@ impl Component for Greeter {
                         model.updates.changed(Updates::manual_sess_mode())
                         || model.updates.changed(Updates::password_mode())
                     )]
-                    set_sensitive: model.updates.manual_sess_mode && !model.updates.password_mode,
-                    #[track(
-                        model.updates.changed(Updates::manual_sess_mode())
-                        || model.updates.changed(Updates::password_mode())
-                    )]
                     set_visible: model.updates.manual_sess_mode && !model.updates.password_mode,
                 },
                 #[template_child]
                 password_label {
                     #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: model.updates.password_mode,
-                    #[track(model.updates.changed(Updates::password_mode()))]
                     set_visible: model.updates.password_mode,
                 },
                 #[template_child]
                 password_entry {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: model.updates.password_mode,
                     #[track(model.updates.changed(Updates::password_mode()))]
                     set_visible: model.updates.password_mode,
                     #[track(
@@ -237,15 +221,11 @@ impl Component for Greeter {
                 #[template_child]
                 sess_toggle {
                     #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: !model.updates.password_mode,
-                    #[track(model.updates.changed(Updates::password_mode()))]
                     set_visible: !model.updates.password_mode,
                     connect_clicked => Self::Input::ToggleManualSess,
                 },
                 #[template_child]
                 cancel_button {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: model.updates.password_mode,
                     #[track(model.updates.changed(Updates::password_mode()))]
                     set_visible: model.updates.password_mode,
                     connect_clicked => Self::Input::Cancel,
