@@ -94,7 +94,7 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
 }
 
 /// Set up auto updation for the datetime label.
-fn setup_datetime_display(sender: ComponentSender<Greeter>) {
+fn setup_datetime_display(sender: &ComponentSender<Greeter>) {
     // Set a timer in a separate thread that signals the main thread to update the time, so as to
     // not block the GUI.
     sender.spawn_command(|sender| {
@@ -274,7 +274,7 @@ impl Component for Greeter {
 
         setup_settings(&model, root);
         setup_users_sessions(&model, &widgets);
-        setup_datetime_display(sender);
+        setup_datetime_display(&sender);
 
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
