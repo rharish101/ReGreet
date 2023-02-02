@@ -1157,6 +1157,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "456c603be3e8d448b072f410900c09faf164fbce2d480456f50eea6e25f9c848"
 
 [[package]]
+name = "regreet"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "const_format",
+ "derivative",
+ "file-rotate",
+ "glob",
+ "greetd_ipc",
+ "lru",
+ "pwd",
+ "regex",
+ "relm4",
+ "serde",
+ "shlex",
+ "thiserror",
+ "toml 0.6.0",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+ "tracker",
+]
+
+[[package]]
 name = "relm4"
 version = "0.5.0-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1182,31 +1207,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "rgreet"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "clap",
- "const_format",
- "derivative",
- "file-rotate",
- "glob",
- "greetd_ipc",
- "lru",
- "pwd",
- "regex",
- "relm4",
- "serde",
- "shlex",
- "thiserror",
- "toml 0.6.0",
- "tracing",
- "tracing-appender",
- "tracing-subscriber",
- "tracker",
 ]
 
 [[package]]

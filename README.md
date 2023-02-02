@@ -10,7 +10,7 @@ SPDX-FileCopyrightText: 2021 Maximilian Moser <maximilian.moser@tuwien.ac.at>
 SPDX-License-Identifier: MIT
 -->
 
-# rgreet
+# ReGreet
 
 A clean and customizable GTK-based [greetd](https://git.sr.ht/~kennylevinsen/greetd) greeter written in Rust using [Relm4](https://relm4.org/).
 This is meant to be run under a Wayland compositor (like [Sway](https://github.com/swaywm/sway)).
@@ -55,26 +55,26 @@ These are:
 Environment Variable | Default | Use
 -- | -- | --
 GREETD\_CONFIG\_DIR | `/etc/greetd` | The configuration directory used by greetd
-CACHE\_DIR | `/var/cache/rgreet` | The directory used to store cache
-LOG\_DIR | `/var/log/rgreet` | The directory used to store logs
+CACHE\_DIR | `/var/cache/regreet` | The directory used to store cache
+LOG\_DIR | `/var/log/regreet` | The directory used to store logs
 SESSION\_DIR | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
 
-The greeter can be installed by copying the file `target/release/rgreet` to `/usr/bin` (or similar directories like `/bin`).
+The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 
 ## Usage
 ### Set as Default Session
-Edit the greetd config file (`/etc/greetd/config.toml`) to set rgreet with a Wayland compositor as the default session.
+Edit the greetd config file (`/etc/greetd/config.toml`) to set regreet with a Wayland compositor as the default session.
 For example, if using Cage:
 ```toml
 [default_session]
-command = "cage -s -- rgreet"
+command = "cage -s -- regreet"
 user = "greeter"
 ```
 The -s argument enables VT switching in cage (0.1.2 and newer only), which is highly recommended to prevent locking yourself out.
 
 If using Sway, create a sway config file (in a path such as `/etc/greetd/sway-config`) as follows:
 ```
-exec "rgreet; swaymsg exit"
+exec "regreet; swaymsg exit"
 include /etc/sway/config.d/*
 ```
 
@@ -88,17 +88,17 @@ user = "greeter"
 Restart greetd to use the new config.
 
 ### Configuration
-The configuration file must be named `rgreet.toml`, and in the [TOML](https://toml.io/) format.
+The configuration file must be named `regreet.toml`, and in the [TOML](https://toml.io/) format.
 It should be located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
-A sample configuration is provided along with sample values for all available options in [`rgreet.sample.toml`](rgreet.sample.toml).
+A sample configuration is provided along with sample values for all available options in [`regreet.sample.toml`](regreet.sample.toml).
 
 ### Logging and Caching
-The cache is are stored in `/var/cache/rgreet/cache.toml` (configurable during installation).
+The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during installation).
 It contains the last authenticated user and the last used session per user, which are automatically selected on next login.
 If the greeter is unable to write to this file, then it reverts to the default behaviour.
 
-The log file is stored in `/var/log/rgreet/log` (configurable during installation).
-Once the log file reaches a limit, it is compressed and rotated to `/var/log/rgreet/log.X.gz`, where `X` is the index of the log file.
+The log file is stored in `/var/log/regreet/log` (configurable during installation).
+Once the log file reaches a limit, it is compressed and rotated to `/var/log/regreet/log.X.gz`, where `X` is the index of the log file.
 The higher the index, the older the log file.
 After reaching a limit, the oldest log file is removed.
 If the greeter is unable to write to this file or create files in the log directory, then it logs to stdout.
