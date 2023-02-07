@@ -61,6 +61,13 @@ SESSION\_DIR | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) 
 
 The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 
+Optionally, to set up the log and cache directories using systemd-tmpfiles, do either of the following:
+* Copy the configuration given in [systemd-tmpfiles.conf](./systemd-tmpfiles.conf) to `/etc/tmpfiles.d/regreet.conf` or `/usr/lib/tmpfiles.d/regreet.conf`.
+* Run the `systemd-tmpfiles` CLI:
+  ```sh
+  systemd-tmpfiles --create "$PWD/systemd-tmpfiles.conf"
+  ```
+
 ## Usage
 ### Set as Default Session
 Edit the greetd config file (`/etc/greetd/config.toml`) to set regreet with a Wayland compositor as the default session.
@@ -105,7 +112,7 @@ If the greeter is unable to write to this file or create files in the log direct
 
 The recommended configuration is to run greetd greeters as a separate user (`greeter` in the above examples).
 This can lead to insufficient permissions for either creating the cache/log directories, or writing to them.
-To make use of the caching and logging features, please create the directories manually with the correct permissions.
+To make use of the caching and logging features, please create the directories manually with the correct permissions, if not done during installation with systemd-tmpfiles.
 
 ## Licenses
 This repository uses [REUSE](https://reuse.software/) to document licenses.
