@@ -43,6 +43,14 @@ This uses the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in d
 **Note**: Please make sure you have all requirements installed, as having a greetd greeter constantly failing isn't as much fun as it sounds.
 
 ## Installation
+### Arch Linux
+ReGreet is available as [regreet-git](https://aur.archlinux.org/packages/regreet-git) in the AUR.
+Install it either by cloning the AUR repository and running `makepkg`, or by using your favourite AUR helper:
+```sh
+paru -S regreet-git
+```
+
+### Manual
 First, the greeter must be compiled using Cargo:
 ```sh
 cargo build --release
