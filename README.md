@@ -64,9 +64,9 @@ The greeter can be installed by copying the file `target/release/regreet` to `/u
 Optionally, to set up the log and cache directories using systemd-tmpfiles, do either of the following:
 * Copy the configuration given in [systemd-tmpfiles.conf](./systemd-tmpfiles.conf) to `/etc/tmpfiles.d/regreet.conf` or `/usr/lib/tmpfiles.d/regreet.conf`.
 * Run the `systemd-tmpfiles` CLI:
-  ```sh
-  systemd-tmpfiles --create "$PWD/systemd-tmpfiles.conf"
-  ```
+    ```sh
+    systemd-tmpfiles --create "$PWD/systemd-tmpfiles.conf"
+    ```
 
 ## Usage
 ### Set as Default Session
