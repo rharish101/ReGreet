@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Setup for using the greeter as a Relm4 component
-use chrono::Local;
+use std::path::PathBuf;
 use std::time::Duration;
+
+use chrono::Local;
 use tracing::{debug, info, warn};
 
 use gtk::prelude::*;
@@ -112,7 +114,7 @@ fn setup_datetime_display(sender: &ComponentSender<Greeter>) {
 impl Component for Greeter {
     type Input = InputMsg;
     type Output = ();
-    type Init = ();
+    type Init = PathBuf;
     type CommandOutput = CommandMsg;
 
     view! {
@@ -260,11 +262,11 @@ impl Component for Greeter {
 
     /// Initialize the greeter.
     fn init(
-        _: Self::Init,
+        config_path: Self::Init,
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut model = Self::new();
+        let mut model = Self::new(&config_path);
         let widgets = view_output!();
 
         // Cancel any previous session, just in case someone started one.

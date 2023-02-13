@@ -103,8 +103,13 @@ user = "greeter"
 Restart greetd to use the new config.
 
 ### Configuration
-The configuration file must be named `regreet.toml`, and in the [TOML](https://toml.io/) format.
-It should be located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
+The configuration file must be in the [TOML](https://toml.io/) format.
+By default, it is named `regreet.toml`, and located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
+You can use a config file in a different location with the `--config` argument as follows:
+```sh
+regreet --config /path/to/custom/regreet/config.toml
+```
+
 A sample configuration is provided along with sample values for all available options in [`regreet.sample.toml`](regreet.sample.toml).
 
 ### Logging and Caching

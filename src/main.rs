@@ -12,7 +12,7 @@ mod sysutil;
 
 use std::fs::create_dir_all;
 use std::io::Result as IoResult;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use clap::{Parser, ValueEnum};
 use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, FileRotate};
@@ -20,7 +20,7 @@ use gui::Greeter;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{filter::LevelFilter, fmt::time::OffsetTime};
 
-use crate::constants::{APP_ID, LOG_PATH};
+use crate::constants::{APP_ID, CONFIG_PATH, LOG_PATH};
 
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
@@ -41,6 +41,10 @@ struct Args {
     /// The verbosity level of the logs
     #[arg(short, long, value_name = "LEVEL", default_value = "warn")]
     log_level: LogLevel,
+
+    /// The path to the config file
+    #[arg(short, long, value_name = "PATH", default_value = CONFIG_PATH)]
+    config: PathBuf,
 }
 
 fn main() {
@@ -49,7 +53,7 @@ fn main() {
     let _guard = init_logging(&args.log_level);
 
     let app = relm4::RelmApp::new(APP_ID);
-    app.run::<Greeter>(());
+    app.run::<Greeter>(args.config);
 }
 
 /// Initialize the log file with file rotation.

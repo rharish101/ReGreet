@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Configuration for the greeter
+use std::path::Path;
+
 use serde::{Deserialize, Serialize};
 
 use crate::common::load_toml;
-use crate::constants::CONFIG_PATH;
 
 /// Struct holding all supported GTK settings
 #[derive(Default, Deserialize, Serialize)]
@@ -33,8 +34,8 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new() -> Self {
-        load_toml(CONFIG_PATH)
+    pub fn new(path: &Path) -> Self {
+        load_toml(path)
     }
 
     pub fn get_background(&self) -> &Option<String> {

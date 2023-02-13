@@ -7,6 +7,7 @@
 // SPDX-License-Identifier: MIT
 
 //! The main logic for the greeter
+use std::path::Path;
 use std::process::Command;
 use std::thread::sleep;
 use std::time::Duration;
@@ -58,7 +59,7 @@ pub struct Greeter {
 }
 
 impl Greeter {
-    pub(super) fn new() -> Self {
+    pub(super) fn new(config_path: &Path) -> Self {
         let updates = Updates {
             message: DEFAULT_MSG.to_string(),
             password: String::new(),
@@ -72,7 +73,7 @@ impl Greeter {
             greetd_client: GreetdClient::new().expect("Couldn't initialize greetd client"),
             sys_util: SysUtil::new().expect("Couldn't read available users and sessions"),
             cache: Cache::new(),
-            config: Config::new(),
+            config: Config::new(config_path),
             updates,
         }
     }
