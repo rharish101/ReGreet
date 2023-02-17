@@ -4,11 +4,11 @@
 
 mod cache;
 mod client;
-mod common;
 mod config;
 mod constants;
 mod gui;
 mod sysutil;
+mod tomlutils;
 
 use std::fs::create_dir_all;
 use std::io::Result as IoResult;

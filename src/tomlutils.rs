@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Common stuff used by the codebase
+//! Convenient TOML loading utilities
+
 use std::ffi::OsStr;
 use std::fs::read;
 use std::path::Path;
@@ -56,9 +57,4 @@ where
         warn!("Missing TOML file: {}", path.display());
         R::default()
     }
-}
-
-/// Capitalize the first letter of the string.
-pub fn capitalize(string: &str) -> String {
-    string[0..1].to_uppercase() + &string[1..]
 }

@@ -8,7 +8,7 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-use crate::common::load_toml;
+use crate::tomlutils::load_toml;
 
 /// Struct holding all supported GTK settings
 #[derive(Default, Deserialize, Serialize)]

@@ -19,7 +19,6 @@ use tracing::{debug, error, info, instrument, warn};
 
 use crate::cache::Cache;
 use crate::client::{AuthStatus, GreetdClient};
-use crate::common::capitalize;
 use crate::config::Config;
 use crate::sysutil::SysUtil;
 
@@ -43,6 +42,11 @@ pub(super) struct Updates {
     pub(super) password_mode: bool,
     /// ID of the active session
     pub(super) active_session_id: Option<String>,
+}
+
+/// Capitalize the first letter of the string.
+fn capitalize(string: &str) -> String {
+    string[0..1].to_uppercase() + &string[1..]
 }
 
 /// Greeter model that holds its state
