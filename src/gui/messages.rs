@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Message definitions for communication between the view and the model
+
 use derivative::Derivative;
 use relm4::gtk::{glib, prelude::*, ComboBoxText, Entry};
 

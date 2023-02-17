@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! The main GUI for the greeter
+
 mod component;
 mod messages;
 mod model;

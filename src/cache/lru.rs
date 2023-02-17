@@ -5,6 +5,7 @@
 //! Wrapper for `lru::LruCache`
 //!
 //! This is needed because `lru::LruCache` doesn't implement (de)serialization.
+
 use std::cmp::Eq;
 use std::fmt::{Formatter, Result as FmtResult};
 use std::hash::{BuildHasher, Hash};

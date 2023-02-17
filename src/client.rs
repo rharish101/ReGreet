@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Client that communicates with greetd
+
 use std::env;
 use std::io::Result as IOResult;
 use std::os::unix::net::UnixStream;

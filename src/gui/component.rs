@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Setup for using the greeter as a Relm4 component
+
 use std::path::PathBuf;
 use std::time::Duration;
 

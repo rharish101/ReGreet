@@ -7,6 +7,7 @@
 // SPDX-License-Identifier: MIT
 
 //! The main logic for the greeter
+
 use std::path::Path;
 use std::process::Command;
 use std::thread::sleep;

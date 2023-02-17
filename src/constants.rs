@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Stores constants that can be configured at compile time
+
 use const_format::concatcp;
 
 /// Get an environment variable during compile time, else return a default.

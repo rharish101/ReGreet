@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Utilities for caching info between logins
+
 mod lru;
 
 use std::fs::{create_dir_all, write};

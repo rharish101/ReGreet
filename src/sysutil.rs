@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Helper for system utilities like users and sessions
+
 use std::collections::HashMap;
 use std::fs::read;
 use std::io::Result as IOResult;

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Configuration for the greeter
+
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
