@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! Utilities for caching info between logins
+//! Utility for caching info between logins
 
 mod lru;
 
