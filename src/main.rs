@@ -16,11 +16,11 @@ use std::path::{Path, PathBuf};
 
 use clap::{Parser, ValueEnum};
 use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, FileRotate};
-use gui::Greeter;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{filter::LevelFilter, fmt::time::OffsetTime};
 
 use crate::constants::{APP_ID, CONFIG_PATH, LOG_PATH};
+use crate::gui::Greeter;
 
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
