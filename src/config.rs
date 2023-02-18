@@ -5,6 +5,7 @@
 //! Configuration for the greeter
 
 use std::path::Path;
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
@@ -29,6 +30,8 @@ pub struct GtkSettings {
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
     #[serde(default)]
+    env: HashMap<String, String>,
+    #[serde(default)]
     background: Option<String>,
     #[serde(default, rename = "GTK")]
     gtk: Option<GtkSettings>,
@@ -37,6 +40,10 @@ pub struct Config {
 impl Config {
     pub fn new(path: &Path) -> Self {
         load_toml(path)
+    }
+
+    pub fn get_env(&self) -> &HashMap<String, String> {
+        &self.env
     }
 
     pub fn get_background(&self) -> &Option<String> {
