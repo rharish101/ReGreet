@@ -4,8 +4,8 @@
 
 //! Configuration for the greeter
 
-use std::path::Path;
 use std::collections::HashMap;
+use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
