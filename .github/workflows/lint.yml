@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install GTK4
+      run: sudo apt update && sudo apt install libgtk-4-dev build-essential
+    - name: Install Rust
+      id: toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+    - name: Restore build cache
+      uses: Swatinem/rust-cache@v2
+    - name: pre-commit
+      uses: pre-commit/action@v3.0.0
+    - uses: pre-commit-ci/lite-action@v1.0.0
+      if: always()
