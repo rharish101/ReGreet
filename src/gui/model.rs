@@ -375,7 +375,7 @@ impl Greeter {
                 return;
             };
 
-
+        // Generate env string that will be passed to greetd when starting the session
         let env = self.config.get_env();
         let mut environment = Vec::with_capacity(env.len());
         for (k, v) in env {
