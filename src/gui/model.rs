@@ -375,10 +375,16 @@ impl Greeter {
                 return;
             };
 
+        // Generate env string that will be passed to greetd when starting the session
+        let env = self.config.get_env();
+        let mut environment = Vec::with_capacity(env.len());
+        for (k, v) in env {
+            environment.push(format!("{}={}", k, v));
+        }
         // Start the session.
         let response = self
             .greetd_client
-            .start_session(cmd)
+            .start_session(cmd, environment)
             .unwrap_or_else(|err| panic!("Failed to start session: {err}"));
 
         match response {
