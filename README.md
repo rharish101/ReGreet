@@ -32,6 +32,7 @@ This uses the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in d
     - Background image
     - GTK theme
     - Dark mode
+    - Icon theme
     - Cursor theme
     - Font
 
