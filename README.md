@@ -27,6 +27,7 @@ This uses the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in d
 * Allows manual entry of username and session command
 * Remembers the last authenticated user
 * Automatically selects the last used session per user
+* Allows setting environment variables for created sessions
 * Supports customizing:
     - Background image
     - GTK theme
