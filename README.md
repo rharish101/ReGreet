@@ -113,6 +113,14 @@ regreet --config /path/to/custom/regreet/config.toml
 ```
 
 A sample configuration is provided along with sample values for all available options in [`regreet.sample.toml`](regreet.sample.toml).
+Currently, the following can be configured:
+* Background image
+* Environment variables for created sessions
+* GTK theme
+* Dark mode
+* Icon theme
+* Cursor theme
+* Font
 
 ### Logging and Caching
 The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during installation).
