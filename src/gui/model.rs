@@ -450,8 +450,7 @@ impl Greeter {
                 self.updates.set_message("Logging in...".to_string());
             }
 
-            // The client should raise an `unimplemented!`, so ignore it.
-            Response::AuthMessage { .. } => (),
+            Response::AuthMessage { .. } => unimplemented!(),
 
             Response::Error { description, .. } => {
                 self.display_error(
