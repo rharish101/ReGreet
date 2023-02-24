@@ -342,9 +342,7 @@ impl Component for Greeter {
         self.updates.reset();
 
         match msg {
-            Self::Input::Login { input, info } => {
-                self.login_click_handler(&sender, input, &info)
-            }
+            Self::Input::Login { input, info } => self.login_click_handler(&sender, input, &info),
             Self::Input::Cancel => self.cancel_click_handler(),
             Self::Input::UserChanged(info) => self.user_change_handler(&info),
             Self::Input::ToggleManualUser => self

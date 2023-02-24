@@ -249,7 +249,7 @@ impl Greeter {
                                     "Authentication message error from greetd: {auth_message}",
                                 ),
                             );
-                        },
+                        }
                     }
                 }
                 Response::Error { description, .. } => {
@@ -262,7 +262,10 @@ impl Greeter {
                     break;
                 }
             }
-            response = self.greetd_client.send_auth_response(None).unwrap_or_else(|err| panic!("Failed to respond to greetd: {err}"));
+            response = self
+                .greetd_client
+                .send_auth_response(None)
+                .unwrap_or_else(|err| panic!("Failed to respond to greetd: {err}"));
         }
     }
 
@@ -319,12 +322,7 @@ impl Greeter {
     }
 
     /// Send the entered input for logging in.
-    fn send_input(
-        &mut self,
-        sender: &ComponentSender<Self>,
-        input: String,
-        info: &UserSessInfo,
-    ) {
+    fn send_input(&mut self, sender: &ComponentSender<Self>, input: String, info: &UserSessInfo) {
         // TODO we should be able to remove this thanks to the new looping handler
         // Reset the password field, for convenience when the user has to re-enter a password.
         self.updates.set_input(String::new());
