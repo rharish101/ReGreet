@@ -274,7 +274,6 @@ impl Component for Greeter {
                     connect_clicked[
                         sender,
                         secret_entry,
-                        visible_entry,
                         usernames_box,
                         username_entry,
                         sessions_box,
