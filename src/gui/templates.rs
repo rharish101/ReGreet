@@ -87,7 +87,7 @@ impl WidgetTemplate for Ui {
                     #[name = "usernames_box"]
                     attach[1, 1, 1, 1] = &gtk::ComboBoxText { set_hexpand: true },
 
-                    /// Widget where the user enters the password
+                    /// Widget where the user enters the username
                     #[name = "username_entry"]
                     attach[1, 1, 1, 1] = &gtk::Entry { set_hexpand: true },
 
@@ -95,21 +95,24 @@ impl WidgetTemplate for Ui {
                     #[name = "sessions_box"]
                     attach[1, 2, 1, 1] = &gtk::ComboBoxText,
 
-                    /// Widget where the user enters the password
+                    /// Widget where the user enters the session
                     #[name = "session_entry"]
                     attach[1, 2, 1, 1] = &gtk::Entry,
 
                     /// Label for the password widget
-                    #[name = "password_label"]
+                    #[name = "input_label"]
                     #[template]
                     attach[0, 2, 1, 1] = &EntryLabel {
-                        set_label: "Password:",
                         set_height_request: 45,
                     },
 
-                    /// Widget where the user enters the password
-                    #[name = "password_entry"]
+                    /// Widget where the user enters a secret
+                    #[name = "secret_entry"]
                     attach[1, 2, 1, 1] = &gtk::PasswordEntry { set_show_peek_icon: true },
+
+                    /// Widget where the user enters something visible
+                    #[name = "visible_entry"]
+                    attach[1, 2, 1, 1] = &gtk::Entry,
 
                     /// Button to toggle manual user entry
                     #[name = "user_toggle"]

@@ -14,8 +14,10 @@ use gtk::prelude::*;
 use relm4::{gtk, Component, ComponentParts, ComponentSender};
 use std::thread::sleep;
 
+
 #[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
+use crate::gui::model::InputMode;
 
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
 use super::model::{Greeter, Updates, DEFAULT_MSG};
@@ -146,16 +148,16 @@ impl Component for Greeter {
                 },
                 #[template_child]
                 session_label {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_visible: !model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_visible: !model.updates.is_input(),
                 },
                 #[template_child]
                 usernames_box {
                     #[track(
                         model.updates.changed(Updates::manual_user_mode())
-                        || model.updates.changed(Updates::password_mode())
+                        || model.updates.changed(Updates::input_mode())
                     )]
-                    set_sensitive: !model.updates.manual_user_mode && !model.updates.password_mode,
+                    set_sensitive: !model.updates.manual_user_mode && !model.updates.is_input(),
                     #[track(model.updates.changed(Updates::manual_user_mode()))]
                     set_visible: !model.updates.manual_user_mode,
                     connect_changed[
@@ -170,9 +172,9 @@ impl Component for Greeter {
                 username_entry {
                     #[track(
                         model.updates.changed(Updates::manual_user_mode())
-                        || model.updates.changed(Updates::password_mode())
+                        || model.updates.changed(Updates::input_mode())
                     )]
-                    set_sensitive: model.updates.manual_user_mode && !model.updates.password_mode,
+                    set_sensitive: model.updates.manual_user_mode && !model.updates.is_input(),
                     #[track(model.updates.changed(Updates::manual_user_mode()))]
                     set_visible: model.updates.manual_user_mode,
                 },
@@ -180,9 +182,9 @@ impl Component for Greeter {
                 sessions_box {
                     #[track(
                         model.updates.changed(Updates::manual_sess_mode())
-                        || model.updates.changed(Updates::password_mode())
+                        || model.updates.changed(Updates::input_mode())
                     )]
-                    set_visible: !model.updates.manual_sess_mode && !model.updates.password_mode,
+                    set_visible: !model.updates.manual_sess_mode && !model.updates.is_input(),
                     #[track(model.updates.changed(Updates::active_session_id()))]
                     set_active_id: model.updates.active_session_id.as_deref(),
                 },
@@ -190,31 +192,54 @@ impl Component for Greeter {
                 session_entry {
                     #[track(
                         model.updates.changed(Updates::manual_sess_mode())
-                        || model.updates.changed(Updates::password_mode())
+                        || model.updates.changed(Updates::input_mode())
                     )]
-                    set_visible: model.updates.manual_sess_mode && !model.updates.password_mode,
+                    set_visible: model.updates.manual_sess_mode && !model.updates.is_input(),
                 },
                 #[template_child]
-                password_label {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_visible: model.updates.password_mode,
+                input_label {
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_visible: model.updates.is_input(),
+                    set_label: &model.updates.input_prompt,
                 },
                 #[template_child]
-                password_entry {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_visible: model.updates.password_mode,
+                secret_entry {
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_visible: model.updates.input_mode == InputMode::Secret,
                     #[track(
-                        model.updates.changed(Updates::password_mode())
-                        && model.updates.password_mode
+                        model.updates.changed(Updates::input_mode())
+                        && model.updates.is_input()
                     )]
                     grab_focus: (),
-                    #[track(model.updates.changed(Updates::password()))]
-                    set_text: &model.updates.password,
+                    #[track(model.updates.changed(Updates::input()))]
+                    set_text: &model.updates.input,
                     connect_activate[
                         sender, usernames_box, username_entry, sessions_box, session_entry
                     ] => move |this| {
                         sender.input(Self::Input::Login {
-                            password: this.text().to_string(),
+                            input: this.text().to_string(),
+                            info: UserSessInfo::extract(
+                                &usernames_box, &username_entry, &sessions_box, &session_entry
+                            ),
+                        })
+                    }
+                },
+                #[template_child]
+                visible_entry {
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_visible: model.updates.input_mode == InputMode::Visible,
+                    #[track(
+                        model.updates.changed(Updates::input_mode())
+                        && model.updates.is_input()
+                    )]
+                    grab_focus: (),
+                    #[track(model.updates.changed(Updates::input()))]
+                    set_text: &model.updates.input,
+                    connect_activate[
+                        sender, usernames_box, username_entry, sessions_box, session_entry
+                    ] => move |this| {
+                        sender.input(Self::Input::Login {
+                            input: this.text().to_string(),
                             info: UserSessInfo::extract(
                                 &usernames_box, &username_entry, &sessions_box, &session_entry
                             ),
@@ -223,39 +248,43 @@ impl Component for Greeter {
                 },
                 #[template_child]
                 user_toggle {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_sensitive: !model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_sensitive: !model.updates.is_input(),
                     connect_clicked => Self::Input::ToggleManualUser,
                 },
                 #[template_child]
                 sess_toggle {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_visible: !model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_visible: !model.updates.is_input(),
                     connect_clicked => Self::Input::ToggleManualSess,
                 },
                 #[template_child]
                 cancel_button {
-                    #[track(model.updates.changed(Updates::password_mode()))]
-                    set_visible: model.updates.password_mode,
+                    #[track(model.updates.changed(Updates::input_mode()))]
+                    set_visible: model.updates.is_input(),
                     connect_clicked => Self::Input::Cancel,
                 },
                 #[template_child]
                 login_button {
                     #[track(
-                        model.updates.changed(Updates::password_mode())
-                        && !model.updates.password_mode
+                        model.updates.changed(Updates::input_mode())
+                        && !model.updates.is_input()
                     )]
                     grab_focus: (),
                     connect_clicked[
                         sender,
-                        password_entry,
+                        secret_entry,
+                        visible_entry,
                         usernames_box,
                         username_entry,
                         sessions_box,
                         session_entry,
                     ] => move |_| {
                         sender.input(Self::Input::Login {
-                            password: password_entry.text().to_string(),
+                            // Here, it is sufficient to pass the text from either secret_entry or visible_entry,
+                            // because they never show at the same time and their text is synchronised through the
+                            // model.updates.input field.
+                            input: secret_entry.text().to_string(),
                             info: UserSessInfo::extract(
                                 &usernames_box, &username_entry, &sessions_box, &session_entry
                             ),
@@ -314,8 +343,8 @@ impl Component for Greeter {
         self.updates.reset();
 
         match msg {
-            Self::Input::Login { password, info } => {
-                self.login_click_handler(&sender, password, &info)
+            Self::Input::Login { input, info } => {
+                self.login_click_handler(&sender, input, &info)
             }
             Self::Input::Cancel => self.cancel_click_handler(),
             Self::Input::UserChanged(info) => self.user_change_handler(&info),

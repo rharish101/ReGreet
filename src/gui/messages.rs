@@ -44,7 +44,7 @@ pub enum InputMsg {
     /// Login request
     Login {
         #[derivative(Debug = "ignore")]
-        password: String,
+        input: String,
         info: UserSessInfo,
     },
     /// Cancel the login request
