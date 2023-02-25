@@ -17,10 +17,9 @@ use std::thread::sleep;
 
 #[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
-use crate::gui::model::InputMode;
 
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
-use super::model::{Greeter, Updates, DEFAULT_MSG};
+use super::model::{Greeter, InputMode, Updates, DEFAULT_MSG};
 use super::templates::Ui;
 
 const DATETIME_FMT: &str = "%a %R";
