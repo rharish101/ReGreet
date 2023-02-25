@@ -200,6 +200,7 @@ impl Component for Greeter {
                 input_label {
                     #[track(model.updates.changed(Updates::input_mode()))]
                     set_visible: model.updates.is_input(),
+                    #[track(model.updates.changed(Updates::input_prompt()))]
                     set_label: &model.updates.input_prompt,
                 },
                 #[template_child]
