@@ -17,10 +17,15 @@ This is meant to be run under a Wayland compositor (like [Sway](https://github.c
 
 It is based on [Max Moser's LightDM Elephant greeter](https://github.com/max-moser/lightdm-elephant-greeter), which is based on [Matt ~~Shultz's~~ Fischer's example LightDM greeter](https://web.archive.org/web/20210923235052/https://www.mattfischer.com/blog/archives/5).
 
-## Screenshot
-![Screenshot](./screenshot.png)
+## Screenshots
+![Welcome screen](./screenshots/welcome.png)
+![Dropdown session menu](./screenshots/dropdown.png)
+![Manual session entry](./screenshots/manual-entry.png)
+![Password entry with selected user](./screenshots/password-selected-user.png)
+![Password entry with manual user](./screenshots/password-manual-user.png)
+![Login fail](./screenshots/login-fail.png)
 
-This uses the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in dark mode with the Roboto font.
+These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in dark mode with the Roboto font.
 
 ## Features
 * Shows a dropdown list of existing users and X11/Wayland sessions

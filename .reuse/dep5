@@ -3,7 +3,7 @@ Upstream-Name: ReGreet
 Upstream-Contact: Harish Rajagopal <harish.rajagopals@gmail.com>
 Source: https://github.com/rharish101/ReGreet
 
-Files: screenshot.png
+Files: screenshots/*.png
 Copyright: 2023 Harish Rajagopal <harish.rajagopals@gmail.com>
 License: CC-BY-SA-4.0
 
