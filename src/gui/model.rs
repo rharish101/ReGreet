@@ -223,14 +223,16 @@ impl Greeter {
                             // e.g.: a password
                             self.updates.set_input_mode(InputMode::Secret);
                             self.updates.set_input(String::new());
-                            self.updates.set_input_prompt(auth_message);
+                            self.updates
+                                .set_input_prompt(auth_message.trim_end().to_string());
                             break;
                         }
                         AuthMessageType::Visible => {
                             // Greetd has requested input that need not be hidden
                             self.updates.set_input_mode(InputMode::Visible);
                             self.updates.set_input(String::new());
-                            self.updates.set_input_prompt(auth_message);
+                            self.updates
+                                .set_input_prompt(auth_message.trim_end().to_string());
                             break;
                         }
                         AuthMessageType::Info => {
