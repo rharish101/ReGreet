@@ -24,7 +24,7 @@ greetd_ipc = { version = "0.9.0", features = ["sync-codec"] }
 lru = "0.9.0"
 pwd = "1.4.0"
 regex = "1.7.1"
-relm4 = "0.5.0-rc.2"
+relm4 = "0.5.0"
 serde = { version = "1.0.142", features = ["derive"] }
 shlex = "1.1.0"
 thiserror = "1.0.32"
