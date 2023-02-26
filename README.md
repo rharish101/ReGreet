@@ -137,7 +137,7 @@ To load a custom CSS stylesheet, pass the `-s` or `--style` CLI argument as foll
 regreet --style /path/to/custom.css
 ```
 
-Please refer to the [GTK4 CSS docs](https://docs.gtk.org/gtk4/css-overview.html) to learn how to style a GTK4 app using CSS.
+Please refer to the GTK4 docs on [CSS in GTK](https://docs.gtk.org/gtk4/css-overview.html) and [GTK CSS Properties](https://docs.gtk.org/gtk4/css-properties.html) to learn how to style a GTK4 app using CSS.
 For a general reference on CSS, please refer to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax).
 
 ### Logging and Caching
