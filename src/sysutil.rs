@@ -56,8 +56,8 @@ impl SysUtil {
 
         // UID_MIN/MAX are limits to a UID for a regular user i.e. a user created with `useradd`.
         // Thus, to find regular users, we filter the list of users with these UID limits.
-        let min_uid_regex = Regex::new(r"UID_MIN\s+([0-9]+)").expect("Invalid regex for UID_MIN");
-        let max_uid_regex = Regex::new(r"UID_MAX\s+([0-9]+)").expect("Invalid regex for UID_MAX");
+        let min_uid_regex = Regex::new(r"\nUID_MIN\s+([0-9]+)").expect("Invalid regex for UID_MIN");
+        let max_uid_regex = Regex::new(r"\nUID_MAX\s+([0-9]+)").expect("Invalid regex for UID_MAX");
 
         // Get UID_MIN.
         let min_uid = if let Some(num) = min_uid_regex
