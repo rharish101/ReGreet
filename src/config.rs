@@ -26,6 +26,16 @@ pub struct GtkSettings {
     pub theme_name: Option<String>,
 }
 
+/// Analogue to `gtk4::ContentFit`
+#[derive(Default, Deserialize, Serialize)]
+pub enum BgFit {
+    Fill,
+    #[default]
+    Contain,
+    Cover,
+    ScaleDown,
+}
+
 /// The configuration struct
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
@@ -33,6 +43,8 @@ pub struct Config {
     env: HashMap<String, String>,
     #[serde(default)]
     background: Option<String>,
+    #[serde(default)]
+    pub background_fit: Option<BgFit>,
     #[serde(default, rename = "GTK")]
     gtk: Option<GtkSettings>,
 }
@@ -48,6 +60,11 @@ impl Config {
 
     pub fn get_background(&self) -> &Option<String> {
         &self.background
+    }
+
+    #[cfg(feature = "gtk4_8")]
+    pub fn get_background_fit(&self) -> &Option<BgFit> {
+        &self.background_fit
     }
 
     pub fn get_gtk_settings(&self) -> &Option<GtkSettings> {

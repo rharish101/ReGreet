@@ -8,6 +8,7 @@ repos:
     hooks:
     - id: fmt
     - id: clippy
+      args: [--all-features, --, -D, warnings]
   - repo: https://github.com/DevinR528/cargo-sort
     rev: v1.0.9
     hooks:

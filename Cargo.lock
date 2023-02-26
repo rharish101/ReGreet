@@ -1167,6 +1167,7 @@ dependencies = [
  "file-rotate",
  "glob",
  "greetd_ipc",
+ "gtk4",
  "lru",
  "pwd",
  "regex",

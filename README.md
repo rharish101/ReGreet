@@ -84,6 +84,26 @@ Optionally, to set up the log and cache directories using systemd-tmpfiles, do e
     systemd-tmpfiles --create "$PWD/systemd-tmpfiles.conf"
     ```
 
+#### GTK4 Versions
+ReGreet targets GTK version 4.0 or above.
+If you have higher versions of GTK, then you can enable additional features in ReGreet.
+Currently, the extra features enabled are:
+
+GTK Version | Feature Flag | Features
+-- | -- | --
+4.8 | `gtk4_8` | <ul><li>Changing how the background image fits the screen</li></ul>
+
+To compile with support for a GTK version, pass the corresponding feature flag during building.
+For example, to compile with GTK 4.8+ support, run:
+```sh
+cargo build -F gtk4_8 --release
+```
+
+To compile with full support, run:
+```sh
+cargo build --all-features --release
+```
+
 ## Usage
 ### Set as Default Session
 Edit the greetd config file (`/etc/greetd/config.toml`) to set regreet with a Wayland compositor as the default session.
@@ -121,6 +141,7 @@ regreet --config /path/to/custom/regreet/config.toml
 A sample configuration is provided along with sample values for all available options in [`regreet.sample.toml`](regreet.sample.toml).
 Currently, the following can be configured:
 * Background image
+* How the background image fits the screen (needs GTK 4.8+ support compiled)
 * Environment variables for created sessions
 * GTK theme
 * Dark mode

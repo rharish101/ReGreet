@@ -21,6 +21,7 @@ derivative = "2.2.0"
 file-rotate = "0.7.0"
 glob = "0.3.0"
 greetd_ipc = { version = "0.9.0", features = ["sync-codec"] }
+gtk4 = "0.5"
 lru = "0.9.0"
 pwd = "1.4.0"
 regex = "1.7.1"
@@ -33,3 +34,6 @@ tracing = "0.1.37"
 tracing-appender = "0.2.2"
 tracing-subscriber = { version = "0.3.16", features = ["local-time"] }
 tracker = "0.2.0"
+
+[features]
+gtk4_8 = ["gtk4/v4_8"]
