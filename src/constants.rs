@@ -41,6 +41,6 @@ pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/log");
 
 /// Directories separated by `:`, containing desktop files for X11/Wayland sessions
 pub const SESSION_DIRS: &str = env_or!(
-    "SESSIONS_DIR",
+    "SESSION_DIRS",
     "/usr/share/xsessions:/usr/share/wayland-sessions"
 );
