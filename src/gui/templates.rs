@@ -55,10 +55,8 @@ impl WidgetTemplate for Ui {
 
                     /// Widget to display messages to the user
                     #[name = "message_label"]
-                    attach[1, 0, 1, 1] = &gtk::Label {
-                        set_hexpand: true,
+                    attach[0, 0, 3, 1] = &gtk::Label {
                         set_margin_bottom: 15,
-                        set_xalign: 0.0,
 
                         // Format all messages in boldface.
                         #[wrap(Some)]
@@ -87,7 +85,8 @@ impl WidgetTemplate for Ui {
 
                     /// Widget containing the usernames
                     #[name = "usernames_box"]
-                    attach[1, 1, 1, 1] = &gtk::ComboBoxText,
+                    // Only one of the widgets in column 1 need `hexpand`.
+                    attach[1, 1, 1, 1] = &gtk::ComboBoxText { set_hexpand: true },
 
                     /// Widget where the user enters the password
                     #[name = "username_entry"]
