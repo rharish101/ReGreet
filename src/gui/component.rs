@@ -274,16 +274,18 @@ impl Component for Greeter {
                     connect_clicked[
                         sender,
                         secret_entry,
+                        visible_entry,
                         usernames_box,
                         username_entry,
                         sessions_box,
                         session_entry,
                     ] => move |_| {
                         sender.input(Self::Input::Login {
-                            // Here, it is sufficient to pass the text from either secret_entry or visible_entry,
-                            // because they never show at the same time and their text is synchronised through the
-                            // model.updates.input field.
-                            input: secret_entry.text().to_string(),
+                            input: match model.updates.input_mode {
+                                InputMode::Secret => secret_entry.text().to_string(),
+                                InputMode::Visible => visible_entry.text().to_string(),
+                                InputMode::None => String::new(),
+                            },
                             info: UserSessInfo::extract(
                                 &usernames_box, &username_entry, &sessions_box, &session_entry
                             ),
