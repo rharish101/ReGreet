@@ -111,11 +111,17 @@ fn setup_datetime_display(sender: &ComponentSender<Greeter>) {
     });
 }
 
+/// The info required to initialize the greeter
+pub struct GreeterInit {
+    pub config_path: PathBuf,
+    pub css_path: Option<PathBuf>,
+}
+
 #[relm4::component(pub)]
 impl Component for Greeter {
     type Input = InputMsg;
     type Output = ();
-    type Init = PathBuf;
+    type Init = GreeterInit;
     type CommandOutput = CommandMsg;
 
     view! {
@@ -263,11 +269,11 @@ impl Component for Greeter {
 
     /// Initialize the greeter.
     fn init(
-        config_path: Self::Init,
+        input: Self::Init,
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut model = Self::new(&config_path);
+        let mut model = Self::new(&input.config_path);
         let widgets = view_output!();
 
         // Cancel any previous session, just in case someone started one.
@@ -278,6 +284,10 @@ impl Component for Greeter {
         setup_settings(&model, root);
         setup_users_sessions(&model, &widgets);
         setup_datetime_display(&sender);
+        if let Some(css_path) = input.css_path {
+            debug!("Loading custom CSS from file: {}", css_path.display());
+            relm4::set_global_css_from_file(css_path);
+        };
 
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));

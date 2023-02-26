@@ -20,7 +20,7 @@ use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{filter::LevelFilter, fmt::time::OffsetTime};
 
 use crate::constants::{APP_ID, CONFIG_PATH, LOG_PATH};
-use crate::gui::Greeter;
+use crate::gui::{Greeter, GreeterInit};
 
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
@@ -45,6 +45,10 @@ struct Args {
     /// The path to the config file
     #[arg(short, long, value_name = "PATH", default_value = CONFIG_PATH)]
     config: PathBuf,
+
+    /// The path to the custom CSS stylesheet
+    #[arg(short, long, value_name = "PATH")]
+    style: Option<PathBuf>,
 }
 
 fn main() {
@@ -53,7 +57,10 @@ fn main() {
     let _guard = init_logging(&args.log_level);
 
     let app = relm4::RelmApp::new(APP_ID);
-    app.run::<Greeter>(args.config);
+    app.run::<Greeter>(GreeterInit {
+        config_path: args.config,
+        css_path: args.style,
+    });
 }
 
 /// Initialize the log file with file rotation.

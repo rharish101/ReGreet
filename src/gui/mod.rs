@@ -9,4 +9,5 @@ mod messages;
 mod model;
 mod templates;
 
+pub use component::GreeterInit;
 pub use model::Greeter;

@@ -40,6 +40,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
     - Icon theme
     - Cursor theme
     - Font
+* Supports custom CSS files for further customizations
 
 ## Requirements
 * Rust 1.64.0+ (for compilation only)
@@ -126,6 +127,18 @@ Currently, the following can be configured:
 * Icon theme
 * Cursor theme
 * Font
+
+### Custom CSS
+ReGreet supports loading CSS files to act as a custom global stylesheet.
+This enables one to do further customizations above what ReGreet supports through the config file.
+
+To load a custom CSS stylesheet, pass the `-s` or `--style` CLI argument as follows:
+```sh
+regreet --style /path/to/custom.css
+```
+
+Please refer to the [GTK4 CSS docs](https://docs.gtk.org/gtk4/css-overview.html) to learn how to style a GTK4 app using CSS.
+For a general reference on CSS, please refer to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax).
 
 ### Logging and Caching
 The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during installation).
