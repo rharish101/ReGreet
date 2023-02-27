@@ -10,8 +10,8 @@ mod gui;
 mod sysutil;
 mod tomlutils;
 
-use std::fs::create_dir_all;
-use std::io::Result as IoResult;
+use std::fs::{create_dir_all, OpenOptions};
+use std::io::{Result as IoResult, Write};
 use std::path::{Path, PathBuf};
 
 use clap::{Parser, ValueEnum};
@@ -74,7 +74,11 @@ fn setup_log_file() -> IoResult<FileRotate<AppendCount>> {
 
     // Manually write to the log file, since `FileRotate` will silently fail if the log file can't
     // be written to.
-    std::fs::write(log_path, [])?;
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(log_path)?;
+    file.write_all(&[])?;
 
     Ok(FileRotate::new(
         log_path,
