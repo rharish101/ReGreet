@@ -5,6 +5,7 @@
 //! Helper for system utilities like users and sessions
 
 use std::collections::HashMap;
+use std::env;
 use std::fs::read;
 use std::io::Result as IOResult;
 use std::str::from_utf8;
@@ -22,6 +23,8 @@ pub const LOGIN_FILE: &str = "/etc/login.defs";
 const DEFAULT_UID_MIN: u32 = 1000;
 /// Default maximum UID for `useradd` (a/c to my system)
 const DEFAULT_UID_MAX: u32 = 60000;
+/// XDG data directory variable name (parent directory for X11/Wayland sessions)
+const XDG_DIR_ENV_VAR: &str = "XDG_DATA_DIRS";
 
 // Convenient aliases for used maps
 type UserMap = HashMap<String, String>;
@@ -150,7 +153,24 @@ impl SysUtil {
     fn init_sessions() -> IOResult<SessionMap> {
         let mut sessions = HashMap::new();
 
-        for sess_dir in SESSION_DIRS.split(':') {
+        // Use the XDG spec if available, else use the one that's compiled.
+        // The XDG env var can change after compilation in some distros like NixOS.
+        let session_dirs = if let Ok(sess_parent_dirs) = env::var(XDG_DIR_ENV_VAR) {
+            debug!("Found XDG env var {XDG_DIR_ENV_VAR}: {sess_parent_dirs}");
+            match sess_parent_dirs
+                .split(':')
+                .map(|parent_dir| format!("{parent_dir}/xsessions:{parent_dir}/wayland-sessions"))
+                .reduce(|a, b| a + ":" + &b)
+            {
+                None => SESSION_DIRS.to_string(),
+                Some(dirs) => dirs,
+            }
+        } else {
+            SESSION_DIRS.to_string()
+        };
+
+        for sess_dir in session_dirs.split(':') {
+            debug!("Checking session directory: {sess_dir}");
             // Iterate over all '.desktop' files.
             for glob_path in glob(&format!("{sess_dir}/*.desktop"))
                 .expect("Invalid glob pattern for session desktop files")
