@@ -85,12 +85,11 @@ impl WidgetTemplate for Ui {
 
                     /// Widget containing the usernames
                     #[name = "usernames_box"]
-                    // Only one of the widgets in column 1 need `hexpand`.
                     attach[1, 1, 1, 1] = &gtk::ComboBoxText { set_hexpand: true },
 
                     /// Widget where the user enters the password
                     #[name = "username_entry"]
-                    attach[1, 1, 1, 1] = &gtk::Entry,
+                    attach[1, 1, 1, 1] = &gtk::Entry { set_hexpand: true },
 
                     /// Widget containing the sessions
                     #[name = "sessions_box"]
