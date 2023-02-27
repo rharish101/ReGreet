@@ -18,14 +18,15 @@ This is meant to be run under a Wayland compositor (like [Sway](https://github.c
 It is based on [Max Moser's LightDM Elephant greeter](https://github.com/max-moser/lightdm-elephant-greeter), which is based on [Matt ~~Shultz's~~ Fischer's example LightDM greeter](https://web.archive.org/web/20210923235052/https://www.mattfischer.com/blog/archives/5).
 
 ## Screenshots
-![Welcome screen](./screenshots/welcome.png)
-![Dropdown session menu](./screenshots/dropdown.png)
-![Manual session entry](./screenshots/manual-entry.png)
-![Password entry with selected user](./screenshots/password-selected-user.png)
-![Password entry with manual user](./screenshots/password-manual-user.png)
-![Login fail](./screenshots/login-fail.png)
 
-These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in dark mode with the Roboto font.
+![Welcome](https://user-images.githubusercontent.com/25344287/221668247-f5193c01-2202-4739-803b-6f163da3d03b.png)
+![Dropdown session menu](https://user-images.githubusercontent.com/25344287/221668339-524a731f-509c-46a7-9ceb-e6c8e92a61a0.png)
+![Manual session entry](https://user-images.githubusercontent.com/25344287/221668422-ab82d10b-3167-4a31-9705-c1d066ced252.png)
+![Password entry with selected user](https://user-images.githubusercontent.com/25344287/221668490-cfd231a8-bcb9-426b-ba27-783b09c29e9c.png)
+![Password entry with manual user](https://user-images.githubusercontent.com/25344287/221668537-dbc8ebda-b1ec-4f71-a521-77674e2ee992.png)
+![Login fail](https://user-images.githubusercontent.com/25344287/221668589-191794c6-e237-497c-9efc-1d9805fd0b42.png)
+
+These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in dark mode with the Roboto font. All screenshots are provided under the [CC-BY-SA-4.0 license](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
 ## Features
 * Shows a dropdown list of existing users and X11/Wayland sessions
