@@ -14,7 +14,7 @@ use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
 
-use greetd_ipc::{AuthMessageType, Response};
+use greetd_ipc::{AuthMessageType, ErrorType, Response};
 use relm4::ComponentSender;
 use tracing::{debug, error, info, instrument, warn};
 
@@ -265,13 +265,22 @@ impl Greeter {
                     }
                 }
             }
-            Response::Error { description, .. } => {
+            Response::Error {
+                description,
+                error_type,
+            } => {
                 // some general response error. This can be an authentication failure or a general error
                 self.display_error(
                     sender,
-                    &capitalize(&description),
-                    &format!("Message from greetd: {description}"),
+                    &format!("Login failed: {}", capitalize(&description)),
+                    &format!("Error from greetd: {description}"),
                 );
+
+                // In case this is an authentication error (e.g. wrong password), the session should be cancelled.
+                match error_type {
+                    ErrorType::Error => {}
+                    ErrorType::AuthError => self.cancel_click_handler(),
+                }
                 return;
             }
         }
@@ -336,7 +345,6 @@ impl Greeter {
 
     /// Send the entered input for logging in.
     fn send_input(&mut self, sender: &ComponentSender<Self>, input: String) {
-        // TODO we should be able to remove this thanks to the new looping handler
         // Reset the password field, for convenience when the user has to re-enter a password.
         self.updates.set_input(String::new());
 
