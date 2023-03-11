@@ -207,13 +207,14 @@ impl Component for Greeter {
                     #[track(model.updates.changed(Updates::input_prompt()))]
                     set_label: &model.updates.input_prompt,
                 },
+                // FIXME focus of input field is messed up
                 #[template_child]
                 secret_entry {
                     #[track(model.updates.changed(Updates::input_mode()))]
                     set_visible: model.updates.input_mode == InputMode::Secret,
                     #[track(
                         model.updates.changed(Updates::input_mode())
-                        && model.updates.is_input()
+                        && model.updates.input_mode == InputMode::Secret
                     )]
                     grab_focus: (),
                     #[track(model.updates.changed(Updates::input()))]
@@ -235,7 +236,7 @@ impl Component for Greeter {
                     set_visible: model.updates.input_mode == InputMode::Visible,
                     #[track(
                         model.updates.changed(Updates::input_mode())
-                        && model.updates.is_input()
+                        && model.updates.input_mode == InputMode::Visible
                     )]
                     grab_focus: (),
                     #[track(model.updates.changed(Updates::input()))]
