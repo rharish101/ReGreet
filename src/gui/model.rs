@@ -10,6 +10,7 @@
 
 use std::path::Path;
 use std::process::Command;
+use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -39,6 +40,8 @@ pub(super) enum InputMode {
 pub(super) struct Updates {
     /// Message to be shown to the user
     pub(super) message: String,
+    /// Error message to be shown to the user below the prompt
+    pub(super) error: Option<String>,
     /// Text in the password field
     pub(super) input: String,
     /// Whether the username is being entered manually
@@ -67,13 +70,15 @@ fn capitalize(string: &str) -> String {
 /// Greeter model that holds its state
 pub struct Greeter {
     /// Client to communicate with greetd
-    pub(super) greetd_client: GreetdClient,
+    pub(super) greetd_client: Arc<Mutex<GreetdClient>>,
     /// System utility to get available users and sessions
     pub(super) sys_util: SysUtil,
     /// The cache that persists between logins
     pub(super) cache: Cache,
     /// The config for this greeter
     pub(super) config: Config,
+    /// Session info set after pressing login
+    pub(super) sess_info: Option<UserSessInfo>,
     /// The updates from the model that are read by the view
     pub(super) updates: Updates,
 }
@@ -82,6 +87,7 @@ impl Greeter {
     pub(super) fn new(config_path: &Path) -> Self {
         let updates = Updates {
             message: DEFAULT_MSG.to_string(),
+            error: None,
             input: String::new(),
             manual_user_mode: false,
             manual_sess_mode: false,
@@ -91,10 +97,13 @@ impl Greeter {
             tracker: 0,
         };
         Self {
-            greetd_client: GreetdClient::new().expect("Couldn't initialize greetd client"),
+            greetd_client: Arc::new(Mutex::new(
+                GreetdClient::new().expect("Couldn't initialize greetd client"),
+            )),
             sys_util: SysUtil::new().expect("Couldn't read available users and sessions"),
             cache: Cache::new(),
             config: Config::new(config_path),
+            sess_info: None,
             updates,
         }
     }
@@ -139,7 +148,7 @@ impl Greeter {
     /// This cancels the created session and goes back to the user/session chooser.
     #[instrument(skip_all)]
     pub(super) fn cancel_click_handler(&mut self) {
-        if let Err(err) = self.greetd_client.cancel_session() {
+        if let Err(err) = self.greetd_client.lock().unwrap().cancel_session() {
             warn!("Couldn't cancel greetd session: {err}");
         };
         self.updates.set_input(String::new());
@@ -147,8 +156,8 @@ impl Greeter {
     }
 
     /// Create a greetd session, i.e. start a login attempt for the current user.
-    fn create_session(&mut self, sender: &ComponentSender<Self>, info: &UserSessInfo) {
-        let username = if let Some(username) = self.get_current_username(info) {
+    fn create_session(&mut self, sender: &ComponentSender<Self>) {
+        let username = if let Some(username) = self.get_current_username() {
             username
         } else {
             // No username found (which shouldn't happen), so we can't create the session.
@@ -158,6 +167,7 @@ impl Greeter {
         // Before trying to create a session, check if the session command (if manually entered) is
         // valid.
         if self.updates.manual_sess_mode {
+            let info = self.sess_info.as_ref().unwrap();
             if shlex::split(info.sess_text.as_str()).is_none() {
                 // This must be an invalid command.
                 self.display_error(
@@ -175,12 +185,14 @@ impl Greeter {
         // Create a session for the current user.
         let response = self
             .greetd_client
+            .lock()
+            .unwrap()
             .create_session(&username)
             .unwrap_or_else(|err| {
                 panic!("Failed to create session for username '{username}': {err}",)
             });
 
-        self.handle_greetd_response(sender, info, response);
+        self.handle_greetd_response(sender, response);
     }
 
     /// This function handles a greetd response as follows:
@@ -195,88 +207,87 @@ impl Greeter {
     /// This way of handling responses allows for composite authentication procedures, e.g.:
     /// 1. Fingerprint
     /// 2. Password
-    fn handle_greetd_response(
+    pub(super) fn handle_greetd_response(
         &mut self,
         sender: &ComponentSender<Self>,
-        info: &UserSessInfo,
-        initial_response: Response,
+        response: Response,
     ) {
-        let mut response = initial_response;
-
-        loop {
-            match response {
-                Response::Success => {
-                    // Authentication was successful and the session may be started.
-                    // This may happen on the first request, in which case logging in
-                    // as the given user requires no authentication.
-                    info!("Successfully logged in; starting session");
-                    self.start_session(sender, info);
-                    break;
-                }
-                Response::AuthMessage {
-                    auth_message,
-                    auth_message_type,
-                } => {
-                    match auth_message_type {
-                        AuthMessageType::Secret => {
-                            // Greetd has requested input that should be hidden
-                            // e.g.: a password
-                            self.updates.set_input_mode(InputMode::Secret);
-                            self.updates.set_input(String::new());
-                            self.updates
-                                .set_input_prompt(auth_message.trim_end().to_string());
-                            break;
-                        }
-                        AuthMessageType::Visible => {
-                            // Greetd has requested input that need not be hidden
-                            self.updates.set_input_mode(InputMode::Visible);
-                            self.updates.set_input(String::new());
-                            self.updates
-                                .set_input_prompt(auth_message.trim_end().to_string());
-                            break;
-                        }
-                        AuthMessageType::Info => {
-                            // Greetd has sent an info message that should be displayed
-                            // e.g.: asking for a fingerprint
-                            self.updates.set_input_mode(InputMode::None);
-                            self.updates.set_message(auth_message);
-                        }
-                        AuthMessageType::Error => {
-                            // Greetd has sent an error message that should be displayed and logged
-                            self.updates.set_input_mode(InputMode::None);
-                            self.display_error(
-                                sender,
-                                &capitalize(&auth_message),
-                                &format!(
-                                    "Authentication message error from greetd: {auth_message}",
-                                ),
-                            );
-                        }
+        match response {
+            Response::Success => {
+                // Authentication was successful and the session may be started.
+                // This may happen on the first request, in which case logging in
+                // as the given user requires no authentication.
+                info!("Successfully logged in; starting session");
+                self.start_session(sender);
+                return;
+            }
+            Response::AuthMessage {
+                auth_message,
+                auth_message_type,
+            } => {
+                match auth_message_type {
+                    AuthMessageType::Secret => {
+                        // Greetd has requested input that should be hidden
+                        // e.g.: a password
+                        self.updates.set_input_mode(InputMode::Secret);
+                        self.updates.set_input(String::new());
+                        self.updates
+                            .set_input_prompt(auth_message.trim_end().to_string());
+                        return;
+                    }
+                    AuthMessageType::Visible => {
+                        // Greetd has requested input that need not be hidden
+                        self.updates.set_input_mode(InputMode::Visible);
+                        self.updates.set_input(String::new());
+                        self.updates
+                            .set_input_prompt(auth_message.trim_end().to_string());
+                        return;
+                    }
+                    AuthMessageType::Info => {
+                        // Greetd has sent an info message that should be displayed
+                        // e.g.: asking for a fingerprint
+                        self.updates.set_input_mode(InputMode::None);
+                        self.updates.set_message(auth_message);
+                    }
+                    AuthMessageType::Error => {
+                        // Greetd has sent an error message that should be displayed and logged
+                        self.updates.set_input_mode(InputMode::None);
+                        self.display_error(
+                            sender,
+                            &capitalize(&auth_message),
+                            &format!("Authentication message error from greetd: {auth_message}",),
+                        );
                     }
                 }
-                Response::Error { description, .. } => {
-                    // some general response error. This can be an authentication failure or a general error
-                    self.display_error(
-                        sender,
-                        &capitalize(&description),
-                        &format!("Message from greetd: {description}"),
-                    );
-                    break;
-                }
             }
-            response = self
-                .greetd_client
+            Response::Error { description, .. } => {
+                // some general response error. This can be an authentication failure or a general error
+                self.display_error(
+                    sender,
+                    &capitalize(&description),
+                    &format!("Message from greetd: {description}"),
+                );
+                return;
+            }
+        }
+
+        let client = Arc::clone(&self.greetd_client);
+        sender.spawn_oneshot_command(move || {
+            let response = client
+                .lock()
+                .unwrap()
                 .send_auth_response(None)
                 .unwrap_or_else(|err| panic!("Failed to respond to greetd: {err}"));
-        }
+            CommandMsg::HandleGreetdResponse(response)
+        });
     }
 
     /// Event handler for selecting a different username in the `ComboBoxText`
     ///
     /// This changes the session in the combo box according to the last used session of the current user.
     #[instrument(skip_all)]
-    pub(super) fn user_change_handler(&mut self, info: &UserSessInfo) {
-        let username = if let Some(username) = self.get_current_username(info) {
+    pub(super) fn user_change_handler(&mut self) {
+        let username = if let Some(username) = self.get_current_username() {
             username
         } else {
             // No username found (which shouldn't happen), so we can't change the session.
@@ -299,32 +310,27 @@ impl Greeter {
     ///     - Begins a login attempt for the given user
     ///     - Submits the entered password for logging in and starts the session
     #[instrument(skip_all)]
-    pub(super) fn login_click_handler(
-        &mut self,
-        sender: &ComponentSender<Self>,
-        input: String,
-        info: &UserSessInfo,
-    ) {
+    pub(super) fn login_click_handler(&mut self, sender: &ComponentSender<Self>, input: String) {
         // Check if a password is needed. If not, then directly start the session.
-        let auth_status = self.greetd_client.get_auth_status().clone();
+        let auth_status = self.greetd_client.lock().unwrap().get_auth_status().clone();
         match auth_status {
             AuthStatus::Done => {
                 // No password is needed, but the session should've been already started by
                 // `create_session`.
                 warn!("No password needed for current user, but session not already started");
-                self.start_session(sender, info);
+                self.start_session(sender);
             }
             AuthStatus::InProgress => {
-                self.send_input(sender, input, info);
+                self.send_input(sender, input);
             }
             AuthStatus::NotStarted => {
-                self.create_session(sender, info);
+                self.create_session(sender);
             }
         };
     }
 
     /// Send the entered input for logging in.
-    fn send_input(&mut self, sender: &ComponentSender<Self>, input: String, info: &UserSessInfo) {
+    fn send_input(&mut self, sender: &ComponentSender<Self>, input: String) {
         // TODO we should be able to remove this thanks to the new looping handler
         // Reset the password field, for convenience when the user has to re-enter a password.
         self.updates.set_input(String::new());
@@ -332,14 +338,17 @@ impl Greeter {
         // Send the password, as authentication for the current user.
         let resp = self
             .greetd_client
+            .lock()
+            .unwrap()
             .send_auth_response(Some(input))
             .unwrap_or_else(|err| panic!("Failed to send input: {err}"));
 
-        self.handle_greetd_response(sender, info, resp);
+        self.handle_greetd_response(sender, resp);
     }
 
     /// Get the currently selected username.
-    fn get_current_username(&self, info: &UserSessInfo) -> Option<String> {
+    fn get_current_username(&self) -> Option<String> {
+        let info = self.sess_info.as_ref().expect("No session info set yet");
         if self.updates.manual_user_mode {
             debug!(
                 "Retrieved username '{}' through manual entry",
@@ -360,8 +369,8 @@ impl Greeter {
     fn get_current_session_cmd(
         &mut self,
         sender: &ComponentSender<Self>,
-        info: &UserSessInfo,
     ) -> (Option<String>, Option<Vec<String>>) {
+        let info = self.sess_info.as_ref().expect("No session info set yet");
         if self.updates.manual_sess_mode {
             debug!(
                 "Retrieved session command '{}' through manual entry",
@@ -390,7 +399,7 @@ impl Greeter {
                 (None, None)
             }
         } else {
-            let username = if let Some(username) = self.get_current_username(info) {
+            let username = if let Some(username) = self.get_current_username() {
                 username
             } else {
                 // This shouldn't happen, because a session should've been created with a username.
@@ -409,15 +418,14 @@ impl Greeter {
     }
 
     /// Start the session for the selected user.
-    fn start_session(&mut self, sender: &ComponentSender<Self>, info: &UserSessInfo) {
+    fn start_session(&mut self, sender: &ComponentSender<Self>) {
         // Get the session command.
-        let (session, cmd) =
-            if let (session, Some(cmd)) = self.get_current_session_cmd(sender, info) {
-                (session, cmd)
-            } else {
-                // Error handling should be inside `get_current_session_cmd`, so simply return.
-                return;
-            };
+        let (session, cmd) = if let (session, Some(cmd)) = self.get_current_session_cmd(sender) {
+            (session, cmd)
+        } else {
+            // Error handling should be inside `get_current_session_cmd`, so simply return.
+            return;
+        };
 
         // Generate env string that will be passed to greetd when starting the session
         let env = self.config.get_env();
@@ -428,13 +436,15 @@ impl Greeter {
         // Start the session.
         let response = self
             .greetd_client
+            .lock()
+            .unwrap()
             .start_session(cmd, environment)
             .unwrap_or_else(|err| panic!("Failed to start session: {err}"));
 
         match response {
             Response::Success => {
                 info!("Session successfully started");
-                if let Some(username) = self.get_current_username(info) {
+                if let Some(username) = self.get_current_username() {
                     self.cache.set_last_user(&username);
                     if let Some(session) = session {
                         self.cache.set_last_session(&username, &session);
@@ -469,7 +479,7 @@ impl Greeter {
         display_text: &str,
         log_text: &str,
     ) {
-        self.updates.set_message(display_text.to_string());
+        self.updates.set_error(Some(display_text.to_string()));
         error!("{log_text}");
 
         // Set a timer in a separate thread that signals the main thread to reset the displayed

@@ -5,6 +5,7 @@
 //! Message definitions for communication between the view and the model
 
 use derivative::Derivative;
+use greetd_ipc::Response;
 use relm4::gtk::{glib, prelude::*, ComboBoxText, Entry};
 
 #[derive(Debug)]
@@ -66,4 +67,6 @@ pub enum CommandMsg {
     UpdateTime,
     /// Clear the error message.
     ClearErr,
+    /// Handle a response received from greetd
+    HandleGreetdResponse(Response),
 }

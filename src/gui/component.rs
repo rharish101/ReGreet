@@ -19,7 +19,7 @@ use std::thread::sleep;
 use crate::config::BgFit;
 
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
-use super::model::{Greeter, InputMode, Updates, DEFAULT_MSG};
+use super::model::{Greeter, InputMode, Updates};
 use super::templates::Ui;
 
 const DATETIME_FMT: &str = "%a %R";
@@ -306,7 +306,7 @@ impl Component for Greeter {
         root: &Self::Root,
         sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let mut model = Self::new(&input.config_path);
+        let model = Self::new(&input.config_path);
         let widgets = view_output!();
 
         // cfg directives don't work inside Relm4 view! macro.
@@ -321,7 +321,7 @@ impl Component for Greeter {
         };
 
         // Cancel any previous session, just in case someone started one.
-        if let Err(err) = model.greetd_client.cancel_session() {
+        if let Err(err) = model.greetd_client.lock().unwrap().cancel_session() {
             warn!("Couldn't cancel greetd session: {err}");
         };
 
@@ -344,9 +344,15 @@ impl Component for Greeter {
         self.updates.reset();
 
         match msg {
-            Self::Input::Login { input, info } => self.login_click_handler(&sender, input, &info),
+            Self::Input::Login { input, info } => {
+                self.sess_info = Some(info);
+                self.login_click_handler(&sender, input);
+            }
             Self::Input::Cancel => self.cancel_click_handler(),
-            Self::Input::UserChanged(info) => self.user_change_handler(&info),
+            Self::Input::UserChanged(info) => {
+                self.sess_info = Some(info);
+                self.user_change_handler();
+            }
             Self::Input::ToggleManualUser => self
                 .updates
                 .set_manual_user_mode(!self.updates.manual_user_mode),
@@ -363,7 +369,7 @@ impl Component for Greeter {
         &mut self,
         widgets: &mut Self::Widgets,
         msg: Self::CommandOutput,
-        _sender: ComponentSender<Self>,
+        sender: ComponentSender<Self>,
         _root: &Self::Root,
     ) {
         match msg {
@@ -371,7 +377,10 @@ impl Component for Greeter {
                 .ui
                 .datetime_label
                 .set_label(&Local::now().format(DATETIME_FMT).to_string()),
-            Self::CommandOutput::ClearErr => widgets.ui.message_label.set_label(DEFAULT_MSG),
+            Self::CommandOutput::ClearErr => self.updates.set_error(None), // TODO see if this works at all
+            Self::CommandOutput::HandleGreetdResponse(response) => {
+                self.handle_greetd_response(&sender, response)
+            }
         };
     }
 }
