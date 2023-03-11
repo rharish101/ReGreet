@@ -140,9 +140,15 @@ impl Component for Greeter {
                 #[template_child]
                 background { set_filename: model.config.get_background().clone() },
                 #[template_child]
+                datetime_label {
+                    #[track(model.updates.changed(Updates::time()))]
+                    set_label: &model.updates.time
+                },
+
+                #[template_child]
                 message_label {
                     #[track(model.updates.changed(Updates::message()))]
-                    set_label: &model.updates.message
+                    set_label: &model.updates.message,
                 },
                 #[template_child]
                 session_label {
@@ -364,23 +370,20 @@ impl Component for Greeter {
     }
 
     /// Perform the requested changes when a background task sends a message.
-    fn update_cmd_with_view(
+    fn update_cmd(
         &mut self,
-        widgets: &mut Self::Widgets,
         msg: Self::CommandOutput,
         sender: ComponentSender<Self>,
         _root: &Self::Root,
     ) {
         match msg {
-            Self::CommandOutput::UpdateTime => widgets
-                .ui
-                .datetime_label
-                .set_label(&Local::now().format(DATETIME_FMT).to_string()),
+            Self::CommandOutput::UpdateTime => self
+                .updates
+                .set_time(Local::now().format(DATETIME_FMT).to_string()),
             Self::CommandOutput::ClearErr => self.updates.set_error(None), // TODO see if this works at all
             Self::CommandOutput::HandleGreetdResponse(response) => {
                 self.handle_greetd_response(&sender, response)
             }
         };
-        self.update_view(widgets, sender);
     }
 }

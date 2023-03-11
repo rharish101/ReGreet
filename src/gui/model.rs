@@ -54,6 +54,8 @@ pub(super) struct Updates {
     pub(super) input_mode: InputMode,
     /// ID of the active session
     pub(super) active_session_id: Option<String>,
+    /// Time that is displayed
+    pub(super) time: String,
 }
 
 impl Updates {
@@ -95,6 +97,7 @@ impl Greeter {
             input_prompt: String::new(),
             active_session_id: None,
             tracker: 0,
+            time: "".to_string(),
         };
         Self {
             greetd_client: Arc::new(Mutex::new(
