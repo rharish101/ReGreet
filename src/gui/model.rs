@@ -255,6 +255,8 @@ impl Greeter {
                     AuthMessageType::Error => {
                         // Greetd has sent an error message that should be displayed and logged
                         self.updates.set_input_mode(InputMode::None);
+                        // Reset outdated info message, if any
+                        self.updates.set_message(DEFAULT_MSG.to_string());
                         self.display_error(
                             sender,
                             &capitalize(&auth_message),
