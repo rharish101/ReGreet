@@ -14,7 +14,6 @@ use gtk::prelude::*;
 use relm4::{gtk, Component, ComponentParts, ComponentSender};
 use std::thread::sleep;
 
-
 #[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
 
@@ -382,5 +381,6 @@ impl Component for Greeter {
                 self.handle_greetd_response(&sender, response)
             }
         };
+        self.update_view(widgets, sender);
     }
 }
