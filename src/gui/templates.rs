@@ -149,7 +149,16 @@ impl WidgetTemplate for Ui {
                             add_css_class: "suggested-action",
                         },
                     },
-                }
+
+                    /// Warning/error messages
+                    attach[1, 4, 1, 1] = &gtk::Box {
+                        set_halign: gtk::Align::Center,
+
+                        // TODO add some styling (error symbol, different colour, ...)
+                        #[name = "error_label"]
+                        gtk::Label { },
+                    }
+                },
             },
 
             /// Clock widget

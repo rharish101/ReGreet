@@ -298,6 +298,13 @@ impl Component for Greeter {
                     }
                 },
                 #[template_child]
+                error_label {
+                    #[track(model.updates.changed(Updates::error()))]
+                    set_label: model.updates.error.as_ref().unwrap_or(&"".to_string()),
+                    #[track(model.updates.changed(Updates::error()))]
+                    set_visible: model.updates.error.is_some(),
+                },
+                #[template_child]
                 reboot_button { connect_clicked => Self::Input::Reboot },
                 #[template_child]
                 poweroff_button { connect_clicked => Self::Input::PowerOff },
