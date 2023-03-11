@@ -207,7 +207,6 @@ impl Component for Greeter {
                     #[track(model.updates.changed(Updates::input_prompt()))]
                     set_label: &model.updates.input_prompt,
                 },
-                // FIXME focus of input field is messed up
                 #[template_child]
                 secret_entry {
                     #[track(model.updates.changed(Updates::input_mode()))]
@@ -384,6 +383,7 @@ impl Component for Greeter {
         sender: ComponentSender<Self>,
         _root: &Self::Root,
     ) {
+        self.updates.reset();
         match msg {
             Self::CommandOutput::UpdateTime => self
                 .updates
