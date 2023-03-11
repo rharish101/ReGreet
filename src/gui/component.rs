@@ -388,7 +388,7 @@ impl Component for Greeter {
             Self::CommandOutput::UpdateTime => self
                 .updates
                 .set_time(Local::now().format(DATETIME_FMT).to_string()),
-            Self::CommandOutput::ClearErr => self.updates.set_error(None), // TODO see if this works at all
+            Self::CommandOutput::ClearErr => self.updates.set_error(None),
             Self::CommandOutput::HandleGreetdResponse(response) => {
                 self.handle_greetd_response(&sender, response)
             }
