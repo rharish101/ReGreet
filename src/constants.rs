@@ -28,6 +28,8 @@ pub const APP_ID: &str = concatcp!("apps.", GREETER_NAME);
 const GREETD_CONFIG_DIR: &str = env_or!("GREETD_CONFIG_DIR", "/etc/greetd");
 /// Path to the config file
 pub const CONFIG_PATH: &str = concatcp!(GREETD_CONFIG_DIR, "/", GREETER_NAME, ".toml");
+/// Path to the config file
+pub const CSS_PATH: &str = concatcp!(GREETD_CONFIG_DIR, "/", GREETER_NAME, ".css");
 
 /// The directory for system cache files
 const CACHE_DIR: &str = env_or!("CACHE_DIR", concatcp!("/var/cache/", GREETER_NAME));

@@ -117,7 +117,7 @@ fn setup_datetime_display(sender: &ComponentSender<Greeter>) {
 /// The info required to initialize the greeter
 pub struct GreeterInit {
     pub config_path: PathBuf,
-    pub css_path: Option<PathBuf>,
+    pub css_path: PathBuf,
 }
 
 #[relm4::component(pub)]
@@ -298,9 +298,9 @@ impl Component for Greeter {
         setup_settings(&model, root);
         setup_users_sessions(&model, &widgets);
         setup_datetime_display(&sender);
-        if let Some(css_path) = input.css_path {
-            debug!("Loading custom CSS from file: {}", css_path.display());
-            relm4::set_global_css_from_file(css_path);
+        if input.css_path.exists() {
+            debug!("Loading custom CSS from file: {}", input.css_path.display());
+            relm4::set_global_css_from_file(input.css_path);
         };
 
         // Set the default behaviour of pressing the Return key to act like the login button.

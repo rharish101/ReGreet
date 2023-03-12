@@ -154,7 +154,8 @@ Currently, the following can be configured:
 ReGreet supports loading CSS files to act as a custom global stylesheet.
 This enables one to do further customizations above what ReGreet supports through the config file.
 
-To load a custom CSS stylesheet, pass the `-s` or `--style` CLI argument as follows:
+By default, the custom CSS file is named `regreet.css`, and located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
+To load a custom CSS stylesheet from a different location, pass the `-s` or `--style` CLI argument as follows:
 ```sh
 regreet --style /path/to/custom.css
 ```

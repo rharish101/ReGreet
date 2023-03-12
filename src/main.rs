@@ -19,7 +19,7 @@ use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, F
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{filter::LevelFilter, fmt::time::OffsetTime};
 
-use crate::constants::{APP_ID, CONFIG_PATH, LOG_PATH};
+use crate::constants::{APP_ID, CONFIG_PATH, CSS_PATH, LOG_PATH};
 use crate::gui::{Greeter, GreeterInit};
 
 const MAX_LOG_FILES: usize = 3;
@@ -47,8 +47,8 @@ struct Args {
     config: PathBuf,
 
     /// The path to the custom CSS stylesheet
-    #[arg(short, long, value_name = "PATH")]
-    style: Option<PathBuf>,
+    #[arg(short, long, value_name = "PATH", default_value = CSS_PATH)]
+    style: PathBuf,
 }
 
 fn main() {
