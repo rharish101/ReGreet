@@ -136,8 +136,8 @@ impl AsyncComponent for Greeter {
 
     view! {
         // The `view!` macro needs a proper widget, not a template, as the root.
+        #[name = "window"]
         gtk::ApplicationWindow {
-            set_fullscreened: true,
             set_visible: true,
 
             // Name the UI widget, otherwise the inner children cannot be accessed by name.
@@ -327,13 +327,23 @@ impl AsyncComponent for Greeter {
         }
     }
 
+    fn post_view() {
+        if model.updates.changed(Updates::monitor()) {
+            if let Some(monitor) = &model.updates.monitor {
+                widgets.window.fullscreen_on_monitor(monitor);
+                // For some reason, the GTK settings are reset when changing monitors, so re-apply them.
+                setup_settings(self, &widgets.window);
+            }
+        }
+    }
+
     /// Initialize the greeter.
     async fn init(
         input: Self::Init,
         root: Self::Root,
         sender: AsyncComponentSender<Self>,
     ) -> AsyncComponentParts<Self> {
-        let model = Self::new(&input.config_path).await;
+        let mut model = Self::new(&input.config_path).await;
         let widgets = view_output!();
 
         // Make the info bar permanently visible, since it was made invisible during init. The
@@ -357,9 +367,22 @@ impl AsyncComponent for Greeter {
             warn!("Couldn't cancel greetd session: {err}");
         };
 
+        model.choose_monitor(widgets.ui.display().name().as_str(), &sender);
+        if let Some(monitor) = &model.updates.monitor {
+            // The window needs to be manually fullscreened, since the monitor is `None` at widget
+            // init.
+            root.fullscreen_on_monitor(monitor);
+        } else {
+            // Couldn't choose a monitor, so let the compositor choose it for us.
+            root.fullscreen();
+        }
+
+        // For some reason, the GTK settings are reset when changing monitors, so apply them after
+        // full-screening.
         setup_settings(&model, &root);
         setup_users_sessions(&model, &widgets);
         setup_datetime_display(&sender);
+
         if input.css_path.exists() {
             debug!("Loading custom CSS from file: {}", input.css_path.display());
             relm4::set_global_css_from_file(input.css_path);
@@ -424,6 +447,9 @@ impl AsyncComponent for Greeter {
             Self::CommandOutput::ClearErr => self.updates.set_error(None),
             Self::CommandOutput::HandleGreetdResponse(response) => {
                 self.handle_greetd_response(&sender, response).await
+            }
+            Self::CommandOutput::MonitorRemoved(display_name) => {
+                self.choose_monitor(display_name.as_str(), &sender)
             }
         };
     }

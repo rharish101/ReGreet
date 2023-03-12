@@ -6,19 +6,19 @@
 
 use derivative::Derivative;
 use greetd_ipc::Response;
-use relm4::gtk::{glib, prelude::*, ComboBoxText, Entry};
+use relm4::gtk::{glib::GString, prelude::*, ComboBoxText, Entry};
 
 #[derive(Debug)]
 /// Info about the current user and chosen session
 pub struct UserSessInfo {
     /// The ID for the currently chosen user
-    pub(super) user_id: Option<glib::GString>,
+    pub(super) user_id: Option<GString>,
     /// The entry text for the currently chosen user
-    pub(super) user_text: glib::GString,
+    pub(super) user_text: GString,
     /// The ID for the currently chosen session
-    pub(super) sess_id: Option<glib::GString>,
+    pub(super) sess_id: Option<GString>,
     /// The entry text for the currently chosen session
-    pub(super) sess_text: glib::GString,
+    pub(super) sess_text: GString,
 }
 
 impl UserSessInfo {
@@ -69,4 +69,7 @@ pub enum CommandMsg {
     ClearErr,
     /// Handle a response received from greetd
     HandleGreetdResponse(Response),
+    /// Notify the greeter that a monitor was removed.
+    // The Gstring is the name of the display.
+    MonitorRemoved(GString),
 }
