@@ -83,23 +83,21 @@ impl Greeter {
         }
     }
 
-    /// Run a systemctl command and log any errors in a background thread.
-    fn systemctl_cmd(command: String, sender: &ComponentSender<Self>) {
+    /// Run a command and log any errors in a background thread.
+    fn run_cmd(command: String, sender: &ComponentSender<Self>) {
         // Run the command and check its output in a separate thread, so as to not block the GUI.
-        sender.spawn_command(
-            move |_| match Command::new("systemctl").arg(&command).output() {
-                Ok(output) => {
-                    if !output.status.success() {
-                        if let Ok(err) = std::str::from_utf8(&output.stderr) {
-                            error!("Failed to {command}: {err}")
-                        } else {
-                            error!("Failed to {command}: {:?}", output.stderr)
-                        }
+        sender.spawn_command(move |_| match Command::new(&command).output() {
+            Ok(output) => {
+                if !output.status.success() {
+                    if let Ok(err) = std::str::from_utf8(&output.stderr) {
+                        error!("Failed to {command}: {err}")
+                    } else {
+                        error!("Failed to {command}: {:?}", output.stderr)
                     }
                 }
-                Err(err) => error!("Failed to launch {command}: {err}"),
-            },
-        );
+            }
+            Err(err) => error!("Failed to launch {command}: {err}"),
+        });
     }
 
     /// Event handler for clicking the "Reboot" button
@@ -108,7 +106,7 @@ impl Greeter {
     #[instrument(skip_all)]
     pub(super) fn reboot_click_handler(sender: &ComponentSender<Self>) {
         info!("Rebooting");
-        Self::systemctl_cmd("reboot".to_string(), sender);
+        Self::run_cmd("reboot".to_string(), sender);
     }
 
     /// Event handler for clicking the "Power-Off" button
@@ -117,7 +115,7 @@ impl Greeter {
     #[instrument(skip_all)]
     pub(super) fn poweroff_click_handler(sender: &ComponentSender<Self>) {
         info!("Shutting down");
-        Self::systemctl_cmd("poweroff".to_string(), sender);
+        Self::run_cmd("poweroff".to_string(), sender);
     }
 
     /// Event handler for clicking the "Cancel" button
