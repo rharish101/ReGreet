@@ -10,12 +10,12 @@
 
 use std::path::Path;
 use std::process::Command;
-use std::sync::{Arc, Mutex};
-use std::thread::sleep;
+use std::sync::Arc;
 use std::time::Duration;
 
 use greetd_ipc::{AuthMessageType, ErrorType, Response};
-use relm4::ComponentSender;
+use relm4::AsyncComponentSender;
+use tokio::{sync::Mutex, time::sleep};
 use tracing::{debug, error, info, instrument, warn};
 
 use crate::cache::Cache;
@@ -86,7 +86,7 @@ pub struct Greeter {
 }
 
 impl Greeter {
-    pub(super) fn new(config_path: &Path) -> Self {
+    pub(super) async fn new(config_path: &Path) -> Self {
         let updates = Updates {
             message: DEFAULT_MSG.to_string(),
             error: None,
@@ -99,10 +99,13 @@ impl Greeter {
             tracker: 0,
             time: "".to_string(),
         };
+        let greetd_client = Arc::new(Mutex::new(
+            GreetdClient::new()
+                .await
+                .expect("Couldn't initialize greetd client"),
+        ));
         Self {
-            greetd_client: Arc::new(Mutex::new(
-                GreetdClient::new().expect("Couldn't initialize greetd client"),
-            )),
+            greetd_client,
             sys_util: SysUtil::new().expect("Couldn't read available users and sessions"),
             cache: Cache::new(),
             config: Config::new(config_path),
@@ -112,7 +115,7 @@ impl Greeter {
     }
 
     /// Run a command and log any errors in a background thread.
-    fn run_cmd(command: &[String], sender: &ComponentSender<Self>) {
+    fn run_cmd(command: &[String], sender: &AsyncComponentSender<Self>) {
         let mut process = Command::new(&command[0]);
         process.args(command[1..].iter());
         // Run the command and check its output in a separate thread, so as to not block the GUI.
@@ -134,7 +137,7 @@ impl Greeter {
     ///
     /// This reboots the PC.
     #[instrument(skip_all)]
-    pub(super) fn reboot_click_handler(&self, sender: &ComponentSender<Self>) {
+    pub(super) fn reboot_click_handler(&self, sender: &AsyncComponentSender<Self>) {
         info!("Rebooting");
         Self::run_cmd(&self.config.get_sys_commands().reboot, sender);
     }
@@ -143,7 +146,7 @@ impl Greeter {
     ///
     /// This shuts down the PC.
     #[instrument(skip_all)]
-    pub(super) fn poweroff_click_handler(&self, sender: &ComponentSender<Self>) {
+    pub(super) fn poweroff_click_handler(&self, sender: &AsyncComponentSender<Self>) {
         info!("Shutting down");
         Self::run_cmd(&self.config.get_sys_commands().poweroff, sender);
     }
@@ -152,8 +155,8 @@ impl Greeter {
     ///
     /// This cancels the created session and goes back to the user/session chooser.
     #[instrument(skip_all)]
-    pub(super) fn cancel_click_handler(&mut self) {
-        if let Err(err) = self.greetd_client.lock().unwrap().cancel_session() {
+    pub(super) async fn cancel_click_handler(&mut self) {
+        if let Err(err) = self.greetd_client.lock().await.cancel_session().await {
             warn!("Couldn't cancel greetd session: {err}");
         };
         self.updates.set_input(String::new());
@@ -162,7 +165,7 @@ impl Greeter {
     }
 
     /// Create a greetd session, i.e. start a login attempt for the current user.
-    fn create_session(&mut self, sender: &ComponentSender<Self>) {
+    async fn create_session(&mut self, sender: &AsyncComponentSender<Self>) {
         let username = if let Some(username) = self.get_current_username() {
             username
         } else {
@@ -192,13 +195,14 @@ impl Greeter {
         let response = self
             .greetd_client
             .lock()
-            .unwrap()
+            .await
             .create_session(&username)
+            .await
             .unwrap_or_else(|err| {
                 panic!("Failed to create session for username '{username}': {err}",)
             });
 
-        self.handle_greetd_response(sender, response);
+        self.handle_greetd_response(sender, response).await;
     }
 
     /// This function handles a greetd response as follows:
@@ -213,9 +217,9 @@ impl Greeter {
     /// This way of handling responses allows for composite authentication procedures, e.g.:
     /// 1. Fingerprint
     /// 2. Password
-    pub(super) fn handle_greetd_response(
+    pub(super) async fn handle_greetd_response(
         &mut self,
-        sender: &ComponentSender<Self>,
+        sender: &AsyncComponentSender<Self>,
         response: Response,
     ) {
         match response {
@@ -224,7 +228,7 @@ impl Greeter {
                 // This may happen on the first request, in which case logging in
                 // as the given user requires no authentication.
                 info!("Successfully logged in; starting session");
-                self.start_session(sender);
+                self.start_session(sender).await;
                 return;
             }
             Response::AuthMessage {
@@ -266,7 +270,7 @@ impl Greeter {
                         self.display_error(
                             sender,
                             &capitalize(&auth_message),
-                            &format!("Authentication message error from greetd: {auth_message}",),
+                            &format!("Authentication message error from greetd: {auth_message}"),
                         );
                     }
                 }
@@ -284,19 +288,21 @@ impl Greeter {
 
                 // In case this is an authentication error (e.g. wrong password), the session should be cancelled.
                 if let ErrorType::AuthError = error_type {
-                    self.cancel_click_handler()
+                    self.cancel_click_handler().await
                 }
                 return;
             }
         }
 
+        debug!("Sending empty auth response to greetd");
         let client = Arc::clone(&self.greetd_client);
-        sender.spawn_oneshot_command(move || {
+        sender.oneshot_command(async move {
             debug!("Sending empty auth response to greetd");
             let response = client
                 .lock()
-                .unwrap()
+                .await
                 .send_auth_response(None)
+                .await
                 .unwrap_or_else(|err| panic!("Failed to respond to greetd: {err}"));
             CommandMsg::HandleGreetdResponse(response)
         });
@@ -330,27 +336,31 @@ impl Greeter {
     ///     - Begins a login attempt for the given user
     ///     - Submits the entered password for logging in and starts the session
     #[instrument(skip_all)]
-    pub(super) fn login_click_handler(&mut self, sender: &ComponentSender<Self>, input: String) {
+    pub(super) async fn login_click_handler(
+        &mut self,
+        sender: &AsyncComponentSender<Self>,
+        input: String,
+    ) {
         // Check if a password is needed. If not, then directly start the session.
-        let auth_status = self.greetd_client.lock().unwrap().get_auth_status().clone();
+        let auth_status = self.greetd_client.lock().await.get_auth_status().clone();
         match auth_status {
             AuthStatus::Done => {
                 // No password is needed, but the session should've been already started by
                 // `create_session`.
                 warn!("No password needed for current user, but session not already started");
-                self.start_session(sender);
+                self.start_session(sender).await;
             }
             AuthStatus::InProgress => {
-                self.send_input(sender, input);
+                self.send_input(sender, input).await;
             }
             AuthStatus::NotStarted => {
-                self.create_session(sender);
+                self.create_session(sender).await;
             }
         };
     }
 
     /// Send the entered input for logging in.
-    fn send_input(&mut self, sender: &ComponentSender<Self>, input: String) {
+    async fn send_input(&mut self, sender: &AsyncComponentSender<Self>, input: String) {
         // Reset the password field, for convenience when the user has to re-enter a password.
         self.updates.set_input(String::new());
 
@@ -358,11 +368,12 @@ impl Greeter {
         let resp = self
             .greetd_client
             .lock()
-            .unwrap()
+            .await
             .send_auth_response(Some(input))
+            .await
             .unwrap_or_else(|err| panic!("Failed to send input: {err}"));
 
-        self.handle_greetd_response(sender, resp);
+        self.handle_greetd_response(sender, resp).await;
     }
 
     /// Get the currently selected username.
@@ -387,7 +398,7 @@ impl Greeter {
     /// Get the currently selected session name (if available) and command.
     fn get_current_session_cmd(
         &mut self,
-        sender: &ComponentSender<Self>,
+        sender: &AsyncComponentSender<Self>,
     ) -> (Option<String>, Option<Vec<String>>) {
         let info = self.sess_info.as_ref().expect("No session info set yet");
         if self.updates.manual_sess_mode {
@@ -437,7 +448,7 @@ impl Greeter {
     }
 
     /// Start the session for the selected user.
-    fn start_session(&mut self, sender: &ComponentSender<Self>) {
+    async fn start_session(&mut self, sender: &AsyncComponentSender<Self>) {
         // Get the session command.
         let (session, cmd) = if let (session, Some(cmd)) = self.get_current_session_cmd(sender) {
             (session, cmd)
@@ -470,8 +481,9 @@ impl Greeter {
         let response = self
             .greetd_client
             .lock()
-            .unwrap()
+            .await
             .start_session(cmd, environment)
+            .await
             .unwrap_or_else(|err| panic!("Failed to start session: {err}"));
 
         match response {
@@ -483,7 +495,7 @@ impl Greeter {
             Response::AuthMessage { .. } => unimplemented!(),
 
             Response::Error { description, .. } => {
-                self.cancel_click_handler();
+                self.cancel_click_handler().await;
                 self.display_error(
                     sender,
                     "Failed to start session",
@@ -496,18 +508,31 @@ impl Greeter {
     /// Show an error message to the user.
     fn display_error(
         &mut self,
-        sender: &ComponentSender<Self>,
+        sender: &AsyncComponentSender<Self>,
         display_text: &str,
         log_text: &str,
     ) {
         self.updates.set_error(Some(display_text.to_string()));
         error!("{log_text}");
 
-        // Set a timer in a separate thread that signals the main thread to reset the displayed
-        // message, so as to not block the GUI.
-        sender.spawn_oneshot_command(|| {
-            sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY));
+        sender.oneshot_command(async move {
+            sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY)).await;
             CommandMsg::ClearErr
+        });
+    }
+}
+
+impl Drop for Greeter {
+    fn drop(&mut self) {
+        // Cancel any created session, just to be safe.
+        let client = Arc::clone(&self.greetd_client);
+        tokio::spawn(async move {
+            client
+                .lock()
+                .await
+                .cancel_session()
+                .await
+                .expect("Couldn't cancel session on exit.")
         });
     }
 }

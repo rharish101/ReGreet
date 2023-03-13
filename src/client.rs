@@ -6,12 +6,12 @@
 
 use std::env;
 use std::io::Result as IOResult;
-use std::os::unix::net::UnixStream;
 
 use greetd_ipc::{
-    codec::{Error as GreetdError, SyncCodec},
+    codec::{Error as GreetdError, TokioCodec},
     Request, Response,
 };
+use tokio::net::UnixStream;
 use tracing::info;
 
 /// Environment variable containing the path to the greetd socket
@@ -37,11 +37,11 @@ pub struct GreetdClient {
 
 impl GreetdClient {
     /// Initialize the socket to communicate with greetd.
-    pub fn new() -> IOResult<Self> {
+    pub async fn new() -> IOResult<Self> {
         let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
             panic!("Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",)
         });
-        let socket = UnixStream::connect(sock_path)?;
+        let socket = UnixStream::connect(sock_path).await?;
         Ok(Self {
             socket,
             auth_status: AuthStatus::NotStarted,
@@ -49,14 +49,14 @@ impl GreetdClient {
     }
 
     /// Initialize a greetd session.
-    pub fn create_session(&mut self, username: &str) -> GreetdResult {
+    pub async fn create_session(&mut self, username: &str) -> GreetdResult {
         info!("Creating session for username: {username}");
         let msg = Request::CreateSession {
             username: username.to_string(),
         };
-        msg.write_to(&mut self.socket)?;
+        msg.write_to(&mut self.socket).await?;
 
-        let resp = Response::read_from(&mut self.socket)?;
+        let resp = Response::read_from(&mut self.socket).await?;
         match resp {
             Response::Success => {
                 self.auth_status = AuthStatus::Done;
@@ -72,12 +72,12 @@ impl GreetdClient {
     }
 
     /// Send an auth message response to a greetd session.
-    pub fn send_auth_response(&mut self, input: Option<String>) -> GreetdResult {
+    pub async fn send_auth_response(&mut self, input: Option<String>) -> GreetdResult {
         info!("Sending password to greetd");
         let msg = Request::PostAuthMessageResponse { response: input };
-        msg.write_to(&mut self.socket)?;
+        msg.write_to(&mut self.socket).await?;
 
-        let resp = Response::read_from(&mut self.socket)?;
+        let resp = Response::read_from(&mut self.socket).await?;
         match resp {
             Response::Success => {
                 self.auth_status = AuthStatus::Done;
@@ -95,7 +95,7 @@ impl GreetdClient {
     /// Schedule starting a greetd session.
     ///
     /// On success, the session will start when this greeter terminates.
-    pub fn start_session(
+    pub async fn start_session(
         &mut self,
         command: Vec<String>,
         environment: Vec<String>,
@@ -105,9 +105,9 @@ impl GreetdClient {
             cmd: command,
             env: environment,
         };
-        msg.write_to(&mut self.socket)?;
+        msg.write_to(&mut self.socket).await?;
 
-        let resp = Response::read_from(&mut self.socket)?;
+        let resp = Response::read_from(&mut self.socket).await?;
         if let Response::AuthMessage { .. } = resp {
             unimplemented!("greetd responded with auth request after requesting session start.");
         }
@@ -115,14 +115,14 @@ impl GreetdClient {
     }
 
     /// Cancel an initialized greetd session.
-    pub fn cancel_session(&mut self) -> GreetdResult {
+    pub async fn cancel_session(&mut self) -> GreetdResult {
         info!("Cancelling greetd session");
         self.auth_status = AuthStatus::NotStarted;
 
         let msg = Request::CancelSession;
-        msg.write_to(&mut self.socket)?;
+        msg.write_to(&mut self.socket).await?;
 
-        let resp = Response::read_from(&mut self.socket)?;
+        let resp = Response::read_from(&mut self.socket).await?;
         if let Response::AuthMessage { .. } = resp {
             unimplemented!(
                 "greetd responded with auth request after requesting session cancellation."
@@ -133,13 +133,5 @@ impl GreetdClient {
 
     pub fn get_auth_status(&self) -> &AuthStatus {
         &self.auth_status
-    }
-}
-
-impl Drop for GreetdClient {
-    fn drop(&mut self) {
-        // Cancel any created session, just to be safe.
-        self.cancel_session()
-            .expect("Couldn't cancel session on exit.");
     }
 }

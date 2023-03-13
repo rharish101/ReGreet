@@ -57,7 +57,7 @@ fn main() {
     let _guard = init_logging(&args.log_level);
 
     let app = relm4::RelmApp::new(APP_ID);
-    app.run::<Greeter>(GreeterInit {
+    app.run_async::<Greeter>(GreeterInit {
         config_path: args.config,
         css_path: args.style,
     });

@@ -11,8 +11,11 @@ use chrono::Local;
 use tracing::{debug, info, warn};
 
 use gtk::prelude::*;
-use relm4::{gtk, Component, ComponentParts, ComponentSender};
-use std::thread::sleep;
+use relm4::{
+    component::{AsyncComponent, AsyncComponentParts, AsyncComponentSender},
+    gtk,
+};
+use tokio::time::sleep;
 
 #[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
@@ -100,17 +103,21 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
 }
 
 /// Set up auto updation for the datetime label.
-fn setup_datetime_display(sender: &ComponentSender<Greeter>) {
+fn setup_datetime_display(sender: &AsyncComponentSender<Greeter>) {
     // Set a timer in a separate thread that signals the main thread to update the time, so as to
     // not block the GUI.
-    sender.spawn_command(|sender| {
-        // Run it infinitely, since the clock always needs to stay updated.
-        loop {
-            if sender.send(CommandMsg::UpdateTime).is_err() {
-                warn!("Couldn't update datetime");
-            };
-            sleep(Duration::from_millis(DATETIME_UPDATE_DELAY));
-        }
+    sender.command(|sender, shutdown| {
+        shutdown
+            .register(async move {
+                // Run it infinitely, since the clock always needs to stay updated.
+                loop {
+                    if sender.send(CommandMsg::UpdateTime).is_err() {
+                        warn!("Couldn't update datetime");
+                    };
+                    sleep(Duration::from_millis(DATETIME_UPDATE_DELAY)).await;
+                }
+            })
+            .drop_on_shutdown()
     });
 }
 
@@ -120,8 +127,8 @@ pub struct GreeterInit {
     pub css_path: PathBuf,
 }
 
-#[relm4::component(pub)]
-impl Component for Greeter {
+#[relm4::component(pub, async)]
+impl AsyncComponent for Greeter {
     type Input = InputMsg;
     type Output = ();
     type Init = GreeterInit;
@@ -316,12 +323,12 @@ impl Component for Greeter {
     }
 
     /// Initialize the greeter.
-    fn init(
+    async fn init(
         input: Self::Init,
-        root: &Self::Root,
-        sender: ComponentSender<Self>,
-    ) -> ComponentParts<Self> {
-        let model = Self::new(&input.config_path);
+        root: Self::Root,
+        sender: AsyncComponentSender<Self>,
+    ) -> AsyncComponentParts<Self> {
+        let model = Self::new(&input.config_path).await;
         let widgets = view_output!();
 
         // Make the info bar permanently visible, since it was made invisible during init. The
@@ -341,11 +348,11 @@ impl Component for Greeter {
             });
 
         // Cancel any previous session, just in case someone started one.
-        if let Err(err) = model.greetd_client.lock().unwrap().cancel_session() {
+        if let Err(err) = model.greetd_client.lock().await.cancel_session().await {
             warn!("Couldn't cancel greetd session: {err}");
         };
 
-        setup_settings(&model, root);
+        setup_settings(&model, &root);
         setup_users_sessions(&model, &widgets);
         setup_datetime_display(&sender);
         if input.css_path.exists() {
@@ -356,10 +363,15 @@ impl Component for Greeter {
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
 
-        ComponentParts { model, widgets }
+        AsyncComponentParts { model, widgets }
     }
 
-    fn update(&mut self, msg: Self::Input, sender: ComponentSender<Self>, _root: &Self::Root) {
+    async fn update(
+        &mut self,
+        msg: Self::Input,
+        sender: AsyncComponentSender<Self>,
+        _root: &Self::Root,
+    ) {
         debug!("Got input message: {msg:?}");
 
         // Reset the tracker for update changes.
@@ -368,9 +380,9 @@ impl Component for Greeter {
         match msg {
             Self::Input::Login { input, info } => {
                 self.sess_info = Some(info);
-                self.login_click_handler(&sender, input);
+                self.login_click_handler(&sender, input).await
             }
-            Self::Input::Cancel => self.cancel_click_handler(),
+            Self::Input::Cancel => self.cancel_click_handler().await,
             Self::Input::UserChanged(info) => {
                 self.sess_info = Some(info);
                 self.user_change_handler();
@@ -387,10 +399,10 @@ impl Component for Greeter {
     }
 
     /// Perform the requested changes when a background task sends a message.
-    fn update_cmd(
+    async fn update_cmd(
         &mut self,
         msg: Self::CommandOutput,
-        sender: ComponentSender<Self>,
+        sender: AsyncComponentSender<Self>,
         _root: &Self::Root,
     ) {
         if !matches!(msg, Self::CommandOutput::UpdateTime) {
@@ -406,7 +418,7 @@ impl Component for Greeter {
                 .set_time(Local::now().format(DATETIME_FMT).to_string()),
             Self::CommandOutput::ClearErr => self.updates.set_error(None),
             Self::CommandOutput::HandleGreetdResponse(response) => {
-                self.handle_greetd_response(&sender, response)
+                self.handle_greetd_response(&sender, response).await
             }
         };
     }
