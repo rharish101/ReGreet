@@ -110,7 +110,7 @@ fn init_logging(log_level: &LogLevel) -> WorkerGuard {
 
     // Log in a separate non-blocking thread, then return the guard (otherise the non-blocking
     // writer will immediately stop).
-    match setup_log_file() {
+    let guard = match setup_log_file() {
         Ok(file) => {
             let (file, guard) = non_blocking(file);
             // Disable colouring through ANSI escape sequences in log files.
@@ -123,5 +123,13 @@ fn init_logging(log_level: &LogLevel) -> WorkerGuard {
             logger.with_writer(file).init();
             guard
         }
-    }
+    };
+
+    // Log all panics in the log file as well as stderr.
+    std::panic::set_hook(Box::new(|panic| {
+        tracing::error!("{panic}");
+        eprintln!("{panic}");
+    }));
+
+    guard
 }
