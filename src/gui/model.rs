@@ -277,9 +277,8 @@ impl Greeter {
                 );
 
                 // In case this is an authentication error (e.g. wrong password), the session should be cancelled.
-                match error_type {
-                    ErrorType::Error => {}
-                    ErrorType::AuthError => self.cancel_click_handler(),
+                if let ErrorType::AuthError = error_type {
+                    self.cancel_click_handler()
                 }
                 return;
             }
