@@ -170,7 +170,7 @@ impl Greeter {
         // Before trying to create a session, check if the session command (if manually entered) is
         // valid.
         if self.updates.manual_sess_mode {
-            let info = self.sess_info.as_ref().unwrap();
+            let info = self.sess_info.as_ref().expect("No session info set yet");
             if shlex::split(info.sess_text.as_str()).is_none() {
                 // This must be an invalid command.
                 self.display_error(
