@@ -359,6 +359,8 @@ impl Component for Greeter {
     }
 
     fn update(&mut self, msg: Self::Input, sender: ComponentSender<Self>, _root: &Self::Root) {
+        debug!("Got input message: {msg:?}");
+
         // Reset the tracker for update changes.
         self.updates.reset();
 
@@ -390,7 +392,13 @@ impl Component for Greeter {
         sender: ComponentSender<Self>,
         _root: &Self::Root,
     ) {
+        if !matches!(msg, Self::CommandOutput::UpdateTime) {
+            debug!("Got command message: {msg:?}");
+        }
+
+        // Reset the tracker for update changes.
         self.updates.reset();
+
         match msg {
             Self::CommandOutput::UpdateTime => self
                 .updates

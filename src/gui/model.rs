@@ -232,6 +232,7 @@ impl Greeter {
                     AuthMessageType::Secret => {
                         // Greetd has requested input that should be hidden
                         // e.g.: a password
+                        info!("greetd asks for a secret auth input: {auth_message}");
                         self.updates.set_input_mode(InputMode::Secret);
                         self.updates.set_input(String::new());
                         self.updates
@@ -240,6 +241,7 @@ impl Greeter {
                     }
                     AuthMessageType::Visible => {
                         // Greetd has requested input that need not be hidden
+                        info!("greetd asks for a visible auth input: {auth_message}");
                         self.updates.set_input_mode(InputMode::Visible);
                         self.updates.set_input(String::new());
                         self.updates
@@ -249,6 +251,7 @@ impl Greeter {
                     AuthMessageType::Info => {
                         // Greetd has sent an info message that should be displayed
                         // e.g.: asking for a fingerprint
+                        info!("greetd sent an info: {auth_message}");
                         self.updates.set_input_mode(InputMode::None);
                         self.updates.set_message(auth_message);
                     }
@@ -286,6 +289,7 @@ impl Greeter {
 
         let client = Arc::clone(&self.greetd_client);
         sender.spawn_oneshot_command(move || {
+            debug!("Sending empty auth response to greetd");
             let response = client
                 .lock()
                 .unwrap()
