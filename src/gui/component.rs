@@ -298,11 +298,14 @@ impl Component for Greeter {
                     }
                 },
                 #[template_child]
+                error_info {
+                    #[track(model.updates.changed(Updates::error()))]
+                    set_revealed: model.updates.error.is_some(),
+                },
+                #[template_child]
                 error_label {
                     #[track(model.updates.changed(Updates::error()))]
                     set_label: model.updates.error.as_ref().unwrap_or(&"".to_string()),
-                    #[track(model.updates.changed(Updates::error()))]
-                    set_visible: model.updates.error.is_some(),
                 },
                 #[template_child]
                 reboot_button { connect_clicked => Self::Input::Reboot },
@@ -320,6 +323,10 @@ impl Component for Greeter {
     ) -> ComponentParts<Self> {
         let model = Self::new(&input.config_path);
         let widgets = view_output!();
+
+        // Make the info bar permanently visible, since it was made invisible during init. The
+        // actual visuals are controlled by `InfoBar::set_revealed`.
+        widgets.ui.error_info.set_visible(true);
 
         // cfg directives don't work inside Relm4 view! macro.
         #[cfg(feature = "gtk4_8")]
