@@ -71,10 +71,10 @@ impl GreetdClient {
         Ok(resp)
     }
 
-    /// Send password to a greetd session.
-    pub fn send_password(&mut self, password: Option<String>) -> GreetdResult {
+    /// Send an auth message response to a greetd session.
+    pub fn send_auth_response(&mut self, input: Option<String>) -> GreetdResult {
         info!("Sending password to greetd");
-        let msg = Request::PostAuthMessageResponse { response: password };
+        let msg = Request::PostAuthMessageResponse { response: input };
         msg.write_to(&mut self.socket)?;
 
         let resp = Response::read_from(&mut self.socket)?;
@@ -84,7 +84,6 @@ impl GreetdClient {
             }
             Response::AuthMessage { .. } => {
                 self.auth_status = AuthStatus::InProgress;
-                unimplemented!("greetd responded with auth request after sending password.");
             }
             Response::Error { .. } => {
                 self.auth_status = AuthStatus::InProgress;

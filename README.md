@@ -24,7 +24,7 @@ It is based on [Max Moser's LightDM Elephant greeter](https://github.com/max-mos
 ![Manual session entry](https://user-images.githubusercontent.com/25344287/221668422-ab82d10b-3167-4a31-9705-c1d066ced252.png)
 ![Password entry with selected user](https://user-images.githubusercontent.com/25344287/221668490-cfd231a8-bcb9-426b-ba27-783b09c29e9c.png)
 ![Password entry with manual user](https://user-images.githubusercontent.com/25344287/221668537-dbc8ebda-b1ec-4f71-a521-77674e2ee992.png)
-![Login fail](https://user-images.githubusercontent.com/25344287/221668589-191794c6-e237-497c-9efc-1d9805fd0b42.png)
+![Login fail](https://user-images.githubusercontent.com/25344287/226113001-a66e8303-6d1f-4f75-b362-baccb9e07f9f.png)
 
 These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta-theme) in dark mode with the Roboto font. All screenshots are provided under the [CC-BY-SA-4.0 license](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
