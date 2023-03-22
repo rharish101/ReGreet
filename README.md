@@ -59,6 +59,11 @@ Install it either by cloning the AUR repository and running `makepkg`, or by usi
 paru -S regreet-git
 ```
 
+### Unoffical Packages
+#### NixOS
+For a minimal config, add `programs.regreet.enable = true;` in your NixOS configuration file.
+For users who want to configure more, they can see all the options of the module by searching for `regreet` on https://search.nixos.org/options.
+
 ### Manual
 First, the greeter must be compiled using Cargo:
 ```sh
