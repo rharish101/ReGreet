@@ -15,6 +15,7 @@ use std::str::from_utf8;
 use glob::glob;
 use pwd::Passwd;
 use regex::Regex;
+use shlex::Shlex;
 
 use crate::constants::{LOGIN_DEFS_PATHS, LOGIN_DEFS_UID_MAX, LOGIN_DEFS_UID_MIN, SESSION_DIRS};
 
@@ -143,12 +144,25 @@ impl SysUtil {
         };
 
         for sess_dir in session_dirs.split(':') {
-            let sess_parent_dir = if let Some(sess_parent_dir) = Path::new(sess_dir).parent() {
+            let sess_dir_path = Path::new(sess_dir);
+            let sess_parent_dir = if let Some(sess_parent_dir) = sess_dir_path.parent() {
                 sess_parent_dir
             } else {
                 warn!("Session directory does not have a parent: {sess_dir}");
                 continue;
             };
+
+            let is_x11 = if let Some(name) = sess_dir_path.file_name() {
+                name == "xsessions"
+            } else {
+                false
+            };
+            let cmd_prefix = if is_x11 {
+                vec!["startx".into(), "/bin/env".into()]
+            } else {
+                Vec::new()
+            };
+
             debug!("Checking session directory: {sess_dir}");
             // Iterate over all '.desktop' files.
             for glob_path in glob(&format!("{sess_dir}/*.desktop"))
@@ -222,7 +236,9 @@ impl SysUtil {
                 let cmd = if let Some(cmd_str) =
                     cmd_regex.captures(text).and_then(|capture| capture.get(1))
                 {
-                    if let Some(cmd) = shlex::split(cmd_str.as_str()) {
+                    let mut cmd = cmd_prefix.clone();
+                    cmd.extend(Shlex::new(cmd_str.as_str()));
+                    if cmd.len() > cmd_prefix.len() {
                         cmd
                     } else {
                         warn!(
