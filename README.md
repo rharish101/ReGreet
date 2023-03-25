@@ -79,7 +79,8 @@ Environment Variable | Default | Use
 GREETD\_CONFIG\_DIR | `/etc/greetd` | The configuration directory used by greetd
 CACHE\_DIR | `/var/cache/regreet` | The directory used to store cache
 LOG\_DIR | `/var/log/regreet` | The directory used to store logs
-SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
+XSESSION\_DIRS | `/usr/share/xsessions` | A colon (:) separated list of directories where the greeter looks for X11 session files
+WAYLAND\_SESSION\_DIRS | `/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for Wayland session files
 
 The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 
