@@ -156,6 +156,7 @@ impl Greeter {
         };
         self.updates.set_input(String::new());
         self.updates.set_input_mode(InputMode::None);
+        self.updates.set_message(DEFAULT_MSG.to_string());
     }
 
     /// Create a greetd session, i.e. start a login attempt for the current user.
@@ -482,6 +483,7 @@ impl Greeter {
             Response::AuthMessage { .. } => unimplemented!(),
 
             Response::Error { description, .. } => {
+                self.cancel_click_handler();
                 self.display_error(
                     sender,
                     "Failed to start session",
