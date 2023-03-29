@@ -451,8 +451,6 @@ impl Greeter {
             environment.push(format!("{}={}", k, v));
         }
 
-        self.updates.set_message("Logging in...".to_string());
-
         if let Some(username) = self.get_current_username() {
             self.cache.set_last_user(&username);
             if let Some(session) = session {
