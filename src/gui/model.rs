@@ -156,6 +156,7 @@ impl Greeter {
         };
         self.updates.set_input(String::new());
         self.updates.set_input_mode(InputMode::None);
+        self.updates.set_message(DEFAULT_MSG.to_string());
     }
 
     /// Create a greetd session, i.e. start a login attempt for the current user.
@@ -449,6 +450,20 @@ impl Greeter {
         for (k, v) in env {
             environment.push(format!("{}={}", k, v));
         }
+
+        if let Some(username) = self.get_current_username() {
+            self.cache.set_last_user(&username);
+            if let Some(session) = session {
+                self.cache.set_last_session(&username, &session);
+            }
+            debug!("Updated cache with current user: {username}");
+        }
+
+        info!("Saving cache to disk");
+        if let Err(err) = self.cache.save() {
+            error!("Error saving cache to disk: {err}");
+        }
+
         // Start the session.
         let response = self
             .greetd_client
@@ -460,25 +475,13 @@ impl Greeter {
         match response {
             Response::Success => {
                 info!("Session successfully started");
-                if let Some(username) = self.get_current_username() {
-                    self.cache.set_last_user(&username);
-                    if let Some(session) = session {
-                        self.cache.set_last_session(&username, &session);
-                    }
-                    debug!("Updated cache with current user: {username}");
-                }
-
-                info!("Saving cache to disk");
-                if let Err(err) = self.cache.save() {
-                    error!("Error saving cache to disk: {err}");
-                }
-
-                self.updates.set_message("Logging in...".to_string());
+                std::process::exit(0);
             }
 
             Response::AuthMessage { .. } => unimplemented!(),
 
             Response::Error { description, .. } => {
+                self.cancel_click_handler();
                 self.display_error(
                     sender,
                     "Failed to start session",
