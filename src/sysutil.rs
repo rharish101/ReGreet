@@ -13,9 +13,10 @@ use std::str::from_utf8;
 use glob::glob;
 use pwd::Passwd;
 use regex::Regex;
+use shlex::Shlex;
 use tracing::{debug, info, warn};
 
-use crate::constants::SESSION_DIRS;
+use crate::constants::{WAYLAND_SESSION_DIRS, XSESSION_DIRS};
 
 /// Path to the file that contains min/max UID of a regular user
 pub const LOGIN_FILE: &str = "/etc/login.defs";
@@ -44,10 +45,20 @@ pub struct SysUtil {
 impl SysUtil {
     pub fn new() -> IOResult<Self> {
         let (users, shells) = Self::init_users()?;
+        let mut sessions = Self::init_sessions(
+            XSESSION_DIRS,
+            "xsessions",
+            &vec!["startx".into(), "/bin/env".into()],
+        )?;
+        sessions.extend(Self::init_sessions(
+            WAYLAND_SESSION_DIRS,
+            "wayland-sessions",
+            &Vec::new(),
+        )?);
         Ok(Self {
             users,
             shells,
-            sessions: Self::init_sessions()?,
+            sessions,
         })
     }
 
@@ -150,7 +161,11 @@ impl SysUtil {
     ///
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
-    fn init_sessions() -> IOResult<SessionMap> {
+    fn init_sessions(
+        default_sess_dirs: &str,
+        xdg_sess_dir: &str,
+        cmd_prefix: &Vec<String>,
+    ) -> IOResult<SessionMap> {
         let mut sessions = HashMap::new();
 
         // Use the XDG spec if available, else use the one that's compiled.
@@ -159,14 +174,14 @@ impl SysUtil {
             debug!("Found XDG env var {XDG_DIR_ENV_VAR}: {sess_parent_dirs}");
             match sess_parent_dirs
                 .split(':')
-                .map(|parent_dir| format!("{parent_dir}/xsessions:{parent_dir}/wayland-sessions"))
+                .map(|parent_dir| format!("{parent_dir}/{xdg_sess_dir}"))
                 .reduce(|a, b| a + ":" + &b)
             {
-                None => SESSION_DIRS.to_string(),
+                None => default_sess_dirs.to_string(),
                 Some(dirs) => dirs,
             }
         } else {
-            SESSION_DIRS.to_string()
+            default_sess_dirs.to_string()
         };
 
         for sess_dir in session_dirs.split(':') {
@@ -199,7 +214,9 @@ impl SysUtil {
                 let cmd = if let Some(cmd_str) =
                     cmd_regex.captures(text).and_then(|capture| capture.get(1))
                 {
-                    if let Some(cmd) = shlex::split(cmd_str.as_str()) {
+                    let mut cmd = cmd_prefix.clone();
+                    cmd.extend(Shlex::new(cmd_str.as_str()));
+                    if cmd.len() > cmd_prefix.len() {
                         cmd
                     } else {
                         warn!(
