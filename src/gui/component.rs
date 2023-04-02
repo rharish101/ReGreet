@@ -380,8 +380,8 @@ impl Component for Greeter {
             Self::Input::ToggleManualSess => self
                 .updates
                 .set_manual_sess_mode(!self.updates.manual_sess_mode),
-            Self::Input::Reboot => Self::reboot_click_handler(&sender),
-            Self::Input::PowerOff => Self::poweroff_click_handler(&sender),
+            Self::Input::Reboot => self.reboot_click_handler(&sender),
+            Self::Input::PowerOff => self.poweroff_click_handler(&sender),
         }
     }
 

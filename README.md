@@ -41,6 +41,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
     - Icon theme
     - Cursor theme
     - Font
+* Allows changing reboot & poweroff commands for different init systems
 * Supports custom CSS files for further customizations
 
 ## Requirements
@@ -80,6 +81,8 @@ GREETD\_CONFIG\_DIR | `/etc/greetd` | The configuration directory used by greetd
 CACHE\_DIR | `/var/cache/regreet` | The directory used to store cache
 LOG\_DIR | `/var/log/regreet` | The directory used to store logs
 SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
+REBOOT\_CMD | `reboot` | The default command used to reboot the system
+POWEROFF\_CMD | `poweroff` | The default command used to shut down the system
 
 The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 
@@ -154,6 +157,8 @@ Currently, the following can be configured:
 * Icon theme
 * Cursor theme
 * Font
+* Reboot command
+* Shut down command
 
 ### Custom CSS
 ReGreet supports loading CSS files to act as a custom global stylesheet.
@@ -167,6 +172,20 @@ regreet --style /path/to/custom.css
 
 Please refer to the GTK4 docs on [CSS in GTK](https://docs.gtk.org/gtk4/css-overview.html) and [GTK CSS Properties](https://docs.gtk.org/gtk4/css-properties.html) to learn how to style a GTK4 app using CSS.
 For a general reference on CSS, please refer to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax).
+
+### Changing Reboot/Shut Down Commands
+The default reboot and shut down commands use the `reboot` and `poweroff` binaries, which are present on most Linux systems.
+However, since the recommended way of using ReGreet is to avoid running it as root, the `reboot`/`poweroff` commands might not work on systems where superuser access is needed to run these commands.
+In this case, if there is another command to reboot or shut down the system without superuser access, these commands can be set in the config file under the `[commands]` section.
+
+For example, to use `loginctl reboot` as the reboot command, use the following config:
+```toml
+[commands]
+reboot = [ "loginctl", "reboot" ]
+```
+Here, each command needs to be separated into a list containing the main command, followed by individual arguments.
+
+These commands can also be specified during compilation using the `REBOOT_CMD` and `POWEROFF_CMD` environment variables.
 
 ### Logging and Caching
 The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during installation).

@@ -41,6 +41,11 @@ const LOG_DIR: &str = env_or!("LOG_DIR", concatcp!("/var/log/", GREETER_NAME));
 /// Path to the cache file
 pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/log");
 
+/// Default command for rebooting
+pub const REBOOT_CMD: &str = env_or!("REBOOT_CMD", "reboot");
+/// Default command for shutting down
+pub const POWEROFF_CMD: &str = env_or!("POWEROFF_CMD", "poweroff");
+
 /// Directories separated by `:`, containing desktop files for X11/Wayland sessions
 pub const SESSION_DIRS: &str = env_or!(
     "SESSION_DIRS",
