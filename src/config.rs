@@ -38,12 +38,21 @@ pub enum BgFit {
 }
 
 /// Struct for reboot/poweroff commands
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct SystemCommands {
     #[serde(default = "default_reboot_command")]
     pub reboot: Vec<String>,
     #[serde(default = "default_poweroff_command")]
     pub poweroff: Vec<String>,
+}
+
+impl Default for SystemCommands {
+    fn default() -> Self {
+        SystemCommands {
+            reboot: default_reboot_command(),
+            poweroff: default_poweroff_command(),
+        }
+    }
 }
 
 fn default_reboot_command() -> Vec<String> {
