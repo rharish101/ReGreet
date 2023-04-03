@@ -112,19 +112,21 @@ impl Greeter {
     }
 
     /// Run a command and log any errors in a background thread.
-    fn run_cmd(command: String, sender: &ComponentSender<Self>) {
+    fn run_cmd(command: &[String], sender: &ComponentSender<Self>) {
+        let mut process = Command::new(&command[0]);
+        process.args(command[1..].iter());
         // Run the command and check its output in a separate thread, so as to not block the GUI.
-        sender.spawn_command(move |_| match Command::new(&command).output() {
+        sender.spawn_command(move |_| match process.output() {
             Ok(output) => {
                 if !output.status.success() {
                     if let Ok(err) = std::str::from_utf8(&output.stderr) {
-                        error!("Failed to {command}: {err}")
+                        error!("Failed to launch command: {err}")
                     } else {
-                        error!("Failed to {command}: {:?}", output.stderr)
+                        error!("Failed to launch command: {:?}", output.stderr)
                     }
                 }
             }
-            Err(err) => error!("Failed to launch {command}: {err}"),
+            Err(err) => error!("Failed to launch command: {err}"),
         });
     }
 
@@ -132,18 +134,18 @@ impl Greeter {
     ///
     /// This reboots the PC.
     #[instrument(skip_all)]
-    pub(super) fn reboot_click_handler(sender: &ComponentSender<Self>) {
+    pub(super) fn reboot_click_handler(&self, sender: &ComponentSender<Self>) {
         info!("Rebooting");
-        Self::run_cmd("reboot".to_string(), sender);
+        Self::run_cmd(&self.config.get_sys_commands().reboot, sender);
     }
 
     /// Event handler for clicking the "Power-Off" button
     ///
     /// This shuts down the PC.
     #[instrument(skip_all)]
-    pub(super) fn poweroff_click_handler(sender: &ComponentSender<Self>) {
+    pub(super) fn poweroff_click_handler(&self, sender: &ComponentSender<Self>) {
         info!("Shutting down");
-        Self::run_cmd("poweroff".to_string(), sender);
+        Self::run_cmd(&self.config.get_sys_commands().poweroff, sender);
     }
 
     /// Event handler for clicking the "Cancel" button

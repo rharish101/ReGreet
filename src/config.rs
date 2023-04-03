@@ -9,6 +9,7 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
+use crate::constants::{POWEROFF_CMD, REBOOT_CMD};
 use crate::tomlutils::load_toml;
 
 /// Struct holding all supported GTK settings
@@ -36,6 +37,32 @@ pub enum BgFit {
     ScaleDown,
 }
 
+/// Struct for reboot/poweroff commands
+#[derive(Deserialize, Serialize)]
+pub struct SystemCommands {
+    #[serde(default = "default_reboot_command")]
+    pub reboot: Vec<String>,
+    #[serde(default = "default_poweroff_command")]
+    pub poweroff: Vec<String>,
+}
+
+impl Default for SystemCommands {
+    fn default() -> Self {
+        SystemCommands {
+            reboot: default_reboot_command(),
+            poweroff: default_poweroff_command(),
+        }
+    }
+}
+
+fn default_reboot_command() -> Vec<String> {
+    shlex::split(REBOOT_CMD).expect("Unable to lex reboot command")
+}
+
+fn default_poweroff_command() -> Vec<String> {
+    shlex::split(POWEROFF_CMD).expect("Unable to lex poweroff command")
+}
+
 /// The configuration struct
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
@@ -47,6 +74,8 @@ pub struct Config {
     pub background_fit: Option<BgFit>,
     #[serde(default, rename = "GTK")]
     gtk: Option<GtkSettings>,
+    #[serde(default)]
+    commands: SystemCommands,
 }
 
 impl Config {
@@ -69,5 +98,9 @@ impl Config {
 
     pub fn get_gtk_settings(&self) -> &Option<GtkSettings> {
         &self.gtk
+    }
+
+    pub fn get_sys_commands(&self) -> &SystemCommands {
+        &self.commands
     }
 }
