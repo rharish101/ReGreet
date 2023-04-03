@@ -39,7 +39,7 @@ enum LogLevel {
 #[command(author, version, about)]
 struct Args {
     /// The verbosity level of the logs
-    #[arg(short, long, value_name = "LEVEL", default_value = "warn")]
+    #[arg(short, long, value_name = "LEVEL", default_value = "info")]
     log_level: LogLevel,
 
     /// The path to the config file
