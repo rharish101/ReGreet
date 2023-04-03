@@ -37,6 +37,15 @@ pub enum BgFit {
     ScaleDown,
 }
 
+/// Struct for info about the background image
+#[derive(Default, Deserialize, Serialize)]
+struct Background {
+    #[serde(default)]
+    path: Option<String>,
+    #[serde(default)]
+    fit: BgFit,
+}
+
 /// Struct for reboot/poweroff commands
 #[derive(Deserialize, Serialize)]
 pub struct SystemCommands {
@@ -69,9 +78,7 @@ pub struct Config {
     #[serde(default)]
     env: HashMap<String, String>,
     #[serde(default)]
-    background: Option<String>,
-    #[serde(default)]
-    pub background_fit: Option<BgFit>,
+    background: Background,
     #[serde(default, rename = "GTK")]
     gtk: Option<GtkSettings>,
     #[serde(default)]
@@ -88,12 +95,12 @@ impl Config {
     }
 
     pub fn get_background(&self) -> &Option<String> {
-        &self.background
+        &self.background.path
     }
 
     #[cfg(feature = "gtk4_8")]
-    pub fn get_background_fit(&self) -> &Option<BgFit> {
-        &self.background_fit
+    pub fn get_background_fit(&self) -> &BgFit {
+        &self.background.fit
     }
 
     pub fn get_gtk_settings(&self) -> &Option<GtkSettings> {
