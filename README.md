@@ -137,6 +137,9 @@ command = "sway --config /path/to/custom/sway/config"
 user = "greeter"
 ```
 
+**NOTE**: If you find that ReGreet takes too much time to start up with Sway, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
+See this link for the fix.
+
 Restart greetd to use the new config.
 
 ### Configuration
