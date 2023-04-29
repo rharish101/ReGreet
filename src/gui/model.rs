@@ -28,7 +28,7 @@ use super::messages::{CommandMsg, UserSessInfo};
 pub(super) const DEFAULT_MSG: &str = "Welcome back!";
 const ERROR_MSG_CLEAR_DELAY: u64 = 5;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq)]
 pub(super) enum InputMode {
     None,
     Secret,

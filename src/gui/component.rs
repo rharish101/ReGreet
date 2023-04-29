@@ -293,10 +293,15 @@ impl AsyncComponent for Greeter {
                         session_entry,
                     ] => move |_| {
                         sender.input(Self::Input::Login {
-                            input: match model.updates.input_mode {
-                                InputMode::Secret => secret_entry.text().to_string(),
-                                InputMode::Visible => visible_entry.text().to_string(),
-                                InputMode::None => String::new(),
+                            input: if secret_entry.is_visible() {
+                                // This should correspond to `InputMode::Secret`.
+                                secret_entry.text().to_string()
+                            } else if EntryExt::is_visible(&visible_entry) {
+                                // This should correspond to `InputMode::Visible`.
+                                visible_entry.text().to_string()
+                            } else {
+                                // This should correspond to `InputMode::None`.
+                                String::new()
                             },
                             info: UserSessInfo::extract(
                                 &usernames_box, &username_entry, &sessions_box, &session_entry
