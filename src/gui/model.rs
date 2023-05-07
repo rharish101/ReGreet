@@ -14,7 +14,13 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use greetd_ipc::{AuthMessageType, ErrorType, Response};
-use relm4::AsyncComponentSender;
+use relm4::{
+    gtk::{
+        gdk::{Display, Monitor},
+        prelude::*,
+    },
+    AsyncComponentSender,
+};
 use tokio::{sync::Mutex, time::sleep};
 use tracing::{debug, error, info, instrument, warn};
 
@@ -56,6 +62,8 @@ pub(super) struct Updates {
     pub(super) active_session_id: Option<String>,
     /// Time that is displayed
     pub(super) time: String,
+    /// Monitor where the window is displayed
+    pub(super) monitor: Option<Monitor>,
 }
 
 impl Updates {
@@ -98,6 +106,7 @@ impl Greeter {
             active_session_id: None,
             tracker: 0,
             time: "".to_string(),
+            monitor: None,
         };
         let greetd_client = Arc::new(Mutex::new(
             GreetdClient::new()
@@ -112,6 +121,46 @@ impl Greeter {
             sess_info: None,
             updates,
         }
+    }
+
+    /// Make the greeter full screen over the first monitor.
+    #[instrument(skip(self, sender))]
+    pub(super) fn choose_monitor(
+        &mut self,
+        display_name: &str,
+        sender: &AsyncComponentSender<Self>,
+    ) {
+        let display = match Display::open(display_name) {
+            Some(display) => display,
+            None => {
+                error!("Couldn't get display with name: {display_name}");
+                return;
+            }
+        };
+
+        let mut chosen_monitor = None;
+        for monitor in display
+            .monitors()
+            .into_iter()
+            .filter_map(|item| {
+                item.ok()
+                    .and_then(|object| object.downcast::<Monitor>().ok())
+            })
+            .filter(Monitor::is_valid)
+        {
+            debug!("Found monitor: {monitor}");
+            let sender = sender.clone();
+            monitor.connect_invalidate(move |monitor| {
+                let display_name = monitor.display().name();
+                sender.oneshot_command(async move { CommandMsg::MonitorRemoved(display_name) })
+            });
+            if chosen_monitor.is_none() {
+                // Choose the first monitor.
+                chosen_monitor = Some(monitor);
+            }
+        }
+
+        self.updates.set_monitor(chosen_monitor);
     }
 
     /// Run a command and log any errors in a background thread.
