@@ -54,10 +54,10 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 
 ## Installation
 ### Arch Linux
-ReGreet is available as [regreet-git](https://aur.archlinux.org/packages/regreet-git) in the AUR.
+ReGreet is available as [greetd-regreet-git](https://aur.archlinux.org/packages/greetd-regreet-git) in the AUR.
 Install it either by cloning the AUR repository and running `makepkg`, or by using your favourite AUR helper:
 ```sh
-paru -S regreet-git
+paru -S greetd-regreet-git
 ```
 
 ### Unofficial Packages
