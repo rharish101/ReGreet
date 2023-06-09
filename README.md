@@ -54,10 +54,17 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 
 ## Installation
 ### Arch Linux
-ReGreet is available as [greetd-regreet-git](https://aur.archlinux.org/packages/greetd-regreet-git) in the AUR.
-Install it either by cloning the AUR repository and running `makepkg`, or by using your favourite AUR helper:
+ReGreet is available as [greetd-regreet](https://archlinux.org/packages/extra/x86_64/greetd-regreet) in the official Arch Linux repositories, and as [greetd-regreet-git](https://aur.archlinux.org/packages/greetd-regreet-git) in the AUR.
+Note that I only maintain the AUR package, and the package in the Arch repos is maintained by someone else.
+
+Install the AUR package either by cloning the AUR repository and running `makepkg`, or by using your favourite AUR helper:
 ```sh
 paru -S greetd-regreet-git
+```
+
+Install the package in the Arch repos as follows:
+```sh
+pacman -S greetd-regreet
 ```
 
 ### Unofficial Packages
