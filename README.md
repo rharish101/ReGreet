@@ -146,6 +146,7 @@ user = "greeter"
 
 **NOTE**: If you find that ReGreet takes too much time to start up with Sway, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
 See this link for the fix.
+Alternatively, the solution proposed in [issue #34](https://github.com/rharish101/ReGreet/issues/34) may resolve it.
 
 Restart greetd to use the new config.
 
