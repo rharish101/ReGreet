@@ -117,11 +117,13 @@ impl SysUtil {
                     );
                     entry.name.clone()
                 } else {
+                    // Only take first entry in gecos field.
+                    let gecos_name_part: &str = gecos.split(',').next().unwrap_or(&gecos);
                     debug!(
-                        "Found user '{}' with UID '{}' and full name: {gecos}",
+                        "Found user '{}' with UID '{}' and full name: {gecos_name_part}",
                         entry.name, entry.uid
                     );
-                    gecos
+                    gecos_name_part.into()
                 }
             } else {
                 debug!(
