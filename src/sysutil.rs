@@ -5,6 +5,7 @@
 //! Helper for system utilities like users and sessions
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::env;
 use std::fs::read;
 use std::io::Result as IOResult;
@@ -153,6 +154,7 @@ impl SysUtil {
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
     fn init_sessions() -> IOResult<SessionMap> {
+        let mut stems = HashSet::new();
         let mut sessions = HashMap::new();
 
         // Use the XDG spec if available, else use the one that's compiled.
@@ -191,11 +193,64 @@ impl SysUtil {
                     panic!("Session file '{}' is not UTF-8: {}", path.display(), err)
                 });
 
+                let stem = if let Some(stem) = path.file_stem() {
+                    // Get the stem of the filename of this desktop file.
+                    if let Some(stem) = stem.to_str() {
+                        stem.to_string()
+                    } else {
+                        warn!("Non-UTF-8 file stem in session file: {}", path.display());
+                        // No way to display this session name, so just skip it.
+                        continue;
+                    }
+                } else {
+                    warn!("No file stem found for session: {}", path.display());
+                    // No file stem implies no file name, which shouldn't happen.
+                    // Since there's no full name nor file stem, just skip this anomalous
+                    // session.
+                    continue;
+                };
+                if stems.contains(&stem) {
+                    debug!(
+                        "{stem} was already found elsewhere, skipping {}",
+                        path.display()
+                    );
+                    continue;
+                };
+
+                stems.insert(stem.to_string());
+
                 // The session launch command is specified as: Exec=command arg1 arg2...
                 let cmd_regex =
                     Regex::new(r"Exec=(.*)").expect("Invalid regex for session command");
                 // The session name is specified as: Name=My Session
                 let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
+
+                // Hiding could be either as Hidden=true or NoDisplay=true
+                let hidden_regex = Regex::new(r"Hidden=(.*)").expect("Invalid regex for hidden");
+                let no_display_regex =
+                    Regex::new(r"NoDisplay=(.*)").expect("Invalid regex for no display");
+
+                let hidden: bool = if let Some(hidden_str) = hidden_regex
+                    .captures(text)
+                    .and_then(|capture| capture.get(1))
+                {
+                    hidden_str.as_str().parse().unwrap_or(false)
+                } else {
+                    false
+                };
+
+                let no_display: bool = if let Some(no_display_str) = no_display_regex
+                    .captures(text)
+                    .and_then(|capture| capture.get(1))
+                {
+                    no_display_str.as_str().parse().unwrap_or(false)
+                } else {
+                    false
+                };
+
+                if hidden | no_display {
+                    continue;
+                };
 
                 // Parse the desktop file to get the session command.
                 let cmd = if let Some(cmd_str) =
@@ -211,11 +266,15 @@ impl SysUtil {
                         );
                         // Skip the desktop file, since a missing command means that we can't
                         // use it.
+                        // Also, remove it from a list of used stems and hope we will find some other with the same stem
+                        stems.remove(&stem);
                         continue;
                     }
                 } else {
                     warn!("No command found for session: {}", path.display());
                     // Skip the desktop file, since a missing command means that we can't use it.
+                    // Also, remove it from a list of used stems and hope we will find some other with the same stem
+                    stems.remove(&stem);
                     continue;
                 };
 
@@ -224,31 +283,18 @@ impl SysUtil {
                     name_regex.captures(text).and_then(|capture| capture.get(1))
                 {
                     debug!(
-                        "Found name '{}' for session: {}",
+                        "Found name '{}' for session '{}' with command '{:?}'",
                         name.as_str(),
-                        path.display()
+                        path.display(),
+                        cmd
                     );
                     name.as_str()
-                } else if let Some(stem) = path.file_stem() {
-                    // Get the stem of the filename of this desktop file.
-                    // This is used as backup, in case the file name doesn't exist.
-                    if let Some(stem) = stem.to_str() {
-                        debug!(
-                            "Using file stem '{stem}', since no name was found for session: {}",
-                            path.display()
-                        );
-                        stem
-                    } else {
-                        warn!("Non-UTF-8 file stem in session file: {}", path.display());
-                        // No way to display this session name, so just skip it.
-                        continue;
-                    }
                 } else {
-                    warn!("No file stem found for session: {}", path.display());
-                    // No file stem implies no file name, which shouldn't happen.
-                    // Since there's no full name nor file stem, just skip this anomalous
-                    // session.
-                    continue;
+                    debug!(
+                        "Using file stem '{stem}', since no name was found for session: {}",
+                        path.display()
+                    );
+                    &stem
                 };
 
                 sessions.insert(name.to_string(), cmd);
