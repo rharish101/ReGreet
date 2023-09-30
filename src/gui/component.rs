@@ -385,7 +385,13 @@ impl AsyncComponent for Greeter {
 
         if input.css_path.exists() {
             debug!("Loading custom CSS from file: {}", input.css_path.display());
-            relm4::set_global_css_from_file(input.css_path);
+            let provider = gtk::CssProvider::new();
+            provider.load_from_path(input.css_path);
+            gtk::StyleContext::add_provider_for_display(
+                &widgets.ui.display(),
+                &provider,
+                gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
+            );
         };
 
         // Set the default behaviour of pressing the Return key to act like the login button.
