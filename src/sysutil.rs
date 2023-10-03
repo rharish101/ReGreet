@@ -9,6 +9,7 @@ use std::collections::HashSet;
 use std::env;
 use std::fs::read;
 use std::io::Result as IOResult;
+use std::path::Path;
 use std::str::from_utf8;
 
 use glob::glob;
@@ -154,7 +155,7 @@ impl SysUtil {
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
     fn init_sessions() -> IOResult<SessionMap> {
-        let mut stems = HashSet::new();
+        let mut found_session_names = HashSet::new();
         let mut sessions = HashMap::new();
 
         // Use the XDG spec if available, else use the one that's compiled.
@@ -174,6 +175,12 @@ impl SysUtil {
         };
 
         for sess_dir in session_dirs.split(':') {
+            let sess_parent_dir = if let Some(sess_parent_dir) = Path::new(sess_dir).parent() {
+                sess_parent_dir
+            } else {
+                warn!("Session directory does not have a parent: {sess_dir}");
+                continue;
+            };
             debug!("Checking session directory: {sess_dir}");
             // Iterate over all '.desktop' files.
             for glob_path in glob(&format!("{sess_dir}/*.desktop"))
@@ -193,31 +200,21 @@ impl SysUtil {
                     panic!("Session file '{}' is not UTF-8: {}", path.display(), err)
                 });
 
-                let stem = if let Some(stem) = path.file_stem() {
-                    // Get the stem of the filename of this desktop file.
-                    if let Some(stem) = stem.to_str() {
-                        stem.to_string()
-                    } else {
-                        warn!("Non-UTF-8 file stem in session file: {}", path.display());
-                        // No way to display this session name, so just skip it.
+                let fname_and_type = match path.strip_prefix(sess_parent_dir) {
+                    Ok(fname_and_type) => fname_and_type.as_os_str().to_os_string(),
+                    Err(err) => {
+                        warn!("Error with file name: {err}");
                         continue;
                     }
-                } else {
-                    warn!("No file stem found for session: {}", path.display());
-                    // No file stem implies no file name, which shouldn't happen.
-                    // Since there's no full name nor file stem, just skip this anomalous
-                    // session.
-                    continue;
                 };
-                if stems.contains(&stem) {
+
+                if found_session_names.contains(&fname_and_type) {
                     debug!(
-                        "{stem} was already found elsewhere, skipping {}",
+                        "{fname_and_type:?} was already found elsewhere, skipping {}",
                         path.display()
                     );
                     continue;
                 };
-
-                stems.insert(stem.to_string());
 
                 // The session launch command is specified as: Exec=command arg1 arg2...
                 let cmd_regex =
@@ -249,6 +246,7 @@ impl SysUtil {
                 };
 
                 if hidden | no_display {
+                    found_session_names.insert(fname_and_type);
                     continue;
                 };
 
@@ -266,15 +264,11 @@ impl SysUtil {
                         );
                         // Skip the desktop file, since a missing command means that we can't
                         // use it.
-                        // Also, remove it from a list of used stems and hope we will find some other with the same stem
-                        stems.remove(&stem);
                         continue;
                     }
                 } else {
                     warn!("No command found for session: {}", path.display());
                     // Skip the desktop file, since a missing command means that we can't use it.
-                    // Also, remove it from a list of used stems and hope we will find some other with the same stem
-                    stems.remove(&stem);
                     continue;
                 };
 
@@ -289,14 +283,28 @@ impl SysUtil {
                         cmd
                     );
                     name.as_str()
+                } else if let Some(stem) = path.file_stem() {
+                    // Get the stem of the filename of this desktop file.
+                    // This is used as backup, in case the file name doesn't exist.
+                    if let Some(stem) = stem.to_str() {
+                        debug!(
+                            "Using file stem '{stem}', since no name was found for session: {}",
+                            path.display()
+                        );
+                        stem
+                    } else {
+                        warn!("Non-UTF-8 file stem in session file: {}", path.display());
+                        // No way to display this session name, so just skip it.
+                        continue;
+                    }
                 } else {
-                    debug!(
-                        "Using file stem '{stem}', since no name was found for session: {}",
-                        path.display()
-                    );
-                    &stem
+                    warn!("No file stem found for session: {}", path.display());
+                    // No file stem implies no file name, which shouldn't happen.
+                    // Since there's no full name nor file stem, just skip this anomalous
+                    // session.
+                    continue;
                 };
-
+                found_session_names.insert(fname_and_type);
                 sessions.insert(name.to_string(), cmd);
             }
         }
