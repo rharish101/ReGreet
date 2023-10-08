@@ -201,7 +201,7 @@ impl SysUtil {
                 });
 
                 let fname_and_type = match path.strip_prefix(sess_parent_dir) {
-                    Ok(fname_and_type) => fname_and_type.as_os_str().to_os_string(),
+                    Ok(fname_and_type) => fname_and_type.to_owned(),
                     Err(err) => {
                         warn!("Error with file name: {err}");
                         continue;
