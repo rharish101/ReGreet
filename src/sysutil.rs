@@ -5,9 +5,11 @@
 //! Helper for system utilities like users and sessions
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::env;
 use std::fs::read;
 use std::io::Result as IOResult;
+use std::path::Path;
 use std::str::from_utf8;
 
 use glob::glob;
@@ -153,6 +155,7 @@ impl SysUtil {
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
     fn init_sessions() -> IOResult<SessionMap> {
+        let mut found_session_names = HashSet::new();
         let mut sessions = HashMap::new();
 
         // Use the XDG spec if available, else use the one that's compiled.
@@ -172,6 +175,12 @@ impl SysUtil {
         };
 
         for sess_dir in session_dirs.split(':') {
+            let sess_parent_dir = if let Some(sess_parent_dir) = Path::new(sess_dir).parent() {
+                sess_parent_dir
+            } else {
+                warn!("Session directory does not have a parent: {sess_dir}");
+                continue;
+            };
             debug!("Checking session directory: {sess_dir}");
             // Iterate over all '.desktop' files.
             for glob_path in glob(&format!("{sess_dir}/*.desktop"))
@@ -191,11 +200,55 @@ impl SysUtil {
                     panic!("Session file '{}' is not UTF-8: {}", path.display(), err)
                 });
 
+                let fname_and_type = match path.strip_prefix(sess_parent_dir) {
+                    Ok(fname_and_type) => fname_and_type.to_owned(),
+                    Err(err) => {
+                        warn!("Error with file name: {err}");
+                        continue;
+                    }
+                };
+
+                if found_session_names.contains(&fname_and_type) {
+                    debug!(
+                        "{fname_and_type:?} was already found elsewhere, skipping {}",
+                        path.display()
+                    );
+                    continue;
+                };
+
                 // The session launch command is specified as: Exec=command arg1 arg2...
                 let cmd_regex =
                     Regex::new(r"Exec=(.*)").expect("Invalid regex for session command");
                 // The session name is specified as: Name=My Session
                 let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
+
+                // Hiding could be either as Hidden=true or NoDisplay=true
+                let hidden_regex = Regex::new(r"Hidden=(.*)").expect("Invalid regex for hidden");
+                let no_display_regex =
+                    Regex::new(r"NoDisplay=(.*)").expect("Invalid regex for no display");
+
+                let hidden: bool = if let Some(hidden_str) = hidden_regex
+                    .captures(text)
+                    .and_then(|capture| capture.get(1))
+                {
+                    hidden_str.as_str().parse().unwrap_or(false)
+                } else {
+                    false
+                };
+
+                let no_display: bool = if let Some(no_display_str) = no_display_regex
+                    .captures(text)
+                    .and_then(|capture| capture.get(1))
+                {
+                    no_display_str.as_str().parse().unwrap_or(false)
+                } else {
+                    false
+                };
+
+                if hidden | no_display {
+                    found_session_names.insert(fname_and_type);
+                    continue;
+                };
 
                 // Parse the desktop file to get the session command.
                 let cmd = if let Some(cmd_str) =
@@ -224,9 +277,10 @@ impl SysUtil {
                     name_regex.captures(text).and_then(|capture| capture.get(1))
                 {
                     debug!(
-                        "Found name '{}' for session: {}",
+                        "Found name '{}' for session '{}' with command '{:?}'",
                         name.as_str(),
-                        path.display()
+                        path.display(),
+                        cmd
                     );
                     name.as_str()
                 } else if let Some(stem) = path.file_stem() {
@@ -250,7 +304,7 @@ impl SysUtil {
                     // session.
                     continue;
                 };
-
+                found_session_names.insert(fname_and_type);
                 sessions.insert(name.to_string(), cmd);
             }
         }

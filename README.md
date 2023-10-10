@@ -43,6 +43,9 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
     - Font
 * Allows changing reboot & poweroff commands for different init systems
 * Supports custom CSS files for further customizations
+* Respects `XDG_DATA_DIRS` environment variable
+* Respects fields `Hidden` and `NoDisplay` in session files
+* Picks up the first found session with the same name and in the same type (X11/Wayland). This allows for overriding system-provided session files.
 
 ## Requirements
 * Rust 1.64.0+ (for compilation only)
