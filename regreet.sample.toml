@@ -38,3 +38,7 @@ reboot = [ "systemctl", "reboot" ]
 
 # The command used to shut down the system
 poweroff = [ "systemctl", "poweroff" ]
+
+[appearance]
+# The message that initially displays on startup
+greeting_message = "Welcome back!"
