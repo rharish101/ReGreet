@@ -9,18 +9,19 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-use crate::constants::{POWEROFF_CMD, REBOOT_CMD};
+use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD};
 use crate::tomlutils::load_toml;
 
 #[derive(Deserialize, Serialize)]
 pub struct AppearanceSettings {
+    #[serde(default = "default_greeting_msg")]
     pub greeting_msg: String,
 }
 
-impl std::default::Default for AppearanceSettings {
+impl Default for AppearanceSettings {
     fn default() -> Self {
         AppearanceSettings {
-            greeting_msg: String::from("Welcome back!"),
+            greeting_msg: default_greeting_msg(),
         }
     }
 }
@@ -83,6 +84,10 @@ fn default_reboot_command() -> Vec<String> {
 
 fn default_poweroff_command() -> Vec<String> {
     shlex::split(POWEROFF_CMD).expect("Unable to lex poweroff command")
+}
+
+fn default_greeting_msg() -> String {
+    GREETING_MSG.to_string()
 }
 
 /// The configuration struct
