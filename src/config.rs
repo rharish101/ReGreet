@@ -9,8 +9,22 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-use crate::constants::{POWEROFF_CMD, REBOOT_CMD};
+use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD};
 use crate::tomlutils::load_toml;
+
+#[derive(Deserialize, Serialize)]
+pub struct AppearanceSettings {
+    #[serde(default = "default_greeting_msg")]
+    pub greeting_msg: String,
+}
+
+impl Default for AppearanceSettings {
+    fn default() -> Self {
+        AppearanceSettings {
+            greeting_msg: default_greeting_msg(),
+        }
+    }
+}
 
 /// Struct holding all supported GTK settings
 #[derive(Default, Deserialize, Serialize)]
@@ -72,9 +86,15 @@ fn default_poweroff_command() -> Vec<String> {
     shlex::split(POWEROFF_CMD).expect("Unable to lex poweroff command")
 }
 
+fn default_greeting_msg() -> String {
+    GREETING_MSG.to_string()
+}
+
 /// The configuration struct
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
+    #[serde(default)]
+    appearance: AppearanceSettings,
     #[serde(default)]
     env: HashMap<String, String>,
     #[serde(default)]
@@ -109,5 +129,9 @@ impl Config {
 
     pub fn get_sys_commands(&self) -> &SystemCommands {
         &self.commands
+    }
+
+    pub fn get_default_message(&self) -> String {
+        self.appearance.greeting_msg.clone()
     }
 }

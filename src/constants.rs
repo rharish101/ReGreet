@@ -46,6 +46,9 @@ pub const REBOOT_CMD: &str = env_or!("REBOOT_CMD", "reboot");
 /// Default command for shutting down
 pub const POWEROFF_CMD: &str = env_or!("POWEROFF_CMD", "poweroff");
 
+/// Default greeting message
+pub const GREETING_MSG: &str = "Welcome back!";
+
 /// Directories separated by `:`, containing desktop files for X11/Wayland sessions
 pub const SESSION_DIRS: &str = env_or!(
     "SESSION_DIRS",

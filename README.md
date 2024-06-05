@@ -166,6 +166,7 @@ Currently, the following can be configured:
 * Background image
 * How the background image fits the screen (needs GTK 4.8+ support compiled)
 * Environment variables for created sessions
+* Greeting message
 * GTK theme
 * Dark mode
 * Icon theme
