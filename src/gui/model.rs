@@ -93,7 +93,7 @@ pub struct Greeter {
 }
 
 impl Greeter {
-    pub(super) async fn new(config_path: &Path) -> Self {
+    pub(super) async fn new(config_path: &Path, demo: bool) -> Self {
         let config = Config::new(config_path);
 
         let updates = Updates {
@@ -110,7 +110,7 @@ impl Greeter {
             monitor: None,
         };
         let greetd_client = Arc::new(Mutex::new(
-            GreetdClient::new()
+            GreetdClient::new(demo)
                 .await
                 .expect("Couldn't initialize greetd client"),
         ));
