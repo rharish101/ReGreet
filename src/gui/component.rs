@@ -157,6 +157,7 @@ impl AsyncComponent for Greeter {
                 message_label {
                     #[track(model.updates.changed(Updates::message()))]
                     set_label: &model.updates.message,
+                    set_visible: !model.updates.message.is_empty(),
                 },
                 #[template_child]
                 session_label {
