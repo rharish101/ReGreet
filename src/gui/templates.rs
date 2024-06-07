@@ -5,7 +5,7 @@
 //! Templates for various GUI components
 
 use gtk::prelude::*;
-use relm4::{gtk, RelmWidgetExt, WidgetTemplate};
+use relm4::{gtk, WidgetTemplate};
 
 /// Button that ends the greeter (eg. Reboot)
 #[relm4::widget_template(pub)]
@@ -23,6 +23,8 @@ impl WidgetTemplate for EndButton {
 impl WidgetTemplate for EntryLabel {
     view! {
         gtk::Label {
+            set_ellipsize: gtk::pango::EllipsizeMode::Middle,
+            set_max_width_chars: 12,
             set_width_request: 100,
             set_xalign: 1.0,
         }
@@ -39,10 +41,10 @@ impl WidgetTemplate for Ui {
             gtk::Picture,
 
             /// Main login box
-            add_overlay = &gtk::Frame {
+            add_overlay = &gtk::Box {
+                add_css_class: "center",
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Center,
-                inline_css: "background-color: @theme_bg_color",
 
                 gtk::Grid {
                     set_column_spacing: 15,
@@ -56,6 +58,7 @@ impl WidgetTemplate for Ui {
                     /// Widget to display messages to the user
                     #[name = "message_label"]
                     attach[0, 0, 3, 1] = &gtk::Label {
+                        add_css_class: "message",
                         set_margin_bottom: 15,
 
                         // Format all messages in boldface.
@@ -70,18 +73,12 @@ impl WidgetTemplate for Ui {
                     },
 
                     #[template]
-                    attach[0, 1, 1, 1] = &EntryLabel {
-                        set_label: "User:",
-                        set_height_request: 45,
-                    },
+                    attach[0, 1, 1, 1] = &EntryLabel { set_label: "User:" },
 
                     /// Label for the sessions widget
                     #[name = "session_label"]
                     #[template]
-                    attach[0, 2, 1, 1] = &EntryLabel {
-                        set_label: "Session:",
-                        set_height_request: 45,
-                    },
+                    attach[0, 2, 1, 1] = &EntryLabel { set_label: "Session:" },
 
                     /// Widget containing the usernames
                     #[name = "usernames_box"]
@@ -102,9 +99,7 @@ impl WidgetTemplate for Ui {
                     /// Label for the password widget
                     #[name = "input_label"]
                     #[template]
-                    attach[0, 2, 1, 1] = &EntryLabel {
-                        set_height_request: 45,
-                    },
+                    attach[0, 2, 1, 1] = &EntryLabel,
 
                     /// Widget where the user enters a secret
                     #[name = "secret_entry"]
@@ -138,6 +133,7 @@ impl WidgetTemplate for Ui {
                         gtk::Button {
                             set_focusable: true,
                             set_label: "Cancel",
+                            add_css_class: "cancel",
                         },
 
                         /// Button to enter the password and login
@@ -147,26 +143,21 @@ impl WidgetTemplate for Ui {
                             set_label: "Login",
                             set_receives_default: true,
                             add_css_class: "suggested-action",
+                            add_css_class: "login",
                         },
                     },
                 },
             },
 
             /// Clock widget
-            add_overlay = &gtk::Frame {
+            add_overlay = &gtk::Box {
+                add_css_class: "top",
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Start,
-                // Make it fit cleanly onto the top edge of the screen.
-                inline_css: "
-                    border-top-right-radius: 0px;
-                    border-top-left-radius: 0px;
-                    border-top-width: 0px;
-                    background-color: @theme_bg_color;
-                ",
 
                 /// Label displaying the current date & time
                 #[name = "datetime_label"]
-                gtk::Label { set_width_request: 150 },
+                gtk::Label,
             },
 
             /// Collection of widgets appearing at the bottom
@@ -177,26 +168,26 @@ impl WidgetTemplate for Ui {
                 set_margin_bottom: 15,
                 set_spacing: 15,
 
-                gtk::Frame {
-                    /// Notification bar for error messages
-                    #[name = "error_info"]
-                    gtk::InfoBar {
-                        // During init, the info bar closing animation is shown. To hide that, make
-                        // it invisible. Later, the code will permanently make it visible, so that
-                        // `InfoBar::set_revealed` will work properly with animations.
-                        set_visible: false,
-                        set_message_type: gtk::MessageType::Error,
+                /// Notification bar for error messages
+                #[name = "error_info"]
+                gtk::InfoBar {
+                    add_css_class: "error",
 
-                        /// The actual error message
-                        #[name = "error_label"]
-                        gtk::Label {
-                            set_halign: gtk::Align::Center,
-                            set_margin_top: 10,
-                            set_margin_bottom: 10,
-                            set_margin_start: 10,
-                            set_margin_end: 10,
-                        },
-                    }
+                    // During init, the info bar closing animation is shown. To hide that, make
+                    // it invisible. Later, the code will permanently make it visible, so that
+                    // `InfoBar::set_revealed` will work properly with animations.
+                    set_visible: false,
+                    set_message_type: gtk::MessageType::Error,
+
+                    /// The actual error message
+                    #[name = "error_label"]
+                    gtk::Label {
+                        set_halign: gtk::Align::Center,
+                        set_margin_top: 10,
+                        set_margin_bottom: 10,
+                        set_margin_start: 10,
+                        set_margin_end: 10,
+                    },
                 },
 
                 /// Collection of buttons that close the greeter (eg. Reboot)
