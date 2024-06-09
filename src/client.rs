@@ -9,7 +9,7 @@ use std::io::Result as IOResult;
 
 use greetd_ipc::{
     codec::{Error as GreetdError, TokioCodec},
-    Request, Response,
+    AuthMessageType, ErrorType, Request, Response,
 };
 use tokio::net::UnixStream;
 use tracing::info;
@@ -17,6 +17,12 @@ use tracing::warn;
 
 /// Environment variable containing the path to the greetd socket
 const GREETD_SOCK_ENV_VAR: &str = "GREETD_SOCK";
+
+const DEMO_AUTH_MSG_OPT: &str = "One-Time password prompt for the selected User:";
+const DEMO_AUTH_MSG_PASSWD: &str = "Password:";
+const DEMO_AUTH_MSG_ERROR: &str = "pam_authenticate: AUTH_ERR";
+const DEMO_OTP: &str = "0248";
+const DEMO_PASSWD: &str = "pass";
 
 pub type GreetdResult = Result<Response, GreetdError>;
 
@@ -39,20 +45,23 @@ pub struct GreetdClient {
 impl GreetdClient {
     /// Initialize the socket to communicate with greetd.
     pub async fn new(demo: bool) -> IOResult<Self> {
-        if demo {
-            warn!("Run as demo!");
-            return Ok(Self {
-                socket: None,
-                auth_status: AuthStatus::NotStarted,
-            });
-        }
+        let socket: Option<UnixStream> = match demo {
+            true => {
+                warn!("Run as demo!");
+                None
+            }
+            false => {
+                let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
+                    panic!(
+                        "Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",
+                    )
+                });
+                Some(UnixStream::connect(sock_path).await?)
+            }
+        };
 
-        let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
-            panic!("Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",)
-        });
-        let socket = UnixStream::connect(sock_path).await?;
         Ok(Self {
-            socket: Some(socket),
+            socket,
             auth_status: AuthStatus::NotStarted,
         })
     }
@@ -61,18 +70,20 @@ impl GreetdClient {
     pub async fn create_session(&mut self, username: &str) -> GreetdResult {
         info!("Creating session for username: {username}");
 
-        if self.socket.is_none() {
-            self.auth_status = AuthStatus::Done;
-            return Ok(Response::Success);
-        }
-
-        let socket = self.socket.as_mut().unwrap();
-        let msg = Request::CreateSession {
-            username: username.to_string(),
+        let resp: Response = match &mut self.socket {
+            Some(socket) => {
+                let msg = Request::CreateSession {
+                    username: username.to_string(),
+                };
+                msg.write_to(socket).await?;
+                Response::read_from(socket).await?
+            }
+            None => Response::AuthMessage {
+                auth_message_type: AuthMessageType::Secret,
+                auth_message: DEMO_AUTH_MSG_OPT.to_string(),
+            },
         };
-        msg.write_to(socket).await?;
 
-        let resp = Response::read_from(socket).await?;
         match resp {
             Response::Success => {
                 self.auth_status = AuthStatus::Done;
@@ -91,16 +102,25 @@ impl GreetdClient {
     pub async fn send_auth_response(&mut self, input: Option<String>) -> GreetdResult {
         info!("Sending password to greetd");
 
-        if self.socket.is_none() {
-            self.auth_status = AuthStatus::Done;
-            return Ok(Response::Success);
-        }
+        let resp: Response = match &mut self.socket {
+            Some(socket) => {
+                let msg = Request::PostAuthMessageResponse { response: input };
+                msg.write_to(socket).await?;
+                Response::read_from(socket).await?
+            }
+            None => match input.as_deref() {
+                Some(DEMO_OTP) => Response::AuthMessage {
+                    auth_message_type: AuthMessageType::Secret,
+                    auth_message: DEMO_AUTH_MSG_PASSWD.to_string(),
+                },
+                Some(DEMO_PASSWD) => Response::Success,
+                _ => Response::Error {
+                    error_type: ErrorType::AuthError,
+                    description: DEMO_AUTH_MSG_ERROR.to_string(),
+                },
+            },
+        };
 
-        let socket = self.socket.as_mut().unwrap();
-        let msg = Request::PostAuthMessageResponse { response: input };
-        msg.write_to(socket).await?;
-
-        let resp = Response::read_from(socket).await?;
         match resp {
             Response::Success => {
                 self.auth_status = AuthStatus::Done;
