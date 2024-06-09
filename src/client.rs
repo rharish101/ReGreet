@@ -47,7 +47,10 @@ impl GreetdClient {
     pub async fn new(demo: bool) -> IOResult<Self> {
         let socket: Option<UnixStream> = match demo {
             true => {
-                warn!("Run as demo!");
+                warn!(
+                    "Run as demo: [otp: {}, password: {}]",
+                    DEMO_OTP, DEMO_PASSWD
+                );
                 None
             }
             false => {
