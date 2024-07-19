@@ -15,27 +15,27 @@ license = "GPL-3.0-or-later"
 
 [dependencies]
 chrono = { version = "0.4.22", default-features = false }
-clap = { version = "4.1.4", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 const_format = { version = "0.2.33", features = ["rust_1_64"] }
 derivative = "2.2.0"
-file-rotate = "0.7.2"
-glob = "0.3.0"
-greetd_ipc = { version = "0.9.0", features = ["tokio-codec"] }
+file-rotate = "0.7"
+glob = "0.3"
+greetd_ipc = { version = "0.10", features = ["tokio-codec"] }
 gtk4 = "0.5"
 lazy_static = "1.5.0"
-lru = "0.9.0"
+lru = "0.12"
 pwd = "1.4.0"
-regex = "1.7.1"
+regex = "1.10"
 relm4 = "0.5.0"
-serde = { version = "1.0.142", features = ["derive"] }
-shlex = "1.3.0"
-thiserror = "1.0.32"
-tokio = { version = "1.26.0", features = ["net", "time"] }
-toml = "0.6.0"
-tracing = "0.1.37"
-tracing-appender = "0.2.2"
-tracing-subscriber = { version = "0.3.16", features = ["local-time"] }
-tracker = "0.2.0"
+serde = { version = "1.0", features = ["derive"] }
+shlex = "1.3"
+thiserror = "1.0"
+tokio = { version = "1.38", features = ["net", "time"] }
+toml = "0.8"
+tracing = "0.1"
+tracing-appender = "0.2"
+tracing-subscriber = { version = "0.3", features = ["local-time"] }
+tracker = "0.2"
 
 [features]
 gtk4_8 = ["gtk4/v4_8"]
