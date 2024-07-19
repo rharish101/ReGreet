@@ -17,7 +17,7 @@ license = "GPL-3.0-or-later"
 chrono = { version = "0.4.22", default-features = false }
 clap = { version = "4.5", features = ["derive"] }
 const_format = { version = "0.2.33", features = ["rust_1_64"] }
-derivative = "2.2.0"
+educe = "0.6"
 file-rotate = "0.7"
 glob = "0.3"
 greetd_ipc = { version = "0.10", features = ["tokio-codec"] }
