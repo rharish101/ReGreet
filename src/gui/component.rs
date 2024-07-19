@@ -172,7 +172,10 @@ impl AsyncComponent for Greeter {
                     #[track(model.updates.changed(Updates::manual_user_mode()))]
                     set_visible: !model.updates.manual_user_mode,
                     connect_changed[
-                        sender, username_entry, sessions_box, session_entry
+                        sender,
+                        username_entry = ui.username_entry.clone(),
+                        sessions_box = ui.sessions_box.clone(),
+                        session_entry = ui.session_entry.clone(),
                     ] => move |this| sender.input(
                         Self::Input::UserChanged(
                             UserSessInfo::extract(this, &username_entry, &sessions_box, &session_entry)
@@ -226,7 +229,11 @@ impl AsyncComponent for Greeter {
                     #[track(model.updates.changed(Updates::input()))]
                     set_text: &model.updates.input,
                     connect_activate[
-                        sender, usernames_box, username_entry, sessions_box, session_entry
+                        sender,
+                        usernames_box = ui.usernames_box.clone(),
+                        username_entry = ui.username_entry.clone(),
+                        sessions_box = ui.sessions_box.clone(),
+                        session_entry = ui.session_entry.clone(),
                     ] => move |this| {
                         sender.input(Self::Input::Login {
                             input: this.text().to_string(),
@@ -248,7 +255,11 @@ impl AsyncComponent for Greeter {
                     #[track(model.updates.changed(Updates::input()))]
                     set_text: &model.updates.input,
                     connect_activate[
-                        sender, usernames_box, username_entry, sessions_box, session_entry
+                        sender,
+                        usernames_box = ui.usernames_box.clone(),
+                        username_entry = ui.username_entry.clone(),
+                        sessions_box = ui.sessions_box.clone(),
+                        session_entry = ui.session_entry.clone(),
                     ] => move |this| {
                         sender.input(Self::Input::Login {
                             input: this.text().to_string(),
@@ -285,12 +296,12 @@ impl AsyncComponent for Greeter {
                     grab_focus: (),
                     connect_clicked[
                         sender,
-                        secret_entry,
-                        visible_entry,
-                        usernames_box,
-                        username_entry,
-                        sessions_box,
-                        session_entry,
+                        secret_entry = ui.secret_entry.clone(),
+                        visible_entry = ui.visible_entry.clone(),
+                        usernames_box = ui.usernames_box.clone(),
+                        username_entry = ui.username_entry.clone(),
+                        sessions_box = ui.sessions_box.clone(),
+                        session_entry = ui.session_entry.clone(),
                     ] => move |_| {
                         sender.input(Self::Input::Login {
                             input: if secret_entry.is_visible() {
@@ -387,7 +398,7 @@ impl AsyncComponent for Greeter {
             debug!("Loading custom CSS from file: {}", input.css_path.display());
             let provider = gtk::CssProvider::new();
             provider.load_from_path(input.css_path);
-            gtk::StyleContext::add_provider_for_display(
+            gtk::style_context_add_provider_for_display(
                 &widgets.ui.display(),
                 &provider,
                 gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
