@@ -214,7 +214,12 @@ The log file is stored in `/var/log/regreet/log` (configurable during installati
 Once the log file reaches a limit, it is compressed and rotated to `/var/log/regreet/log.X.gz`, where `X` is the index of the log file.
 The higher the index, the older the log file.
 After reaching a limit, the oldest log file is removed.
+
 If the greeter is unable to write to this file or create files in the log directory, then it logs to stdout.
+You can also print the logs to stdout in addition to the log file, with the `--verbose` argument as follows:
+```sh
+regreet --verbose
+```
 
 The recommended configuration is to run greetd greeters as a separate user (`greeter` in the above examples).
 This can lead to insufficient permissions for either creating the cache/log directories, or writing to them.
