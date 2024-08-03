@@ -92,6 +92,7 @@ GREETD\_CONFIG\_DIR | `/etc/greetd` | The configuration directory used by greetd
 CACHE\_DIR | `/var/cache/regreet` | The directory used to store cache
 LOG\_DIR | `/var/log/regreet` | The directory used to store logs
 SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
+X11\_CMD\_PREFIX | `startx /usr/bin/env` | The default command prefix for X11 sessions to launch the X server (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
 REBOOT\_CMD | `reboot` | The default command used to reboot the system
 POWEROFF\_CMD | `poweroff` | The default command used to shut down the system
 LOGIN\_DEFS\_PATHS | `/etc/login.defs:/usr/etc/login.defs` | A colon (:) separated list of `login.defs` file paths. First found is loaded.
@@ -178,6 +179,7 @@ Currently, the following can be configured:
 * Font
 * Reboot command
 * Shut down command
+* X11 command prefix (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
 
 ### Custom CSS
 ReGreet supports loading CSS files to act as a custom global stylesheet.

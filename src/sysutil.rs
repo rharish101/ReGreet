@@ -17,6 +17,7 @@ use pwd::Passwd;
 use regex::Regex;
 use shlex::Shlex;
 
+use crate::config::Config;
 use crate::constants::{LOGIN_DEFS_PATHS, LOGIN_DEFS_UID_MAX, LOGIN_DEFS_UID_MIN, SESSION_DIRS};
 
 /// XDG data directory variable name (parent directory for X11/Wayland sessions)
@@ -38,7 +39,7 @@ pub struct SysUtil {
 }
 
 impl SysUtil {
-    pub fn new() -> io::Result<Self> {
+    pub fn new(config: &Config) -> io::Result<Self> {
         let path = (*LOGIN_DEFS_PATHS).iter().try_for_each(|path| {
             if let Ok(true) = AsRef::<Path>::as_ref(&path).try_exists() {
                 ControlFlow::Break(path)
@@ -67,7 +68,7 @@ impl SysUtil {
         Ok(Self {
             users,
             shells,
-            sessions: Self::init_sessions()?,
+            sessions: Self::init_sessions(config)?,
         })
     }
 
@@ -123,7 +124,7 @@ impl SysUtil {
     ///
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
-    fn init_sessions() -> io::Result<SessionMap> {
+    fn init_sessions(config: &Config) -> io::Result<SessionMap> {
         let mut found_session_names = HashSet::new();
         let mut sessions = HashMap::new();
 
@@ -158,9 +159,9 @@ impl SysUtil {
                 false
             };
             let cmd_prefix = if is_x11 {
-                vec!["startx".into(), "/bin/env".into()]
+                &config.get_sys_commands().x11_prefix
             } else {
-                Vec::new()
+                &Vec::new()
             };
 
             debug!("Checking session directory: {sess_dir}");
