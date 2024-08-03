@@ -18,7 +18,8 @@ use tracing::warn;
 /// Environment variable containing the path to the greetd socket
 const GREETD_SOCK_ENV_VAR: &str = "GREETD_SOCK";
 
-const DEMO_AUTH_MSG_OPT: &str = "One-Time password prompt for the selected User:";
+/// Demo mode credentials
+const DEMO_AUTH_MSG_OPT: &str = "One-Time Password:";
 const DEMO_AUTH_MSG_PASSWD: &str = "Password:";
 const DEMO_AUTH_MSG_ERROR: &str = "pam_authenticate: AUTH_ERR";
 const DEMO_OTP: &str = "0248";
