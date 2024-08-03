@@ -1,0 +1,108 @@
+* {
+  outline: none;
+}
+
+tooltip label {
+  font-size: 12pt;
+  font-weight: normal;
+}
+
+button,
+entry,
+infobar.error > revealer > box {
+  background-color: transparent;
+  background-image: none;
+}
+entry,
+combobox {
+  min-height: 47px;
+  box-shadow: 0px 0px 2px 0px white inset;
+}
+entry,
+combobox,
+combobox button.combo,
+infobar.error > revealer > box,
+popover.background contents,
+button.cancel,
+button.login {
+  border: none;
+  border-radius: 4px;
+}
+entry:disabled,
+button:disabled {
+  color: alpha(cyan, 0.8);
+}
+
+box.center entry,
+box.center combobox:hover,
+box.center button.toggle:hover,
+box.center button.cancel:hover,
+box.center button.login:hover,
+box.bottom button.destructive-action:hover {
+  box-shadow: 0px 0px 8px 0px white;
+}
+box.center button.toggle:checked {
+  box-shadow: 0px 0px 4px 0px white inset;
+}
+
+box.center {
+  background-color: alpha(black, 0.4);
+  box-shadow: 0px 0px 8px 0px black;
+  border-radius: 8px;
+  padding: 28px 16px 8px 16px;
+  font-size: 16pt;
+  font-weight: bold;
+}
+box.center > grid > label {
+  font-size: 12pt;
+}
+box.center label.message {
+  font-size: 18pt;
+}
+box.center button.cancel {
+  font-size: 14pt;
+  background-color: alpha(#cc4422, 0.7);
+}
+box.center button.login {
+  font-size: 14pt;
+  background-color: alpha(#2244cc, 0.7);
+}
+
+box.top label {
+  font-size: 14pt;
+  font-weight: bold;
+  color: alpha(white, 0.8);
+  margin: 20px;
+}
+
+box.bottom infobar.error label {
+  font-size: 14pt;
+  font-weight: bold;
+  color: alpha(red, 0.8);
+}
+
+box.bottom button.destructive-action {
+  font-size: 10pt;
+  font-weight: bold;
+  color: alpha(white, 0.7);
+  border: solid 1px alpha(white, 0.2);
+}
+box.bottom button.destructive-action:hover {
+  background-color: alpha(red, 0.7);
+}
+
+popover.background contents {
+  background-color: alpha(black, 0.4);
+}
+popover.background contents modelbutton {
+  font-size: 16pt;
+  color: alpha(white, 0.8);
+  background-color: transparent;
+  padding: 2px 4px;
+  min-height: 20px;
+  min-width: 28px;
+}
+popover.background contents modelbutton:hover {
+  background-color: alpha(#2244cc, 0.9);
+  color: white;
+}
