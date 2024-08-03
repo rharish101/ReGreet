@@ -90,10 +90,12 @@ pub struct Greeter {
     pub(super) sess_info: Option<UserSessInfo>,
     /// The updates from the model that are read by the view
     pub(super) updates: Updates,
+    /// Is it run as demo
+    pub(super) demo: bool,
 }
 
 impl Greeter {
-    pub(super) async fn new(config_path: &Path) -> Self {
+    pub(super) async fn new(config_path: &Path, demo: bool) -> Self {
         let config = Config::new(config_path);
 
         let updates = Updates {
@@ -110,7 +112,7 @@ impl Greeter {
             monitor: None,
         };
         let greetd_client = Arc::new(Mutex::new(
-            GreetdClient::new()
+            GreetdClient::new(demo)
                 .await
                 .expect("Couldn't initialize greetd client"),
         ));
@@ -121,6 +123,7 @@ impl Greeter {
             sess_info: None,
             config,
             updates,
+            demo,
         }
     }
 
@@ -188,6 +191,10 @@ impl Greeter {
     /// This reboots the PC.
     #[instrument(skip_all)]
     pub(super) fn reboot_click_handler(&self, sender: &AsyncComponentSender<Self>) {
+        if self.demo {
+            info!("demo: skip reboot");
+            return;
+        }
         info!("Rebooting");
         Self::run_cmd(&self.config.get_sys_commands().reboot, sender);
     }
@@ -197,6 +204,10 @@ impl Greeter {
     /// This shuts down the PC.
     #[instrument(skip_all)]
     pub(super) fn poweroff_click_handler(&self, sender: &AsyncComponentSender<Self>) {
+        if self.demo {
+            info!("demo: skip shutdown");
+            return;
+        }
         info!("Shutting down");
         Self::run_cmd(&self.config.get_sys_commands().poweroff, sender);
     }
@@ -522,9 +533,11 @@ impl Greeter {
             debug!("Updated cache with current user: {username}");
         }
 
-        info!("Saving cache to disk");
-        if let Err(err) = self.cache.save() {
-            error!("Error saving cache to disk: {err}");
+        if !self.demo {
+            info!("Saving cache to disk");
+            if let Err(err) = self.cache.save() {
+                error!("Error saving cache to disk: {err}");
+            }
         }
 
         // Start the session.

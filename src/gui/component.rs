@@ -125,6 +125,7 @@ fn setup_datetime_display(sender: &AsyncComponentSender<Greeter>) {
 pub struct GreeterInit {
     pub config_path: PathBuf,
     pub css_path: PathBuf,
+    pub demo: bool,
 }
 
 #[relm4::component(pub, async)]
@@ -343,7 +344,7 @@ impl AsyncComponent for Greeter {
         root: Self::Root,
         sender: AsyncComponentSender<Self>,
     ) -> AsyncComponentParts<Self> {
-        let mut model = Self::new(&input.config_path).await;
+        let mut model = Self::new(&input.config_path, input.demo).await;
         let widgets = view_output!();
 
         // Make the info bar permanently visible, since it was made invisible during init. The

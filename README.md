@@ -46,6 +46,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Respects `XDG_DATA_DIRS` environment variable
 * Respects fields `Hidden` and `NoDisplay` in session files
 * Picks up the first found session with the same name and in the same type (X11/Wayland). This allows for overriding system-provided session files.
+* Demo mode to run ReGreet without greetd for easier development.
 
 ## Requirements
 * Rust 1.64.0+ (for compilation only)
@@ -188,6 +189,8 @@ regreet --style /path/to/custom.css
 Please refer to the GTK4 docs on [CSS in GTK](https://docs.gtk.org/gtk4/css-overview.html) and [GTK CSS Properties](https://docs.gtk.org/gtk4/css-properties.html) to learn how to style a GTK4 app using CSS.
 For a general reference on CSS, please refer to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax).
 
+**Tip:** You might want to use [demo mode](#demo-mode) to test out your CSS before making it permanent.
+
 ### Changing Reboot/Shut Down Commands
 The default reboot and shut down commands use the `reboot` and `poweroff` binaries, which are present on most Linux systems.
 However, since the recommended way of using ReGreet is to avoid running it as root, the `reboot`/`poweroff` commands might not work on systems where superuser access is needed to run these commands.
@@ -229,6 +232,16 @@ pre-commit install
 
 Now, pre-commit should ensure that the code passes all linters locally before committing.
 This will save time when creating PRs, since these linters also run in CI, and thus fail code that hasn't been linted well.
+
+### Demo mode
+To aid development, a "demo" mode is included within ReGreet that runs ReGreet independent of greetd.
+Simply run ReGreet as follows:
+```sh
+regreet --demo
+```
+
+Since the demo mode doesn't use greetd, authentication is done using hardcoded credentials within the codebase.
+These credentials are logged with the warning log-level, so that you don't have to read the source code.
 
 ## Licenses
 This repository uses [REUSE](https://reuse.software/) to document licenses.

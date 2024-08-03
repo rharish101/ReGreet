@@ -49,6 +49,10 @@ struct Args {
     /// The path to the custom CSS stylesheet
     #[arg(short, long, value_name = "PATH", default_value = CSS_PATH)]
     style: PathBuf,
+
+    /// Run in demo mode
+    #[arg(long)]
+    demo: bool,
 }
 
 fn main() {
@@ -60,6 +64,7 @@ fn main() {
     app.run_async::<Greeter>(GreeterInit {
         config_path: args.config,
         css_path: args.style,
+        demo: args.demo,
     });
 }
 
