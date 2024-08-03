@@ -91,3 +91,6 @@ pub const SESSION_DIRS: &str = env_or!(
     "SESSION_DIRS",
     "/usr/share/xsessions:/usr/share/wayland-sessions"
 );
+
+/// Command prefix for X11 sessions to start the X server
+pub const X11_CMD_PREFIX: &str = env_or!("X11_CMD_PREFIX", "startx /usr/bin/env");
