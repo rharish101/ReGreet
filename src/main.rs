@@ -41,6 +41,10 @@ enum LogLevel {
 #[derive(Parser, Debug)]
 #[command(author, version, about)]
 struct Args {
+    /// The path to the log file
+    #[arg(short, long, value_name = "PATH", default_value = LOG_PATH)]
+    logs: PathBuf,
+
     /// The verbosity level of the logs
     #[arg(short, long, value_name = "LEVEL", default_value = "info")]
     log_level: LogLevel,
@@ -65,7 +69,7 @@ struct Args {
 fn main() {
     let args = Args::parse();
     // Keep the guard alive till the end of the function, since logging depends on this.
-    let _guard = init_logging(&args.log_level, args.verbose);
+    let _guard = init_logging(&args.logs, &args.log_level, args.verbose);
 
     let app = relm4::RelmApp::new(APP_ID);
     app.run_async::<Greeter>(GreeterInit {
@@ -76,8 +80,7 @@ fn main() {
 }
 
 /// Initialize the log file with file rotation.
-fn setup_log_file() -> IoResult<FileRotate<AppendCount>> {
-    let log_path = Path::new(LOG_PATH);
+fn setup_log_file(log_path: &Path) -> IoResult<FileRotate<AppendCount>> {
     if !log_path.exists() {
         if let Some(log_dir) = log_path.parent() {
             create_dir_all(log_dir)?;
@@ -102,7 +105,7 @@ fn setup_log_file() -> IoResult<FileRotate<AppendCount>> {
 }
 
 /// Initialize logging with file rotation.
-fn init_logging(log_level: &LogLevel, stdout: bool) -> Vec<WorkerGuard> {
+fn init_logging(log_path: &Path, log_level: &LogLevel, stdout: bool) -> Vec<WorkerGuard> {
     // Parse the log level string.
     let filter = match log_level {
         LogLevel::Off => LevelFilter::OFF,
@@ -125,7 +128,7 @@ fn init_logging(log_level: &LogLevel, stdout: bool) -> Vec<WorkerGuard> {
     // Log in a separate non-blocking thread, then return the guard (otherise the non-blocking
     // writer will immediately stop).
     let mut guards = Vec::new();
-    match setup_log_file() {
+    match setup_log_file(log_path) {
         Ok(file) => {
             let (file, guard) = non_blocking(file);
             guards.push(guard);
