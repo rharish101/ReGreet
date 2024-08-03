@@ -45,22 +45,17 @@ pub struct GreetdClient {
 impl GreetdClient {
     /// Initialize the socket to communicate with greetd.
     pub async fn new(demo: bool) -> IOResult<Self> {
-        let socket: Option<UnixStream> = match demo {
-            true => {
-                warn!(
-                    "Run as demo: [otp: {}, password: {}]",
-                    DEMO_OTP, DEMO_PASSWD
-                );
-                None
-            }
-            false => {
-                let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
-                    panic!(
-                        "Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",
-                    )
-                });
-                Some(UnixStream::connect(sock_path).await?)
-            }
+        let socket: Option<UnixStream> = if demo {
+            warn!(
+                "Run as demo: [otp: {}, password: {}]",
+                DEMO_OTP, DEMO_PASSWD
+            );
+            None
+        } else {
+            let sock_path = env::var(GREETD_SOCK_ENV_VAR).unwrap_or_else(|_| {
+                panic!("Missing environment variable '{GREETD_SOCK_ENV_VAR}'. Is greetd running?",)
+            });
+            Some(UnixStream::connect(sock_path).await?)
         };
 
         Ok(Self {
@@ -73,18 +68,17 @@ impl GreetdClient {
     pub async fn create_session(&mut self, username: &str) -> GreetdResult {
         info!("Creating session for username: {username}");
 
-        let resp: Response = match &mut self.socket {
-            Some(socket) => {
-                let msg = Request::CreateSession {
-                    username: username.to_string(),
-                };
-                msg.write_to(socket).await?;
-                Response::read_from(socket).await?
-            }
-            None => Response::AuthMessage {
+        let resp: Response = if let Some(socket) = &mut self.socket {
+            let msg = Request::CreateSession {
+                username: username.to_string(),
+            };
+            msg.write_to(socket).await?;
+            Response::read_from(socket).await?
+        } else {
+            Response::AuthMessage {
                 auth_message_type: AuthMessageType::Secret,
                 auth_message: DEMO_AUTH_MSG_OPT.to_string(),
-            },
+            }
         };
 
         match resp {
@@ -105,13 +99,12 @@ impl GreetdClient {
     pub async fn send_auth_response(&mut self, input: Option<String>) -> GreetdResult {
         info!("Sending password to greetd");
 
-        let resp: Response = match &mut self.socket {
-            Some(socket) => {
-                let msg = Request::PostAuthMessageResponse { response: input };
-                msg.write_to(socket).await?;
-                Response::read_from(socket).await?
-            }
-            None => match input.as_deref() {
+        let resp: Response = if let Some(socket) = &mut self.socket {
+            let msg = Request::PostAuthMessageResponse { response: input };
+            msg.write_to(socket).await?;
+            Response::read_from(socket).await?
+        } else {
+            match input.as_deref() {
                 Some(DEMO_OTP) => Response::AuthMessage {
                     auth_message_type: AuthMessageType::Secret,
                     auth_message: DEMO_AUTH_MSG_PASSWD.to_string(),
@@ -121,7 +114,7 @@ impl GreetdClient {
                     error_type: ErrorType::AuthError,
                     description: DEMO_AUTH_MSG_ERROR.to_string(),
                 },
-            },
+            }
         };
 
         match resp {
