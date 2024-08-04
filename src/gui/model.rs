@@ -26,7 +26,7 @@ use tokio::{sync::Mutex, time::sleep};
 use crate::cache::Cache;
 use crate::client::{AuthStatus, GreetdClient};
 use crate::config::Config;
-use crate::sysutil::SysUtil;
+use crate::sysutil::{SessionInfo, SessionType, SysUtil};
 
 use super::messages::{CommandMsg, UserSessInfo};
 
@@ -455,10 +455,10 @@ impl Greeter {
     }
 
     /// Get the currently selected session name (if available) and command.
-    fn get_current_session_cmd(
+    fn get_current_session_info(
         &mut self,
         sender: &AsyncComponentSender<Self>,
-    ) -> (Option<String>, Option<Vec<String>>) {
+    ) -> (Option<String>, Option<SessionInfo>) {
         let info = self.sess_info.as_ref().expect("No session info set yet");
         if self.updates.manual_sess_mode {
             debug!(
@@ -466,7 +466,13 @@ impl Greeter {
                 info.sess_text
             );
             if let Some(cmd) = shlex::split(info.sess_text.as_str()) {
-                (None, Some(cmd))
+                (
+                    None,
+                    Some(SessionInfo {
+                        command: cmd,
+                        sess_type: SessionType::Unknown,
+                    }),
+                )
             } else {
                 // This must be an invalid command.
                 self.display_error(
@@ -479,8 +485,8 @@ impl Greeter {
         } else if let Some(session) = &info.sess_id {
             // Get the currently selected session.
             debug!("Retrieved current session: {session}");
-            if let Some(cmd) = self.sys_util.get_sessions().get(session.as_str()) {
-                (Some(session.to_string()), Some(cmd.clone()))
+            if let Some(sess_info) = self.sys_util.get_sessions().get(session.as_str()) {
+                (Some(session.to_string()), Some(sess_info.clone()))
             } else {
                 // Shouldn't happen, unless there are no sessions available.
                 let error_msg = format!("Session '{session}' not found");
@@ -496,7 +502,13 @@ impl Greeter {
             };
             warn!("No entry found; using default login shell of user: {username}",);
             if let Some(cmd) = self.sys_util.get_shells().get(username.as_str()) {
-                (None, Some(cmd.clone()))
+                (
+                    None,
+                    Some(SessionInfo {
+                        command: cmd.clone(),
+                        sess_type: SessionType::Unknown,
+                    }),
+                )
             } else {
                 // No login shell exists.
                 let error_msg = "No session or login shell found";
@@ -509,16 +521,25 @@ impl Greeter {
     /// Start the session for the selected user.
     async fn start_session(&mut self, sender: &AsyncComponentSender<Self>) {
         // Get the session command.
-        let (session, cmd) = if let (session, Some(cmd)) = self.get_current_session_cmd(sender) {
-            (session, cmd)
+        let (session, info) = if let (session, Some(info)) = self.get_current_session_info(sender) {
+            (session, info)
         } else {
-            // Error handling should be inside `get_current_session_cmd`, so simply return.
+            // Error handling should be inside `get_current_session_info`, so simply return.
             return;
         };
 
         // Generate env string that will be passed to greetd when starting the session
         let env = self.config.get_env();
-        let mut environment = Vec::with_capacity(env.len());
+        let mut environment = Vec::with_capacity(env.len() + 1);
+        match info.sess_type {
+            SessionType::X11 => {
+                environment.push("XDG_SESSION_TYPE=x11".to_string());
+            }
+            SessionType::Wayland => {
+                environment.push("XDG_SESSION_TYPE=wayland".to_string());
+            }
+            SessionType::Unknown => {}
+        };
         for (k, v) in env {
             environment.push(format!("{}={}", k, v));
         }
@@ -543,7 +564,7 @@ impl Greeter {
             .greetd_client
             .lock()
             .await
-            .start_session(cmd, environment)
+            .start_session(info.command, environment)
             .await
             .unwrap_or_else(|err| panic!("Failed to start session: {err}"));
 
