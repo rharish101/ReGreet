@@ -15,9 +15,11 @@ use std::str::from_utf8;
 use glob::glob;
 use pwd::Passwd;
 use regex::Regex;
+use shlex::Shlex;
 use tracing::{debug, info, warn};
 
-use crate::constants::SESSION_DIRS;
+use crate::config::Config;
+use crate::constants::{WAYLAND_SESSION_DIRS, XSESSION_DIRS};
 
 /// Path to the file that contains min/max UID of a regular user
 pub const LOGIN_FILE: &str = "/etc/login.defs";
@@ -28,10 +30,23 @@ const DEFAULT_UID_MAX: u32 = 60000;
 /// XDG data directory variable name (parent directory for X11/Wayland sessions)
 const XDG_DIR_ENV_VAR: &str = "XDG_DATA_DIRS";
 
+#[derive(Clone, Copy)]
+pub enum SessionType {
+    X11,
+    Wayland,
+    Unknown,
+}
+
+#[derive(Clone)]
+pub struct SessionInfo {
+    pub command: Vec<String>,
+    pub sess_type: SessionType,
+}
+
 // Convenient aliases for used maps
 type UserMap = HashMap<String, String>;
 type ShellMap = HashMap<String, Vec<String>>;
-type SessionMap = HashMap<String, Vec<String>>;
+type SessionMap = HashMap<String, SessionInfo>;
 
 /// Stores info of all regular users and sessions
 pub struct SysUtil {
@@ -44,12 +59,21 @@ pub struct SysUtil {
 }
 
 impl SysUtil {
-    pub fn new() -> IOResult<Self> {
+    pub fn new(config: &Config) -> IOResult<Self> {
         let (users, shells) = Self::init_users()?;
+        let x11_cmd_prefix = config.get_sys_commands().x11_prefix.clone();
+        let mut sessions =
+            Self::init_sessions(XSESSION_DIRS, "xsessions", x11_cmd_prefix, SessionType::X11)?;
+        sessions.extend(Self::init_sessions(
+            WAYLAND_SESSION_DIRS,
+            "wayland-sessions",
+            Vec::new(),
+            SessionType::Wayland,
+        )?);
         Ok(Self {
             users,
             shells,
-            sessions: Self::init_sessions()?,
+            sessions,
         })
     }
 
@@ -154,7 +178,12 @@ impl SysUtil {
     ///
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
-    fn init_sessions() -> IOResult<SessionMap> {
+    fn init_sessions(
+        default_sess_dirs: &str,
+        xdg_sess_dir: &str,
+        cmd_prefix: Vec<String>,
+        sess_type: SessionType,
+    ) -> IOResult<SessionMap> {
         let mut found_session_names = HashSet::new();
         let mut sessions = HashMap::new();
 
@@ -164,14 +193,14 @@ impl SysUtil {
             debug!("Found XDG env var {XDG_DIR_ENV_VAR}: {sess_parent_dirs}");
             match sess_parent_dirs
                 .split(':')
-                .map(|parent_dir| format!("{parent_dir}/xsessions:{parent_dir}/wayland-sessions"))
+                .map(|parent_dir| format!("{parent_dir}/{xdg_sess_dir}"))
                 .reduce(|a, b| a + ":" + &b)
             {
-                None => SESSION_DIRS.to_string(),
+                None => default_sess_dirs.to_string(),
                 Some(dirs) => dirs,
             }
         } else {
-            SESSION_DIRS.to_string()
+            default_sess_dirs.to_string()
         };
 
         for sess_dir in session_dirs.split(':') {
@@ -254,7 +283,9 @@ impl SysUtil {
                 let cmd = if let Some(cmd_str) =
                     cmd_regex.captures(text).and_then(|capture| capture.get(1))
                 {
-                    if let Some(cmd) = shlex::split(cmd_str.as_str()) {
+                    let mut cmd = cmd_prefix.clone();
+                    cmd.extend(Shlex::new(cmd_str.as_str()));
+                    if cmd.len() > cmd_prefix.len() {
                         cmd
                     } else {
                         warn!(
@@ -305,7 +336,13 @@ impl SysUtil {
                     continue;
                 };
                 found_session_names.insert(fname_and_type);
-                sessions.insert(name.to_string(), cmd);
+                sessions.insert(
+                    name.to_string(),
+                    SessionInfo {
+                        command: cmd,
+                        sess_type,
+                    },
+                );
             }
         }
 
