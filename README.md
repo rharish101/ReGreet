@@ -33,6 +33,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Allows manual entry of username and session command
 * Remembers the last authenticated user
 * Automatically selects the last used session per user
+* Can also skip selecting the user/session and choose the last user and their last used session.
 * Allows setting environment variables for created sessions
 * Supports customizing:
     - Background image
@@ -175,6 +176,7 @@ Currently, the following can be configured:
 * Font
 * Reboot command
 * Shut down command
+* Whether to skip selecting the user/session and choose the last user and session.
 
 ### Custom CSS
 ReGreet supports loading CSS files to act as a custom global stylesheet.
