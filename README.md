@@ -37,6 +37,8 @@ the Roboto font. All screenshots are provided under the
 - Allows manual entry of username and session command
 - Remembers the last authenticated user
 - Automatically selects the last used session per user
+- Can also skip selecting the user/session and choose the last user and their
+  last used session.
 - Allows setting environment variables for created sessions
 - Supports customizing:
   - Background image
