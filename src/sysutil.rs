@@ -23,10 +23,23 @@ use crate::constants::{LOGIN_DEFS_PATHS, LOGIN_DEFS_UID_MAX, LOGIN_DEFS_UID_MIN,
 /// XDG data directory variable name (parent directory for X11/Wayland sessions)
 const XDG_DIR_ENV_VAR: &str = "XDG_DATA_DIRS";
 
+#[derive(Clone, Copy)]
+pub enum SessionType {
+    X11,
+    Wayland,
+    Unknown,
+}
+
+#[derive(Clone)]
+pub struct SessionInfo {
+    pub command: Vec<String>,
+    pub sess_type: SessionType,
+}
+
 // Convenient aliases for used maps
 type UserMap = HashMap<String, String>;
 type ShellMap = HashMap<String, Vec<String>>;
-type SessionMap = HashMap<String, Vec<String>>;
+type SessionMap = HashMap<String, SessionInfo>;
 
 /// Stores info of all regular users and sessions
 pub struct SysUtil {
@@ -290,7 +303,17 @@ impl SysUtil {
                     continue;
                 };
                 found_session_names.insert(fname_and_type);
-                sessions.insert(name.to_string(), cmd);
+                sessions.insert(
+                    name.to_string(),
+                    SessionInfo {
+                        command: cmd,
+                        sess_type: if is_x11 {
+                            SessionType::X11
+                        } else {
+                            SessionType::Wayland
+                        },
+                    },
+                );
             }
         }
 
