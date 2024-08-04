@@ -94,7 +94,7 @@ pub struct Greeter {
     pub(super) updates: Updates,
     /// Is it run as demo
     pub(super) demo: bool,
-
+    /// The clock widget
     pub(super) clock: Controller<Clock>,
 }
 

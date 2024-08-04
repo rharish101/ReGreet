@@ -131,6 +131,9 @@ fn default_greeting_msg() -> String {
 #[derive(Default, Deserialize)]
 pub struct Config {
     #[serde(default)]
+    skip_selection: bool,
+
+    #[serde(default)]
     appearance: AppearanceSettings,
 
     #[serde(default)]
@@ -183,5 +186,9 @@ impl Config {
 
     pub fn get_default_message(&self) -> &str {
         &self.appearance.greeting_msg
+    }
+
+    pub fn skip_selection(&self) -> bool {
+        self.skip_selection
     }
 }
