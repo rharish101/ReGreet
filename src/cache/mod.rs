@@ -70,6 +70,11 @@ impl Cache {
         self.last_user.as_deref()
     }
 
+    /// Check whether the cache has the last used session by the given user.
+    pub fn has_last_session(&self, user: &str) -> bool {
+        self.user_to_last_sess.contains(user)
+    }
+
     /// Get the last used session by the given user.
     pub fn get_last_session(&mut self, user: &str) -> Option<&str> {
         self.user_to_last_sess.get(user).map(String::as_str)
