@@ -90,7 +90,7 @@ These are:
 Environment Variable | Default | Use
 -- | -- | --
 GREETD\_CONFIG\_DIR | `/etc/greetd` | The configuration directory used by greetd
-CACHE\_DIR | `/var/cache/regreet` | The directory used to store cache
+STATE\_DIR | `/var/lib/regreet` | The directory used to store the ReGreet state/cache
 LOG\_DIR | `/var/log/regreet` | The directory used to store logs
 SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
 X11\_CMD\_PREFIX | `startx /usr/bin/env` | The default command prefix for X11 sessions to launch the X server (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
@@ -102,7 +102,7 @@ LOGIN\_DEFS\_UID\_MAX | 60000 | Override the assumed default if `login.defs` doe
 
 The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 
-Optionally, to set up the log and cache directories using systemd-tmpfiles, do either of the following:
+Optionally, to set up the log and state directories using systemd-tmpfiles, do either of the following:
 * Copy the configuration given in [systemd-tmpfiles.conf](./systemd-tmpfiles.conf) to `/etc/tmpfiles.d/regreet.conf` or `/usr/lib/tmpfiles.d/regreet.conf`.
 * Run the `systemd-tmpfiles` CLI:
     ```sh
@@ -251,7 +251,7 @@ Here, each command needs to be separated into a list containing the main command
 These commands can also be specified during compilation using the `REBOOT_CMD` and `POWEROFF_CMD` environment variables.
 
 ### Logging and Caching
-The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during installation).
+The state is are stored in `/var/lib/regreet/state.toml` (configurable during installation).
 It contains the last authenticated user and the last used session per user, which are automatically selected on next login.
 If the greeter is unable to write to this file, then it reverts to the default behaviour.
 
@@ -272,7 +272,7 @@ regreet --verbose
 ```
 
 The recommended configuration is to run greetd greeters as a separate user (`greeter` in the above examples).
-This can lead to insufficient permissions for either creating the cache/log directories, or writing to them.
+This can lead to insufficient permissions for either creating the state/log directories, or writing to them.
 To make use of the caching and logging features, please create the directories manually with the correct permissions, if not done during installation with systemd-tmpfiles.
 
 ## Contributing
