@@ -210,11 +210,21 @@ The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during 
 It contains the last authenticated user and the last used session per user, which are automatically selected on next login.
 If the greeter is unable to write to this file, then it reverts to the default behaviour.
 
-The log file is stored in `/var/log/regreet/log` (configurable during installation).
-Once the log file reaches a limit, it is compressed and rotated to `/var/log/regreet/log.X.gz`, where `X` is the index of the log file.
+By default, the logs are stored in `/var/log/regreet/log` (configurable during installation).
+You can use a log file in a different location with the `--logs` argument as follows:
+```sh
+regreet --logs /path/to/custom/regreet/logs
+```
+
+Once the log file reaches a limit, it is compressed and rotated to `log.X.gz` in the same directory, where `X` is the index of the log file.
 The higher the index, the older the log file.
 After reaching a limit, the oldest log file is removed.
+
 If the greeter is unable to write to this file or create files in the log directory, then it logs to stdout.
+You can also print the logs to stdout in addition to the log file, with the `--verbose` argument as follows:
+```sh
+regreet --verbose
+```
 
 The recommended configuration is to run greetd greeters as a separate user (`greeter` in the above examples).
 This can lead to insufficient permissions for either creating the cache/log directories, or writing to them.
