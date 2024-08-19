@@ -3,6 +3,6 @@ Upstream-Name: ReGreet
 Upstream-Contact: Harish Rajagopal <harish.rajagopals@gmail.com>
 Source: https://github.com/rharish101/ReGreet
 
-Files: Cargo.lock
+Files: Cargo.lock flake.lock
 Copyright: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
 License: CC0-1.0
