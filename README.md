@@ -230,28 +230,9 @@ The recommended configuration is to run greetd greeters as a separate user (`gre
 This can lead to insufficient permissions for either creating the cache/log directories, or writing to them.
 To make use of the caching and logging features, please create the directories manually with the correct permissions, if not done during installation with systemd-tmpfiles.
 
-## Contributing
-[pre-commit](https://pre-commit.com/) is used for managing hooks that run before each commit (such as clippy), to ensure code quality.
-Thus, this needs to be set up only when one intends to commit changes to git.
+# Contributing
 
-Firstly, [install pre-commit](https://pre-commit.com/#installation) itself.
-Next, install pre-commit hooks:
-```sh
-pre-commit install
-```
-
-Now, pre-commit should ensure that the code passes all linters locally before committing.
-This will save time when creating PRs, since these linters also run in CI, and thus fail code that hasn't been linted well.
-
-### Demo mode
-To aid development, a "demo" mode is included within ReGreet that runs ReGreet independent of greetd.
-Simply run ReGreet as follows:
-```sh
-regreet --demo
-```
-
-Since the demo mode doesn't use greetd, authentication is done using hardcoded credentials within the codebase.
-These credentials are logged with the warning log-level, so that you don't have to read the source code.
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Licenses
 This repository uses [REUSE](https://reuse.software/) to document licenses.
