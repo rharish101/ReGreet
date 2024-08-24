@@ -42,11 +42,11 @@ enum LogLevel {
 #[command(author, version, about)]
 struct Args {
     /// The path to the log file
-    #[arg(short, long, value_name = "PATH", default_value = LOG_PATH)]
+    #[arg(short = 'l', long, value_name = "PATH", default_value = LOG_PATH)]
     logs: PathBuf,
 
     /// The verbosity level of the logs
-    #[arg(short, long, value_name = "LEVEL", default_value = "info")]
+    #[arg(short = 'L', long, value_name = "LEVEL", default_value = "info")]
     log_level: LogLevel,
 
     /// Output all logs to stdout
