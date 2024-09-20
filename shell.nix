@@ -10,6 +10,8 @@ pkgs.mkShell {
     clippy
 
     pre-commit
+
+    greetd.greetd # fakegreet
   ];
 
   shellHook = ''
