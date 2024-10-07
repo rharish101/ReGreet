@@ -2,6 +2,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+# Whether to skip asking for username and session, and use the last used ones.
+skip_selection = false
+
 [background]
 # Path to the background image
 path = "/usr/share/backgrounds/greeter.jpg"

@@ -398,6 +398,13 @@ impl AsyncComponent for Greeter {
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
 
+        if let Some(user) = model.cache.get_last_user() {
+            if model.config.skip_selection() && model.cache.has_last_session(user) {
+                debug!("Skipping user & session selection and using those from the cache");
+                widgets.ui.login_button.emit_clicked();
+            }
+        }
+
         AsyncComponentParts { model, widgets }
     }
 
