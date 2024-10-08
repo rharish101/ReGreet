@@ -243,6 +243,12 @@ pre-commit install
 Now, pre-commit should ensure that the code passes all linters locally before committing.
 This will save time when creating PRs, since these linters also run in CI, and thus fail code that hasn't been linted well.
 
+### Nix/NixOS
+
+Simply run `nix develop .#vscode --command code .` to get VS Code set up with all the extensions you need. The default shell doesnt have any text editors configred.
+
+You can also use nix without flakes if you choose to.
+
 ### Demo mode
 To aid development, a "demo" mode is included within ReGreet that runs ReGreet independent of greetd.
 Simply run ReGreet as follows:
