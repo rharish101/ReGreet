@@ -19,7 +19,6 @@ use serde::{
     ser::SerializeMap,
     Deserialize, Deserializer, Serialize, Serializer,
 };
-use tracing::warn;
 
 /// Wrapper to enable (de)serialization
 pub(super) struct LruCache<K, V, S = DefaultHasher>(OrigLruCache<K, V, S>);

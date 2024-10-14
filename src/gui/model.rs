@@ -22,7 +22,6 @@ use relm4::{
     AsyncComponentSender,
 };
 use tokio::{sync::Mutex, time::sleep};
-use tracing::{debug, error, info, instrument, warn};
 
 use crate::cache::Cache;
 use crate::client::{AuthStatus, GreetdClient};

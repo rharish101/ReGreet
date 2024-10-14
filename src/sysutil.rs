@@ -17,7 +17,6 @@ use anyhow::Context;
 use glob::glob;
 use pwd::Passwd;
 use regex::Regex;
-use tracing::{debug, info, warn};
 
 use crate::constants::SESSION_DIRS;
 
@@ -64,12 +63,7 @@ impl SysUtil {
         let mut users = HashMap::new();
         let mut shells = HashMap::new();
 
-        for entry in Passwd::iter() {
-            if !normal_user.is_normal_user(entry.uid) {
-                // Non-standard user, eg. git or root
-                continue;
-            };
-
+        for entry in Passwd::iter().filter(|entry| normal_user.is_normal_user(entry.uid)) {
             // Use the actual system username if the "full name" is not available.
             let full_name = if let Some(gecos) = entry.gecos {
                 if gecos.is_empty() {

@@ -25,6 +25,9 @@ use tracing_subscriber::{
 use crate::constants::{APP_ID, CONFIG_PATH, CSS_PATH, LOG_PATH};
 use crate::gui::{Greeter, GreeterInit};
 
+#[macro_use]
+extern crate tracing;
+
 #[cfg(test)]
 #[macro_use]
 extern crate test_case;
