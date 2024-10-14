@@ -25,6 +25,10 @@ use tracing_subscriber::{
 use crate::constants::{APP_ID, CONFIG_PATH, CSS_PATH, LOG_PATH};
 use crate::gui::{Greeter, GreeterInit};
 
+#[cfg(test)]
+#[macro_use]
+extern crate test_case;
+
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
 
