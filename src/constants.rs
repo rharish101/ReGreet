@@ -4,8 +4,6 @@
 
 //! Stores constants that can be configured at compile time
 
-use const_format::concatcp;
-
 /// Get an environment variable during compile time, else return a default.
 macro_rules! env_or {
     ($name:expr, $default:expr) => {
@@ -48,6 +46,45 @@ pub const POWEROFF_CMD: &str = env_or!("POWEROFF_CMD", "poweroff");
 
 /// Default greeting message
 pub const GREETING_MSG: &str = "Welcome back!";
+
+/// `:`-separated search path for `login.defs` file.
+///
+/// By default this file is at `/etc/login.defs`, however some distros (e.g. Tumbleweed) move it to other locations.
+///
+/// See: <https://github.com/rharish101/ReGreet/issues/89>
+pub const LOGIN_DEFS_PATHS: &[&str] = {
+    const ENV: &str = env_or!("LOGIN_DEFS_PATHS", "/etc/login.defs:/usr/etc/login.defs");
+    &str_split!(ENV, ':')
+};
+
+lazy_static! {
+    /// Override the default `UID_MIN` in `login.defs`. If the string cannot be parsed at runtime, the value is `1_000`.
+    ///
+    /// This is not meant as a configuration facility. Only override this value if it's a different default in the
+    /// `passwd` suite.
+    pub static ref LOGIN_DEFS_UID_MIN: u64 = {
+        const DEFAULT: u64 = 1_000;
+        const ENV: &str = env_or!("LOGIN_DEFS_UID_MIN", formatcp!("{DEFAULT}"));
+
+        ENV.parse()
+            .map_err(|e| error!("Failed to parse LOGIN_DEFS_UID_MIN='{ENV}': {e}. This is a compile time mistake!"))
+            .unwrap_or(DEFAULT)
+    };
+
+    /// Override the default `UID_MAX` in `login.defs`. If the string cannot be parsed at runtime, the value is
+    /// `60_000`.
+    ///
+    /// This is not meant as a configuration facility. Only override this value if it's a different default in the
+    /// `passwd` suite.
+    pub static ref LOGIN_DEFS_UID_MAX: u64 = {
+        const DEFAULT: u64 = 60_000;
+        const ENV: &str = env_or!("LOGIN_DEFS_UID_MAX", formatcp!("{DEFAULT}"));
+
+        ENV.parse()
+            .map_err(|e| error!("Failed to parse LOGIN_DEFS_UID_MAX='{ENV}': {e}. This is a compile time mistake!"))
+            .unwrap_or(DEFAULT)
+    };
+}
 
 /// Directories separated by `:`, containing desktop files for X11/Wayland sessions
 pub const SESSION_DIRS: &str = env_or!(

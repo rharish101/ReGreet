@@ -4,21 +4,19 @@
 
 //! Helper for system utilities like users and sessions
 
-use std::collections::HashMap;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::env;
-use std::fs::read;
-use std::fs::read_to_string;
-use std::io::Result as IOResult;
+use std::fs::{read, read_to_string};
+use std::io;
+use std::ops::ControlFlow;
 use std::path::Path;
 use std::str::from_utf8;
 
-use anyhow::Context;
 use glob::glob;
 use pwd::Passwd;
 use regex::Regex;
 
-use crate::constants::SESSION_DIRS;
+use crate::constants::{LOGIN_DEFS_PATHS, LOGIN_DEFS_UID_MAX, LOGIN_DEFS_UID_MIN, SESSION_DIRS};
 
 /// XDG data directory variable name (parent directory for X11/Wayland sessions)
 const XDG_DIR_ENV_VAR: &str = "XDG_DATA_DIRS";
@@ -39,12 +37,26 @@ pub struct SysUtil {
 }
 
 impl SysUtil {
-    pub fn new() -> IOResult<Self> {
-        let normal_user = read_to_string(NormalUser::PATH)
-            .with_context(|| format!("Failed to read `{}`", NormalUser::PATH))
-            .map(|text| NormalUser::parse_login_defs(&text))
-            .map_err(|err| warn!("{err}"))
-            .unwrap_or_default();
+    pub fn new() -> io::Result<Self> {
+        let path = (*LOGIN_DEFS_PATHS).iter().try_for_each(|path| {
+            if let Ok(true) = AsRef::<Path>::as_ref(&path).try_exists() {
+                ControlFlow::Break(path)
+            } else {
+                ControlFlow::Continue(())
+            }
+        });
+
+        let normal_user = match path {
+            ControlFlow::Break(path) => read_to_string(path)
+                .map_err(|err| warn!("Failed to read '{path}': {err}"))
+                .map(|text| NormalUser::parse_login_defs(&text))
+                .unwrap_or_default(),
+            ControlFlow::Continue(()) => {
+                warn!("`login.defs` file not found in these paths: {LOGIN_DEFS_PATHS:?}",);
+
+                NormalUser::default()
+            }
+        };
 
         debug!("{normal_user:?}");
 
@@ -59,7 +71,7 @@ impl SysUtil {
     /// Get the list of regular users.
     ///
     /// These are defined as a list of users with UID between `UID_MIN` and `UID_MAX`.
-    fn init_users(normal_user: NormalUser) -> IOResult<(UserMap, ShellMap)> {
+    fn init_users(normal_user: NormalUser) -> io::Result<(UserMap, ShellMap)> {
         let mut users = HashMap::new();
         let mut shells = HashMap::new();
 
@@ -108,7 +120,7 @@ impl SysUtil {
     ///
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
-    fn init_sessions() -> IOResult<SessionMap> {
+    fn init_sessions() -> io::Result<SessionMap> {
         let mut found_session_names = HashSet::new();
         let mut sessions = HashMap::new();
 
@@ -299,21 +311,16 @@ struct NormalUser {
 impl Default for NormalUser {
     fn default() -> Self {
         Self {
-            min_uid: Self::MIN_DEFAULT,
-            max_uid: Self::MAX_DEFAULT,
+            min_uid: *LOGIN_DEFS_UID_MIN,
+            max_uid: *LOGIN_DEFS_UID_MAX,
         }
     }
 }
 
 impl NormalUser {
-    /// Path to a file that can be parsed by [`Self::parse_login_defs`].
-    pub const PATH: &'static str = "/etc/login.defs";
-
-    const MIN_DEFAULT: u64 = 1_000;
-    const MAX_DEFAULT: u64 = 60_000;
-
-    /// Parses the [`Self::PATH`] file content and looks for `UID_MIN` and `UID_MAX` definitions. If a definition is
-    /// missing or causes parsing errors, the default values [`Self::MIN_DEFAULT`] and [`Self::MAX_DEFAULT`] are used.
+    /// Parses the `login.defs` file content and looks for `UID_MIN` and `UID_MAX` definitions. If a definition is
+    /// missing or causes parsing errors, the default values [`struct@LOGIN_DEFS_UID_MIN`] and
+    /// [`struct@LOGIN_DEFS_UID_MAX`] are used.
     ///
     /// This parser is highly specific to parsing the 2 required values, thus it focuses on doing the least amout of
     /// compute required to extracting them.
@@ -350,8 +357,8 @@ impl NormalUser {
         }
 
         Self {
-            min_uid: min.unwrap_or(Self::MIN_DEFAULT),
-            max_uid: max.unwrap_or(Self::MAX_DEFAULT),
+            min_uid: min.unwrap_or(*LOGIN_DEFS_UID_MIN),
+            max_uid: max.unwrap_or(*LOGIN_DEFS_UID_MAX),
         }
     }
 
@@ -440,7 +447,7 @@ mod tests {
         #[test_case("0x" => None; "0x isn't a hex number")]
         #[test_case("10" => Some(10); "decimal")]
         #[test_case("0777" => Some(0o777); "octal")]
-        #[test_case("0xDeadBeef" => Some(0xDeadBeef); "hex")]
+        #[test_case("0xDeadBeef" => Some(0xdead_beef); "hex")]
         fn parse_number(num: &str) -> Option<u64> {
             NormalUser::parse_number(num)
         }
