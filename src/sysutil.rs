@@ -48,7 +48,9 @@ impl SysUtil {
 
         let normal_user = match path {
             ControlFlow::Break(path) => read_to_string(path)
-                .map_err(|err| warn!("Failed to read '{path}': {err}"))
+                .map_err(|err| {
+                    warn!("Failed to read login.defs from '{path}', using default values: {err}")
+                })
                 .map(|text| NormalUser::parse_login_defs(&text))
                 .unwrap_or_default(),
             ControlFlow::Continue(()) => {
@@ -304,15 +306,15 @@ impl SysUtil {
 /// parsing errors a fallback of [`Self::default`] should be used.
 #[derive(Debug, PartialEq, Eq)]
 struct NormalUser {
-    min_uid: u64,
-    max_uid: u64,
+    uid_min: u64,
+    uid_max: u64,
 }
 
 impl Default for NormalUser {
     fn default() -> Self {
         Self {
-            min_uid: *LOGIN_DEFS_UID_MIN,
-            max_uid: *LOGIN_DEFS_UID_MAX,
+            uid_min: *LOGIN_DEFS_UID_MIN,
+            uid_max: *LOGIN_DEFS_UID_MAX,
         }
     }
 }
@@ -357,8 +359,8 @@ impl NormalUser {
         }
 
         Self {
-            min_uid: min.unwrap_or(*LOGIN_DEFS_UID_MIN),
-            max_uid: max.unwrap_or(*LOGIN_DEFS_UID_MAX),
+            uid_min: min.unwrap_or(*LOGIN_DEFS_UID_MIN),
+            uid_max: max.unwrap_or(*LOGIN_DEFS_UID_MAX),
         }
     }
 
@@ -392,7 +394,7 @@ impl NormalUser {
     where
         T: Into<u64>,
     {
-        (self.min_uid..=self.max_uid).contains(&uid.into())
+        (self.uid_min..=self.uid_max).contains(&uid.into())
     }
 }
 
@@ -404,12 +406,12 @@ mod tests {
 
         #[test_case(
             &["UID_MIN 1", "UID_MAX 10"].join("\n")
-            => NormalUser { min_uid: 1, max_uid: 10 };
+            => NormalUser { uid_min: 1, uid_max: 10 };
             "both configured"
         )]
         #[test_case(
             &["UID_MAX 10", "UID_MIN 1"].join("\n")
-            => NormalUser { min_uid: 1, max_uid: 10 };
+            => NormalUser { uid_min: 1, uid_max: 10 };
             "reverse order"
         )]
         #[test_case(
@@ -419,7 +421,7 @@ mod tests {
             "UID_MAX 10",
             "UID_MIN 1",
             "MORE_TEXT 40"].join("\n")
-            => NormalUser { min_uid: 1, max_uid: 10 };
+            => NormalUser { uid_min: 1, uid_max: 10 };
             "complex file"
         )]
         #[test_case(
