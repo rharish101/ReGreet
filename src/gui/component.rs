@@ -5,16 +5,14 @@
 //! Setup for using the greeter as a Relm4 component
 
 use std::path::PathBuf;
-use std::time::Duration;
 
-use chrono::Local;
-
-use gtk::prelude::*;
 use relm4::{
-    component::{AsyncComponent, AsyncComponentParts, AsyncComponentSender},
-    gtk,
+    component::{AsyncComponent, AsyncComponentParts},
+    gtk::prelude::*,
+    prelude::*,
+    AsyncComponentSender,
 };
-use tokio::time::sleep;
+use tracing::{debug, info, warn};
 
 #[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
@@ -22,9 +20,6 @@ use crate::config::BgFit;
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
 use super::model::{Greeter, InputMode, Updates};
 use super::templates::Ui;
-
-const DATETIME_FMT: &str = "%a %R";
-const DATETIME_UPDATE_DELAY: u64 = 500;
 
 /// Load GTK settings from the greeter config.
 fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
@@ -101,25 +96,6 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     }
 }
 
-/// Set up auto updation for the datetime label.
-fn setup_datetime_display(sender: &AsyncComponentSender<Greeter>) {
-    // Set a timer in a separate thread that signals the main thread to update the time, so as to
-    // not block the GUI.
-    sender.command(|sender, shutdown| {
-        shutdown
-            .register(async move {
-                // Run it infinitely, since the clock always needs to stay updated.
-                loop {
-                    if sender.send(CommandMsg::UpdateTime).is_err() {
-                        warn!("Couldn't update datetime");
-                    };
-                    sleep(Duration::from_millis(DATETIME_UPDATE_DELAY)).await;
-                }
-            })
-            .drop_on_shutdown()
-    });
-}
-
 /// The info required to initialize the greeter
 pub struct GreeterInit {
     pub config_path: PathBuf,
@@ -145,11 +121,11 @@ impl AsyncComponent for Greeter {
             #[template]
             Ui {
                 #[template_child]
-                background { set_filename: model.config.get_background().clone() },
+                background { set_filename: model.config.get_background() },
+
                 #[template_child]
-                datetime_label {
-                    #[track(model.updates.changed(Updates::time()))]
-                    set_label: &model.updates.time
+                clock_frame {
+                    model.clock.widget(),
                 },
 
                 #[template_child]
@@ -392,7 +368,6 @@ impl AsyncComponent for Greeter {
         // full-screening.
         setup_settings(&model, &root);
         setup_users_sessions(&model, &widgets);
-        setup_datetime_display(&sender);
 
         if input.css_path.exists() {
             debug!("Loading custom CSS from file: {}", input.css_path.display());
@@ -450,17 +425,12 @@ impl AsyncComponent for Greeter {
         sender: AsyncComponentSender<Self>,
         _root: &Self::Root,
     ) {
-        if !matches!(msg, Self::CommandOutput::UpdateTime) {
-            debug!("Got command message: {msg:?}");
-        }
+        debug!("Got command message: {msg:?}");
 
         // Reset the tracker for update changes.
         self.updates.reset();
 
         match msg {
-            Self::CommandOutput::UpdateTime => self
-                .updates
-                .set_time(Local::now().format(DATETIME_FMT).to_string()),
             Self::CommandOutput::ClearErr => self.updates.set_error(None),
             Self::CommandOutput::HandleGreetdResponse(response) => {
                 self.handle_greetd_response(&sender, response).await

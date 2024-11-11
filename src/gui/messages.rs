@@ -63,8 +63,6 @@ pub enum InputMsg {
 #[derive(Debug)]
 /// The messages sent to the sender to run tasks in the background
 pub enum CommandMsg {
-    /// Update the clock.
-    UpdateTime,
     /// Clear the error message.
     ClearErr,
     /// Handle a response received from greetd

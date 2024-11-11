@@ -10,6 +10,7 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 
 use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD};
+use crate::gui::widget::clock::ClockConfig;
 use crate::tomlutils::load_toml;
 
 #[derive(Deserialize, Serialize)]
@@ -91,18 +92,31 @@ fn default_greeting_msg() -> String {
 }
 
 /// The configuration struct
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize)]
 pub struct Config {
     #[serde(default)]
     appearance: AppearanceSettings,
+
     #[serde(default)]
     env: HashMap<String, String>,
+
     #[serde(default)]
     background: Background,
+
     #[serde(default, rename = "GTK")]
     gtk: Option<GtkSettings>,
+
     #[serde(default)]
     commands: SystemCommands,
+
+    #[serde(default)]
+    pub(crate) widget: WidgetConfig,
+}
+
+#[derive(Deserialize, Default)]
+pub struct WidgetConfig {
+    #[serde(default)]
+    pub(crate) clock: ClockConfig,
 }
 
 impl Config {
@@ -114,8 +128,8 @@ impl Config {
         &self.env
     }
 
-    pub fn get_background(&self) -> &Option<String> {
-        &self.background.path
+    pub fn get_background(&self) -> Option<&str> {
+        self.background.path.as_deref()
     }
 
     #[cfg(feature = "gtk4_8")]
