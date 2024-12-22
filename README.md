@@ -181,6 +181,10 @@ Currently, the following can be configured:
 * Shut down command
 * X11 command prefix (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
 
+**NOTE:** For configuring other essential features, such as the keyboard layout/mapping, the choice of monitor to use, etc., please check out the configuration options for the wayland compositor that you are using to run ReGreet.
+For example, if you use Cage, check out the [Cage wiki](https://github.com/cage-kiosk/cage/wiki/Configuration).
+If you use Sway, check out the [Sway wiki](https://github.com/swaywm/sway/wiki#configuration).
+
 ### Custom CSS
 ReGreet supports loading CSS files to act as a custom global stylesheet.
 This enables one to do further customizations above what ReGreet supports through the config file.
