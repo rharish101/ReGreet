@@ -52,7 +52,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Rust 1.64.0+ (for compilation only)
 * greetd
 * GTK 4.0+
-* A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or [Sway](https://swaywm.org/))
+* A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or [Sway](https://swaywm.org/) or [Hyprland](https://hyprland.org/))
 
 **Note**: Please make sure you have all requirements installed, as having a greetd greeter constantly failing isn't as much fun as it sounds.
 
@@ -139,7 +139,7 @@ user = "greeter"
 ```
 The -s argument enables VT switching in cage (0.1.2 and newer only), which is highly recommended to prevent locking yourself out.
 
-If using Sway, create a sway config file (in a path such as `/etc/greetd/sway-config`) as follows:
+If using Sway, create a Sway config file (in a path such as `/etc/greetd/sway-config`) as follows:
 ```
 exec "regreet; swaymsg exit"
 include /etc/sway/config.d/*
@@ -155,6 +155,23 @@ user = "greeter"
 **NOTE**: If you find that ReGreet takes too much time to start up with Sway, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
 See this link for the fix.
 Alternatively, the solution proposed in [issue #34](https://github.com/rharish101/ReGreet/issues/34) may resolve it.
+
+If using Hyprland, create a Hyprland config file (in a path such as `/etc/greetd/hyprland-config`) as follows:
+```
+exec = sh -c "regreet; hyprctl dispatch exit"
+misc {
+    disable_hyprland_logo = true
+    disable_splash_rendering = true
+    disable_hyprland_qtutils_check = true
+}
+```
+
+Then, set Hyprland to use this config (whose path is shown here as `/path/to/custom/hyprland/config`) as the default greetd session:
+```toml
+[default_session]
+command = "hyprland --config /path/to/custom/hyprland/config"
+user = "greeter"
+```
 
 Restart greetd to use the new config.
 
@@ -184,6 +201,7 @@ Currently, the following can be configured:
 **NOTE:** For configuring other essential features, such as the keyboard layout/mapping, the choice of monitor to use, etc., please check out the configuration options for the wayland compositor that you are using to run ReGreet.
 For example, if you use Cage, check out the [Cage wiki](https://github.com/cage-kiosk/cage/wiki/Configuration).
 If you use Sway, check out the [Sway wiki](https://github.com/swaywm/sway/wiki#configuration).
+If you use Hyprland, check out the [Hyprland wiki](https://wiki.hyprland.org/).
 
 ### Custom CSS
 ReGreet supports loading CSS files to act as a custom global stylesheet.
