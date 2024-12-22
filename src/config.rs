@@ -114,7 +114,11 @@ pub struct Config {
 
 impl Config {
     pub fn new(path: &Path) -> Self {
-        load_toml(path)
+        let mut config: Self = load_toml(path);
+        if !config.env.contains_key("GDK_DEBUG") {
+            config.env.insert("GDK_DEBUG".into(), "no-portals".into());
+        }
+        config
     }
 
     pub fn get_env(&self) -> &HashMap<String, String> {
