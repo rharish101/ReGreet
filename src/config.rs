@@ -94,6 +94,8 @@ fn default_greeting_msg() -> String {
 #[derive(Default, Deserialize, Serialize)]
 pub struct Config {
     #[serde(default)]
+    skip_selection: bool,
+    #[serde(default)]
     appearance: AppearanceSettings,
     #[serde(default)]
     env: HashMap<String, String>,
@@ -133,5 +135,9 @@ impl Config {
 
     pub fn get_default_message(&self) -> String {
         self.appearance.greeting_msg.clone()
+    }
+
+    pub fn skip_selection(&self) -> bool {
+        self.skip_selection
     }
 }
