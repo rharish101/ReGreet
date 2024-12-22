@@ -2,4 +2,11 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
+# Cargo
 target/
+
+# Nix 
+result
+
+# fakegreet
+greetd.sock
