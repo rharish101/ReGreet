@@ -134,10 +134,11 @@ Edit the greetd config file (`/etc/greetd/config.toml`) to set regreet with a Wa
 For example, if using Cage:
 ```toml
 [default_session]
-command = "cage -s -- regreet"
+command = "cage -s -mlast -- regreet"
 user = "greeter"
 ```
-The -s argument enables VT switching in cage (0.1.2 and newer only), which is highly recommended to prevent locking yourself out.
+The `-s` argument enables VT switching in cage (0.1.2 and newer only), which is highly recommended to prevent locking yourself out.
+The `-mlast` argument tells Cage to use the last-connected monitor only, which is useful since ReGreet is a single-monitor application.
 
 If using Sway, create a Sway config file (in a path such as `/etc/greetd/sway-config`) as follows:
 ```
