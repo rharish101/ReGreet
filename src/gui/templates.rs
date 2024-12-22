@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! Templates for various GUI components
+#![allow(dead_code)] // Silence dead code warnings for UI code that isn't dead
 
 use gtk::prelude::*;
 use relm4::{gtk, RelmWidgetExt, WidgetTemplate};

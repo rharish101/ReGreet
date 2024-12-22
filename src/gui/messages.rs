@@ -4,7 +4,7 @@
 
 //! Message definitions for communication between the view and the model
 
-use derivative::Derivative;
+use educe::Educe;
 use greetd_ipc::Response;
 use relm4::gtk::{glib::GString, prelude::*, ComboBoxText, Entry};
 
@@ -39,12 +39,12 @@ impl UserSessInfo {
 }
 
 /// The messages sent by the view to the model
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Educe)]
+#[educe(Debug)]
 pub enum InputMsg {
     /// Login request
     Login {
-        #[derivative(Debug = "ignore")]
+        #[educe(Debug = "ignore")]
         input: String,
         info: UserSessInfo,
     },

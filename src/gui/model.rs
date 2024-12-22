@@ -133,7 +133,7 @@ impl Greeter {
         display_name: &str,
         sender: &AsyncComponentSender<Self>,
     ) {
-        let display = match Display::open(display_name) {
+        let display = match Display::open(Some(display_name)) {
             Some(display) => display,
             None => {
                 error!("Couldn't get display with name: {display_name}");
@@ -151,7 +151,6 @@ impl Greeter {
             })
             .filter(Monitor::is_valid)
         {
-            debug!("Found monitor: {monitor}");
             let sender = sender.clone();
             monitor.connect_invalidate(move |monitor| {
                 let display_name = monitor.display().name();
