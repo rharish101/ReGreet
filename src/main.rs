@@ -83,7 +83,7 @@ fn main() {
     let _guard = init_logging(&args.logs, &args.log_level, args.verbose);
 
     let app = relm4::RelmApp::new(APP_ID);
-    app.run_async::<Greeter>(GreeterInit {
+    app.with_args(vec![]).run_async::<Greeter>(GreeterInit {
         config_path: args.config,
         css_path: args.style,
         demo: args.demo,
