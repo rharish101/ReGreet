@@ -8,7 +8,6 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use chrono::Local;
-use tracing::{debug, info, warn};
 
 use gtk::prelude::*;
 use relm4::{

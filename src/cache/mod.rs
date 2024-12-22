@@ -11,7 +11,6 @@ use std::num::NonZeroUsize;
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
-use tracing::info;
 
 use self::lru::LruCache;
 use crate::constants::CACHE_PATH;

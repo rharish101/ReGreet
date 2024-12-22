@@ -17,19 +17,17 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install GTK4
       run: sudo apt update && sudo apt install libgtk-4-dev build-essential
-    - name: Install Rust
-      id: toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+    - run: rustup toolchain install stable --profile minimal
     - name: Restore build cache
-      uses: Swatinem/rust-cache@v2
+      uses: Swatinem/rust-cache@v2.7.5
+
+    - run: cargo build --verbose
+    - run: cargo test --verbose
+
     - name: pre-commit
-      uses: pre-commit/action@v3.0.0
-    - uses: pre-commit-ci/lite-action@v1.0.0
+      uses: pre-commit/action@v3.0.1
+    - uses: pre-commit-ci/lite-action@v1.1.0
       if: always()

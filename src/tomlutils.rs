@@ -9,7 +9,6 @@ use std::fs::read;
 use std::path::Path;
 
 use serde::de::DeserializeOwned;
-use tracing::{info, warn};
 
 /// Contains possible errors when loading/saving TOML from/to disk
 #[derive(thiserror::Error, Debug)]

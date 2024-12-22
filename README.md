@@ -94,6 +94,9 @@ LOG\_DIR | `/var/log/regreet` | The directory used to store logs
 SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
 REBOOT\_CMD | `reboot` | The default command used to reboot the system
 POWEROFF\_CMD | `poweroff` | The default command used to shut down the system
+LOGIN\_DEFS\_PATHS | `/etc/login.defs:/usr/etc/login.defs` | A colon (:) separated list of `login.defs` file paths. First found is loaded.
+LOGIN\_DEFS\_UID\_MIN | 1000 | Override the assumed default if `login.defs` doesnt specify `UID_MIN`.
+LOGIN\_DEFS\_UID\_MAX | 60000 | Override the assumed default if `login.defs` doesnt specify `UID_MAX`.
 
 The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 

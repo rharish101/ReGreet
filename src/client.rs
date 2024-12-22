@@ -12,8 +12,6 @@ use greetd_ipc::{
     AuthMessageType, ErrorType, Request, Response,
 };
 use tokio::net::UnixStream;
-use tracing::info;
-use tracing::warn;
 
 /// Environment variable containing the path to the greetd socket
 const GREETD_SOCK_ENV_VAR: &str = "GREETD_SOCK";
