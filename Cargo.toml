@@ -14,7 +14,6 @@ license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chrono = { version = "0.4.22", default-features = false }
 clap = { version = "4.5", features = ["derive"] }
 const_format = { version = "0.2.33", features = ["rust_1_64"] }
 educe = "0.6"
@@ -22,6 +21,8 @@ file-rotate = "0.7"
 glob = "0.3"
 greetd_ipc = { version = "0.10", features = ["tokio-codec"] }
 gtk4 = "0.9"
+humantime-serde = "1.1.1"
+jiff = "0.1.14"
 lazy_static = "1.5.0"
 lru = "0.12"
 pwd = "1.4.0"
