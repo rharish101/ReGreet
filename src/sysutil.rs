@@ -172,9 +172,9 @@ impl SysUtil {
                 false
             };
             let cmd_prefix = if is_x11 {
-                &config.get_sys_commands().x11_prefix
+                Some(&config.get_sys_commands().x11_prefix)
             } else {
-                &Vec::new()
+                None
             };
 
             debug!("Checking session directory: {sess_dir}");
@@ -250,9 +250,14 @@ impl SysUtil {
                 let cmd = if let Some(cmd_str) =
                     cmd_regex.captures(text).and_then(|capture| capture.get(1))
                 {
-                    let mut cmd = cmd_prefix.clone();
+                    let mut cmd = if let Some(prefix) = cmd_prefix {
+                        prefix.clone()
+                    } else {
+                        Vec::new()
+                    };
+                    let prefix_len = cmd.len();
                     cmd.extend(Shlex::new(cmd_str.as_str()));
-                    if cmd.len() > cmd_prefix.len() {
+                    if cmd.len() > prefix_len {
                         cmd
                     } else {
                         warn!(
