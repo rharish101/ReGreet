@@ -8,6 +8,9 @@ mod component;
 mod messages;
 mod model;
 mod templates;
+pub(crate) mod widget {
+    pub mod clock;
+}
 
 pub use component::GreeterInit;
 pub use model::Greeter;

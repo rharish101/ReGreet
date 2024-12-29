@@ -43,7 +43,7 @@ impl WidgetTemplate for Ui {
             add_overlay = &gtk::Frame {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Center,
-                inline_css: "background-color: @theme_bg_color",
+                add_css_class: "background",
 
                 gtk::Grid {
                     set_column_spacing: 15,
@@ -154,20 +154,19 @@ impl WidgetTemplate for Ui {
             },
 
             /// Clock widget
+            #[name = "clock_frame"]
             add_overlay = &gtk::Frame {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Start,
+
+                add_css_class: "background",
+
                 // Make it fit cleanly onto the top edge of the screen.
                 inline_css: "
                     border-top-right-radius: 0px;
                     border-top-left-radius: 0px;
                     border-top-width: 0px;
-                    background-color: @theme_bg_color;
                 ",
-
-                /// Label displaying the current date & time
-                #[name = "datetime_label"]
-                gtk::Label { set_width_request: 150 },
             },
 
             /// Collection of widgets appearing at the bottom
