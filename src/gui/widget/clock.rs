@@ -73,7 +73,7 @@ where
     D: Deserializer<'de>,
 {
     struct TimeZoneVisitor;
-    impl<'de> Visitor<'de> for TimeZoneVisitor {
+    impl Visitor<'_> for TimeZoneVisitor {
         type Value = TimeZone;
 
         fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
