@@ -19,7 +19,7 @@ use relm4::{
         gdk::{Display, Monitor},
         prelude::*,
     },
-    AsyncComponentSender,
+    AsyncComponentSender, Component, Controller,
 };
 use tokio::{sync::Mutex, time::sleep};
 
@@ -28,7 +28,10 @@ use crate::client::{AuthStatus, GreetdClient};
 use crate::config::Config;
 use crate::sysutil::{SessionInfo, SessionType, SysUtil};
 
-use super::messages::{CommandMsg, UserSessInfo};
+use super::{
+    messages::{CommandMsg, UserSessInfo},
+    widget::clock::Clock,
+};
 
 const ERROR_MSG_CLEAR_DELAY: u64 = 5;
 
@@ -91,6 +94,8 @@ pub struct Greeter {
     pub(super) updates: Updates,
     /// Is it run as demo
     pub(super) demo: bool,
+
+    pub(super) clock: Controller<Clock>,
 }
 
 impl Greeter {
@@ -115,6 +120,11 @@ impl Greeter {
                 .await
                 .expect("Couldn't initialize greetd client"),
         ));
+
+        let clock = Clock::builder()
+            .launch(config.widget.clock.clone())
+            .detach();
+
         Self {
             greetd_client,
             sys_util: SysUtil::new(&config).expect("Couldn't read available users and sessions"),
@@ -123,6 +133,7 @@ impl Greeter {
             config,
             updates,
             demo,
+            clock,
         }
     }
 

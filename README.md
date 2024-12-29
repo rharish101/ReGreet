@@ -36,6 +36,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Allows setting environment variables for created sessions
 * Supports customizing:
     - Background image
+    - Clock
     - GTK theme
     - Dark mode
     - Icon theme
@@ -190,6 +191,7 @@ Currently, the following can be configured:
 * How the background image fits the screen (needs GTK 4.8+ support compiled)
 * Environment variables for created sessions
 * Greeting message
+* Clock
 * GTK theme
 * Dark mode
 * Icon theme

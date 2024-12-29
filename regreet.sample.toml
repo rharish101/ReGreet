@@ -34,10 +34,10 @@ theme_name = "Adwaita"
 
 [commands]
 # The command used to reboot the system
-reboot = [ "systemctl", "reboot" ]
+reboot = ["systemctl", "reboot"]
 
 # The command used to shut down the system
-poweroff = [ "systemctl", "poweroff" ]
+poweroff = ["systemctl", "poweroff"]
 
 # The command prefix for X11 sessions to start the X server
 x11_prefix = [ "startx", "/usr/bin/env" ]
@@ -45,3 +45,20 @@ x11_prefix = [ "startx", "/usr/bin/env" ]
 [appearance]
 # The message that initially displays on startup
 greeting_msg = "Welcome back!"
+
+
+[widget.clock]
+# strftime format argument
+# See https://docs.rs/jiff/0.1.14/jiff/fmt/strtime/index.html#conversion-specifications
+format = "%a %H:%M"
+
+# How often to update the text
+resolution = "500ms"
+
+# Override system timezone (IANA Time Zone Database name, aka /etc/zoneinfo path)
+# Remove to use the system time zone.
+timezone = "America/Chicago"
+
+# Ask GTK to make the label at least this wide. This helps keeps the parent element layout and width consistent.
+# Experiment with different widths, the interpretation of this value is entirely up to GTK.
+label_width = 150
