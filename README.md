@@ -154,10 +154,6 @@ command = "sway --config /path/to/custom/sway/config"
 user = "greeter"
 ```
 
-**NOTE**: If you find that ReGreet takes too much time to start up with Sway, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
-See this link for the fix.
-Alternatively, the solution proposed in [issue #34](https://github.com/rharish101/ReGreet/issues/34) may resolve it.
-
 If using Hyprland, create a Hyprland config file (in a path such as `/etc/greetd/hyprland-config`) as follows:
 ```
 exec = sh -c "regreet; hyprctl dispatch exit"
@@ -176,6 +172,25 @@ user = "greeter"
 ```
 
 Restart greetd to use the new config.
+
+#### Startup delays
+If you find that ReGreet takes too much time to start up, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
+See this link for the fix.
+Alternatively, the solution proposed in [issue #34](https://github.com/rharish101/ReGreet/issues/34) may resolve it.
+
+As another option, you can disable portals by exporting environment variables for the Wayland compositor launched for ReGreet.
+Simply prepend `env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals` to the start of the default session command in `greetd.toml`.
+For example, with Cage, the session command would be:
+```toml
+[default_session]
+command = "env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals cage -s -mlast -- regreet"
+```
+
+If using Hyprland, you can also append the following lines to the Hyprland config for ReGreet:
+```
+env = GTK_USE_PORTAL,0
+env = GDK_DEBUG,no-portals
+```
 
 ### Configuration
 The configuration file must be in the [TOML](https://toml.io/) format.
