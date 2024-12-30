@@ -131,7 +131,7 @@ cargo build --all-features --release
 
 ## Usage
 ### Set as Default Session
-Edit the greetd config file (`/etc/greetd/config.toml`) to set regreet with a Wayland compositor as the default session.
+Edit the greetd config file (`/etc/greetd/config.toml`) to set ReGreet with a Wayland compositor as the default session.
 For example, if using Cage:
 ```toml
 [default_session]
