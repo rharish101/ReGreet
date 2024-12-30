@@ -36,7 +36,7 @@ pub const CACHE_PATH: &str = concatcp!(CACHE_DIR, "/state.toml");
 
 /// The directory for system log files
 const LOG_DIR: &str = env_or!("LOG_DIR", concatcp!("/var/log/", GREETER_NAME));
-/// Path to the cache file
+/// Path to the log file
 pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/log");
 
 /// Default command for rebooting
