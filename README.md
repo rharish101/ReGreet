@@ -186,7 +186,7 @@ For example, with Cage, the session command would be:
 command = "env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals cage -s -mlast -- regreet"
 ```
 
-If using Hyprland, you can also append the following lines to the Hyprland config for ReGreet:
+If using Hyprland, you can instead append the following lines to the Hyprland config for ReGreet:
 ```
 env = GTK_USE_PORTAL,0
 env = GDK_DEBUG,no-portals
