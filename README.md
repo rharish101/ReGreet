@@ -300,7 +300,7 @@ These credentials are logged with the warning log-level, so that you don't have 
 
 ## Licenses
 This repository uses [REUSE](https://reuse.software/) to document licenses.
-Each file either has a header containing copyright and license information, or has an entry in the [DEP5 file](https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/) at [.reuse/dep5](./.reuse/dep5).
+Each file either has a header containing copyright and license information, or has an entry in the [TOML file](https://reuse.software/spec-3.3/#reusetoml) at [REUSE.toml](./REUSE.toml).
 The license files that are used in this project can be found in the [LICENSES](./LICENSES) directory.
 
 A copy of the GPL-3.0-or-later license is placed in [LICENSE](./LICENSE), to signify that it constitutes the majority of the codebase, and for compatibility with GitHub.
