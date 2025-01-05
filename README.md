@@ -154,9 +154,9 @@ command = "sway --config /path/to/custom/sway/config"
 user = "greeter"
 ```
 
-If using Hyprland, create a Hyprland config file (in a path such as `/etc/greetd/hyprland-config`) as follows:
+If using Hyprland, create a Hyprland config file (in a path such as `/etc/greetd/hyprland.conf`) as follows:
 ```
-exec = sh -c "regreet; hyprctl dispatch exit"
+exec-once = regreet; hyprctl dispatch exit
 misc {
     disable_hyprland_logo = true
     disable_splash_rendering = true
@@ -167,7 +167,7 @@ misc {
 Then, set Hyprland to use this config (whose path is shown here as `/path/to/custom/hyprland/config`) as the default greetd session:
 ```toml
 [default_session]
-command = "hyprland --config /path/to/custom/hyprland/config"
+command = "Hyprland --config /path/to/custom/hyprland/config"
 user = "greeter"
 ```
 
