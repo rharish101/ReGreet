@@ -44,7 +44,7 @@ impl UserSessInfo {
 pub enum InputMsg {
     /// Login request
     Login {
-        #[educe(Debug = "ignore")]
+        #[educe(Debug(ignore))]
         input: String,
         info: UserSessInfo,
     },
