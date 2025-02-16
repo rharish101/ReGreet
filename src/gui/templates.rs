@@ -8,17 +8,6 @@
 use gtk::prelude::*;
 use relm4::{gtk, RelmWidgetExt, WidgetTemplate};
 
-/// Button that ends the greeter (eg. Reboot)
-#[relm4::widget_template(pub)]
-impl WidgetTemplate for EndButton {
-    view! {
-        gtk::Button {
-            set_focusable: true,
-            add_css_class: "destructive-action",
-        }
-    }
-}
-
 /// Label for an entry/combo box
 #[relm4::widget_template(pub)]
 impl WidgetTemplate for EntryLabel {
@@ -153,21 +142,33 @@ impl WidgetTemplate for Ui {
                 },
             },
 
-            /// Clock widget
-            #[name = "clock_frame"]
-            add_overlay = &gtk::Frame {
-                set_halign: gtk::Align::Center,
+            add_overlay = &gtk::CenterBox {
+                set_halign: gtk::Align::Fill,
                 set_valign: gtk::Align::Start,
+                set_hexpand:true,
 
-                add_css_class: "background",
+                /// Clock widget
+                #[name = "clock_frame"]
+                #[wrap(Some)]
+                set_center_widget = &gtk::Frame {
+                    add_css_class: "background",
 
-                // Make it fit cleanly onto the top edge of the screen.
-                inline_css: "
-                    border-top-right-radius: 0px;
-                    border-top-left-radius: 0px;
-                    border-top-width: 0px;
-                ",
+                    // Make it fit cleanly onto the top edge of the screen.
+                    inline_css: "
+                        border-top-right-radius: 0px;
+                        border-top-left-radius: 0px;
+                        border-top-width: 0px;
+                    ",
+                },
+
+                #[name = "panel_end"]
+                #[wrap(Some)]
+                set_end_widget = &gtk::Box {
+                    set_hexpand: true,
+                    set_halign: gtk::Align::End,
+                },
             },
+
 
             /// Collection of widgets appearing at the bottom
             add_overlay = &gtk::Box {
@@ -197,23 +198,6 @@ impl WidgetTemplate for Ui {
                             set_margin_end: 10,
                         },
                     }
-                },
-
-                /// Collection of buttons that close the greeter (eg. Reboot)
-                gtk::Box {
-                    set_halign: gtk::Align::Center,
-                    set_homogeneous: true,
-                    set_spacing: 15,
-
-                    /// Button to reboot
-                    #[name = "reboot_button"]
-                    #[template]
-                    EndButton { set_label: "Reboot" },
-
-                    /// Button to power-off
-                    #[name = "poweroff_button"]
-                    #[template]
-                    EndButton { set_label: "Power Off" },
                 },
             },
         }

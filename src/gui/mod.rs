@@ -10,7 +10,9 @@ mod model;
 mod templates;
 pub(crate) mod widget {
     pub mod clock;
+    pub mod power_menu;
 }
+pub mod icons;
 
 pub use component::GreeterInit;
 pub use model::Greeter;

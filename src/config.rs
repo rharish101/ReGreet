@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
 use crate::gui::widget::clock::ClockConfig;
+use crate::gui::widget::power_menu::PowerMenuConfig;
 use crate::tomlutils::load_toml;
 
 #[derive(Deserialize, Serialize)]
@@ -130,6 +131,9 @@ pub struct Config {
 pub struct WidgetConfig {
     #[serde(default)]
     pub(crate) clock: ClockConfig,
+
+    #[serde(default)]
+    pub(crate) power_menu: PowerMenuConfig,
 }
 
 impl Config {
@@ -160,5 +164,19 @@ impl Config {
 
     pub fn get_default_message(&self) -> String {
         self.appearance.greeting_msg.clone()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::tomlutils::{load_raw_toml, TomlFileResult};
+
+    use super::*;
+
+    #[test]
+    fn sample_config_works() -> TomlFileResult<()> {
+        let _: Config = load_raw_toml("regreet.sample.toml")?;
+
+        Ok(())
     }
 }

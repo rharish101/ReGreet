@@ -56,8 +56,6 @@ pub enum InputMsg {
     ToggleManualUser,
     /// Toggle manual entry of session.
     ToggleManualSess,
-    Reboot,
-    PowerOff,
 }
 
 #[derive(Debug)]
