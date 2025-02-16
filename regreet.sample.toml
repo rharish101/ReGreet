@@ -68,7 +68,10 @@ label_width = 150
 
 # The power menu widget
 [widget.power_menu.systemd] # systemd-aware
-# [widget.power_menu.unix] # Uses the generic shutdown command
 
 # Selects what actions are displayed in the power menu
 actions = ["poweroff", "reboot"]
+
+# You can also use this power menu type:
+#[widget.power_menu.unix]
+#actions = ["poweroff", "reboot", "halt"]
