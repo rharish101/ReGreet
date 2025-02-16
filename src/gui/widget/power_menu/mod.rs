@@ -7,16 +7,19 @@
 use relm4::prelude::*;
 use serde::Deserialize;
 use systemd::{SystemdPowerMenu, SystemdPowerMenuConfig};
+use unix::{UnixPowerMenu, UnixPowerMenuConfig};
 
 use crate::{fl, gui::icons};
 
 mod systemd;
+mod unix;
 
 #[derive(Deserialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum PowerMenuConfig {
     /// Systemd-aware widget
     Systemd(SystemdPowerMenuConfig),
+    Unix(UnixPowerMenuConfig),
 }
 
 impl Default for PowerMenuConfig {
@@ -25,8 +28,9 @@ impl Default for PowerMenuConfig {
     }
 }
 
-pub struct PowerMenu {
-    menu: AsyncController<SystemdPowerMenu>,
+pub enum PowerMenu {
+    Systemd(AsyncController<SystemdPowerMenu>),
+    Unix(AsyncController<UnixPowerMenu>),
 }
 
 #[relm4::component(pub)]
@@ -43,22 +47,39 @@ impl Component for PowerMenu {
 
             #[wrap(Some)]
             set_popover = &gtk::Popover {
-                model.menu.widget() { },
+                model.widget() { },
             },
         }
     }
 
     fn init(
-        PowerMenuConfig::Systemd(systemd_config): Self::Init,
+        init: Self::Init,
         root: Self::Root,
         _sender: ComponentSender<Self>,
     ) -> ComponentParts<Self> {
-        let model = Self {
-            menu: SystemdPowerMenu::builder().launch(systemd_config).detach(),
+        let model = match init {
+            Self::Init::Systemd(systemd_config) => {
+                Self::Systemd(SystemdPowerMenu::builder().launch(systemd_config).detach())
+            }
+
+            Self::Init::Unix(unix_power_menu_config) => Self::Unix(
+                UnixPowerMenu::builder()
+                    .launch(unix_power_menu_config)
+                    .detach(),
+            ),
         };
 
         let widgets = view_output!();
 
         ComponentParts { model, widgets }
+    }
+}
+
+impl PowerMenu {
+    fn widget(&self) -> &gtk::Box {
+        match self {
+            Self::Systemd(controller) => controller.widget(),
+            Self::Unix(controller) => controller.widget(),
+        }
     }
 }

@@ -8,6 +8,7 @@ dialog-cancel = Cancel
 
 power-menu-tooltip = Power menu
 power-menu-poweroff = Poweroff
+power-menu-halt = Halt
 power-menu-reboot = Reboot
 power-menu-reboot-firmware = Reboot into firmware
 power-menu-suspend = Suspend

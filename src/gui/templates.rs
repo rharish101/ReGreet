@@ -8,6 +8,8 @@
 use gtk::prelude::*;
 use relm4::{gtk, RelmWidgetExt, WidgetTemplate};
 
+use crate::gui::GAP;
+
 /// Label for an entry/combo box
 #[relm4::widget_template(pub)]
 impl WidgetTemplate for EntryLabel {
@@ -35,18 +37,18 @@ impl WidgetTemplate for Ui {
                 add_css_class: "background",
 
                 gtk::Grid {
-                    set_column_spacing: 15,
-                    set_margin_bottom: 15,
-                    set_margin_end: 15,
-                    set_margin_start: 15,
-                    set_margin_top: 15,
-                    set_row_spacing: 15,
+                    set_column_spacing: GAP as u32,
+                    set_margin_bottom: GAP,
+                    set_margin_end: GAP,
+                    set_margin_start: GAP,
+                    set_margin_top: GAP,
+                    set_row_spacing: GAP as u32,
                     set_width_request: 500,
 
                     /// Widget to display messages to the user
                     #[name = "message_label"]
                     attach[0, 0, 3, 1] = &gtk::Label {
-                        set_margin_bottom: 15,
+                        set_margin_bottom: GAP,
 
                         // Format all messages in boldface.
                         #[wrap(Some)]
@@ -121,7 +123,7 @@ impl WidgetTemplate for Ui {
                     /// Collection of action buttons (eg. Login)
                     attach[1, 3, 2, 1] = &gtk::Box {
                         set_halign: gtk::Align::End,
-                        set_spacing: 15,
+                        set_spacing: GAP,
 
                         /// Button to cancel password entry
                         #[name = "cancel_button"]
@@ -171,12 +173,10 @@ impl WidgetTemplate for Ui {
 
 
             /// Collection of widgets appearing at the bottom
-            add_overlay = &gtk::Box {
-                set_orientation: gtk::Orientation::Vertical,
+            add_overlay = &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::End,
-                set_margin_bottom: 15,
-                set_spacing: 15,
+                set_margin_bottom: GAP,
 
                 gtk::Frame {
                     /// Notification bar for error messages

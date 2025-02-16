@@ -16,3 +16,5 @@ pub mod icons;
 
 pub use component::GreeterInit;
 pub use model::Greeter;
+
+const GAP: i32 = 15;
