@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! A systemd-aware power menu widget.
+//!
+//! See supported actions as variants of [`Action`].
 
 use std::collections::HashSet;
 
@@ -13,61 +15,18 @@ use relm4::{
 };
 use tokio::process::Command;
 
-use crate::{demo, fl, i18n::lowercase_first_char};
+use crate::{demo, fl, gui::GAP, i18n::lowercase_first_char};
 
-macro_rules! actions {
-    ($($variant:ident = $systemctl_args:expr; $icon:ident),+ $(,)?) => {
-        #[derive(Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-        #[serde(rename_all = "snake_case")]
-        pub enum Action {
-            $($variant),+
-        }
-
-        impl Action {
-            /// Every variant as a [`Vec`].
-            pub fn all() -> Vec<Action> {
-                // It is easier to use a macro than adding a complex dependency.
-               [$(Action::$variant),+].into()
-            }
-
-            pub fn systemctl_args(&self) -> &'static[&'static str] {
-                match self {
-                    $(Self::$variant => &$systemctl_args[..]),+
-                }
-            }
-
-            pub fn icon(&self) -> &'static str {
-                match self {
-                    $(Self::$variant => crate::gui::icons::$icon),+
-                }
-            }
-        }
-
-    };
-}
-
-actions! {
-    Poweroff = ["poweroff"]; POWEROFF,
-    Reboot = ["reboot"]; REBOOT,
-    RebootFirmware = ["reboot", "--firmware-setup"]; REBOOT_FIRMWARE,
-    Suspend = ["suspend"]; SUSPEND,
-    Hibernate = ["hibernate"]; HIBERNATE,
-    HybridSleep = ["hybrid-sleep"]; HIBERNATE, // TODO: Is there an icon for it?
-}
-
-impl Action {
-    /// Returns the [`crate::fl!`] for the variant using this format: `fl!("power-menu-{snake-case}")`
-    fn fl(&self) -> String {
-        use Action as A;
-        match self {
-            A::Poweroff => fl!("power-menu-poweroff"),
-            A::Reboot => fl!("power-menu-reboot"),
-            A::RebootFirmware => fl!("power-menu-reboot-firmware"),
-            A::Suspend => fl!("power-menu-suspend"),
-            A::Hibernate => fl!("power-menu-hibernate"),
-            A::HybridSleep => fl!("power-menu-hybrid-sleep"),
-        }
-    }
+#[derive(Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[serde(rename_all = "kebab-case")]
+pub enum Action {
+    Poweroff,
+    Halt,
+    Reboot,
+    RebootFirmware,
+    Suspend,
+    Hibernate,
+    HybridSleep,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -77,14 +36,14 @@ pub struct SystemdPowerMenuConfig {
     /// E.g. `["poweroff", "reboot", "poweroff"]` Results in this order of widgets: Poweroff, Reboot.
     ///
     /// See [`Action`] for all available actions and what they do.
-    #[serde(default = "Action::all")]
+    #[serde(default = "Action::default_set")]
     pub actions: Vec<Action>,
 }
 
 impl Default for SystemdPowerMenuConfig {
     fn default() -> Self {
         Self {
-            actions: Action::all(),
+            actions: Action::default_set(),
         }
     }
 }
@@ -123,7 +82,7 @@ impl AsyncComponent for SystemdPowerMenu {
             #[name = "menu"]
             #[transition(Crossfade)]
             match model {
-                Self::Menu => &gtk::Box::new(gtk::Orientation::Vertical, 15) {
+                Self::Menu => &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
                     gtk::Label {
                         set_markup: &format!("<big><b>{}</b> (Systemd)</big>", fl!("power-menu-tooltip")),
                     },
@@ -132,10 +91,7 @@ impl AsyncComponent for SystemdPowerMenu {
                     append: &action_buttons(actions, sender.clone()),
                 },
 
-                Self::Confirm(action) => &gtk::Box {
-                    set_orientation: gtk::Orientation::Vertical,
-                    set_spacing: 15,
-
+                Self::Confirm(action) => &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
                     gtk::Label {
                         #[watch]
                         set_markup: &format!("<big><b>{}</b></big>",
@@ -146,11 +102,9 @@ impl AsyncComponent for SystemdPowerMenu {
                     },
 
                     gtk::Box {
-                        set_spacing: 15,
+                        set_spacing:GAP,
 
-                        gtk::Button {
-                            set_label: &fl!("dialog-cancel"),
-
+                        gtk::Button::with_label(&fl!("dialog-cancel")) {
                             connect_clicked => SystemdPowerMenuMsg::Cancel,
                         },
 
@@ -251,7 +205,7 @@ fn action_buttons(
             let icon = gtk::Image::new();
             icon.set_icon_name(Some(action.icon()));
 
-            let container = gtk::Box::new(gtk::Orientation::Horizontal, 15);
+            let container = gtk::Box::new(gtk::Orientation::Horizontal, GAP);
             container.append(&icon);
             container.append(&label);
 
@@ -264,4 +218,50 @@ fn action_buttons(
             acc.push(button);
             acc
         })
+}
+
+impl Action {
+    /// Sensible default set of actions that most users would find sufficient.
+    pub fn default_set() -> Vec<Action> {
+        [Self::Poweroff, Self::Reboot, Self::Suspend].into()
+    }
+
+    pub fn systemctl_args(&self) -> &'static [&'static str] {
+        match self {
+            Self::Poweroff => &["poweroff"],
+            Self::Halt => &["halt"],
+            Self::Reboot => &["reboot"],
+            Self::RebootFirmware => &["reboot", "--firmware-setup"],
+            Self::Suspend => &["suspend"],
+            Self::Hibernate => &["hibernate"],
+            Self::HybridSleep => &["hybrid-sleep"],
+        }
+    }
+
+    /// Returns the icon name for this action
+    pub fn icon(&self) -> &'static str {
+        match self {
+            Self::Poweroff => crate::gui::icons::POWEROFF,
+            Self::Halt => crate::gui::icons::POWEROFF,
+            Self::Reboot => crate::gui::icons::REBOOT,
+            Self::RebootFirmware => crate::gui::icons::REBOOT_FIRMWARE,
+            Self::Suspend => crate::gui::icons::SUSPEND,
+            Self::Hibernate => crate::gui::icons::HIBERNATE,
+            Self::HybridSleep => crate::gui::icons::HIBERNATE,
+        }
+    }
+
+    /// Returns the [`crate::fl!`] for the variant using this format: `fl!("power-menu-{kebab-case}")`
+    fn fl(&self) -> String {
+        use Action as A;
+        match self {
+            A::Poweroff => fl!("power-menu-poweroff"),
+            A::Halt => fl!("power-menu-halt"),
+            A::Reboot => fl!("power-menu-reboot"),
+            A::RebootFirmware => fl!("power-menu-reboot-firmware"),
+            A::Suspend => fl!("power-menu-suspend"),
+            A::Hibernate => fl!("power-menu-hibernate"),
+            A::HybridSleep => fl!("power-menu-hybrid-sleep"),
+        }
+    }
 }

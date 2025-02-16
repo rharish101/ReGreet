@@ -8,6 +8,7 @@ dialog-cancel = Відмінити
 
 power-menu-tooltip = Керування живленням
 power-menu-poweroff = Вимкнути
+power-menu-halt = Зупинити
 power-menu-reboot = Перезапустити
 power-menu-reboot-firmware = Перезапустити до меню загрузки
 power-menu-suspend = Сон

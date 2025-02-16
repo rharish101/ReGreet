@@ -9,7 +9,7 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
+use crate::constants::{GREETING_MSG, X11_CMD_PREFIX};
 use crate::gui::widget::clock::ClockConfig;
 use crate::gui::widget::power_menu::PowerMenuConfig;
 use crate::tomlutils::load_toml;
@@ -65,10 +65,6 @@ struct Background {
 /// Struct for various system commands
 #[derive(Deserialize, Serialize)]
 pub struct SystemCommands {
-    #[serde(default = "default_reboot_command")]
-    pub reboot: Vec<String>,
-    #[serde(default = "default_poweroff_command")]
-    pub poweroff: Vec<String>,
     #[serde(default = "default_x11_command_prefix")]
     pub x11_prefix: Vec<String>,
 }
@@ -76,19 +72,9 @@ pub struct SystemCommands {
 impl Default for SystemCommands {
     fn default() -> Self {
         SystemCommands {
-            reboot: default_reboot_command(),
-            poweroff: default_poweroff_command(),
             x11_prefix: default_x11_command_prefix(),
         }
     }
-}
-
-fn default_reboot_command() -> Vec<String> {
-    shlex::split(REBOOT_CMD).expect("Unable to lex reboot command")
-}
-
-fn default_poweroff_command() -> Vec<String> {
-    shlex::split(POWEROFF_CMD).expect("Unable to lex poweroff command")
 }
 
 fn default_x11_command_prefix() -> Vec<String> {

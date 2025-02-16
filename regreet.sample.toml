@@ -67,6 +67,8 @@ label_width = 150
 
 
 # The power menu widget
-[widget.power_menu.systemd]
-# Everything except `["hybernate", "hybrid-sleep"]`
-actions = ["poweroff", "reboot", "reboot-firmware", "suspend"]
+[widget.power_menu.systemd] # systemd-aware
+# [widget.power_menu.unix] # Uses the generic shutdown command
+
+# Selects what actions are displayed in the power menu
+actions = ["poweroff", "reboot"]

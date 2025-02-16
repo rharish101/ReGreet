@@ -56,5 +56,11 @@ macro_rules! fl {
 
 /// Lowercase the first letter of the string.
 pub(crate) fn lowercase_first_char(string: &str) -> String {
-    string[0..1].to_lowercase() + &string[1..]
+    let mut chars = string.chars();
+    let Some(uppercase) = chars.next() else {
+        return "".into();
+    };
+
+    let lowercase = uppercase.to_lowercase().to_string();
+    lowercase + chars.collect::<String>().as_str()
 }
