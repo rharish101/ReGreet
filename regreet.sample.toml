@@ -12,9 +12,11 @@ path = "/usr/share/backgrounds/greeter.jpg"
 # NOTE: This is ignored if ReGreet isn't compiled with GTK v4.8 support.
 fit = "Contain"
 
+
 # The entries defined in this section will be passed to the session as environment variables when it is started
 [env]
 ENV_VARIABLE = "value"
+
 
 [GTK]
 # Whether to use the dark theme
@@ -40,7 +42,7 @@ reboot = ["systemctl", "reboot"]
 poweroff = ["systemctl", "poweroff"]
 
 # The command prefix for X11 sessions to start the X server
-x11_prefix = [ "startx", "/usr/bin/env" ]
+x11_prefix = ["startx", "/usr/bin/env"]
 
 [appearance]
 # The message that initially displays on startup
@@ -62,3 +64,9 @@ timezone = "America/Chicago"
 # Ask GTK to make the label at least this wide. This helps keeps the parent element layout and width consistent.
 # Experiment with different widths, the interpretation of this value is entirely up to GTK.
 label_width = 150
+
+
+# The power menu widget
+[widget.power_menu.systemd]
+# Everything except `["hybernate", "hybrid-sleep"]`
+actions = ["poweroff", "reboot", "reboot-firmware", "suspend"]

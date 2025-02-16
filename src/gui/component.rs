@@ -22,7 +22,7 @@ use super::model::{Greeter, InputMode, Updates};
 use super::templates::Ui;
 
 /// Load GTK settings from the greeter config.
-fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
+fn setup_settings(model: &Greeter, root: &adw::ApplicationWindow) {
     let settings = root.settings();
     let config = if let Some(config) = model.config.get_gtk_settings() {
         config
@@ -113,7 +113,7 @@ impl AsyncComponent for Greeter {
     view! {
         // The `view!` macro needs a proper widget, not a template, as the root.
         #[name = "window"]
-        gtk::ApplicationWindow {
+        adw::ApplicationWindow {
             set_visible: true,
 
             // Name the UI widget, otherwise the inner children cannot be accessed by name.
@@ -126,6 +126,14 @@ impl AsyncComponent for Greeter {
                 #[template_child]
                 clock_frame {
                     model.clock.widget(),
+                },
+
+                #[template_child]
+                panel_end {
+                    append = model.power_menu.widget() {
+                        set_halign: gtk::Align::End,
+                        set_hexpand: false,
+                    },
                 },
 
                 #[template_child]
@@ -306,10 +314,6 @@ impl AsyncComponent for Greeter {
                     #[track(model.updates.changed(Updates::error()))]
                     set_label: model.updates.error.as_ref().unwrap_or(&"".to_string()),
                 },
-                #[template_child]
-                reboot_button { connect_clicked => Self::Input::Reboot },
-                #[template_child]
-                poweroff_button { connect_clicked => Self::Input::PowerOff },
             }
         }
     }
@@ -413,8 +417,6 @@ impl AsyncComponent for Greeter {
             Self::Input::ToggleManualSess => self
                 .updates
                 .set_manual_sess_mode(!self.updates.manual_sess_mode),
-            Self::Input::Reboot => self.reboot_click_handler(&sender),
-            Self::Input::PowerOff => self.poweroff_click_handler(&sender),
         }
     }
 

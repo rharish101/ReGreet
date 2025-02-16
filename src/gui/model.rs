@@ -9,7 +9,6 @@
 //! The main logic for the greeter
 
 use std::path::Path;
-use std::process::Command;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -30,7 +29,7 @@ use crate::sysutil::{SessionInfo, SessionType, SysUtil};
 
 use super::{
     messages::{CommandMsg, UserSessInfo},
-    widget::clock::Clock,
+    widget::{clock::Clock, power_menu::PowerMenu},
 };
 
 const ERROR_MSG_CLEAR_DELAY: u64 = 5;
@@ -96,6 +95,7 @@ pub struct Greeter {
     pub(super) demo: bool,
 
     pub(super) clock: Controller<Clock>,
+    pub(super) power_menu: Controller<PowerMenu>,
 }
 
 impl Greeter {
@@ -125,6 +125,10 @@ impl Greeter {
             .launch(config.widget.clock.clone())
             .detach();
 
+        let power_menu = PowerMenu::builder()
+            .launch(config.widget.power_menu.clone())
+            .detach();
+
         Self {
             greetd_client,
             sys_util: SysUtil::new(&config).expect("Couldn't read available users and sessions"),
@@ -134,6 +138,7 @@ impl Greeter {
             updates,
             demo,
             clock,
+            power_menu,
         }
     }
 
@@ -174,51 +179,6 @@ impl Greeter {
         }
 
         self.updates.set_monitor(chosen_monitor);
-    }
-
-    /// Run a command and log any errors in a background thread.
-    fn run_cmd(command: &[String], sender: &AsyncComponentSender<Self>) {
-        let mut process = Command::new(&command[0]);
-        process.args(command[1..].iter());
-        // Run the command and check its output in a separate thread, so as to not block the GUI.
-        sender.spawn_command(move |_| match process.output() {
-            Ok(output) => {
-                if !output.status.success() {
-                    if let Ok(err) = std::str::from_utf8(&output.stderr) {
-                        error!("Failed to launch command: {err}")
-                    } else {
-                        error!("Failed to launch command: {:?}", output.stderr)
-                    }
-                }
-            }
-            Err(err) => error!("Failed to launch command: {err}"),
-        });
-    }
-
-    /// Event handler for clicking the "Reboot" button
-    ///
-    /// This reboots the PC.
-    #[instrument(skip_all)]
-    pub(super) fn reboot_click_handler(&self, sender: &AsyncComponentSender<Self>) {
-        if self.demo {
-            info!("demo: skip reboot");
-            return;
-        }
-        info!("Rebooting");
-        Self::run_cmd(&self.config.get_sys_commands().reboot, sender);
-    }
-
-    /// Event handler for clicking the "Power-Off" button
-    ///
-    /// This shuts down the PC.
-    #[instrument(skip_all)]
-    pub(super) fn poweroff_click_handler(&self, sender: &AsyncComponentSender<Self>) {
-        if self.demo {
-            info!("demo: skip shutdown");
-            return;
-        }
-        info!("Shutting down");
-        Self::run_cmd(&self.config.get_sys_commands().poweroff, sender);
     }
 
     /// Event handler for clicking the "Cancel" button
