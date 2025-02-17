@@ -15,7 +15,11 @@ use relm4::{
 };
 use tokio::process::Command;
 
-use crate::{demo, fl, gui::GAP, i18n::lowercase_first_char};
+use crate::{
+    demo, fl,
+    gui::{widget::power_menu::header_label, GAP},
+    i18n::lowercase_first_char,
+};
 
 #[derive(Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[serde(rename_all = "kebab-case")]
@@ -83,9 +87,7 @@ impl AsyncComponent for SystemdPowerMenu {
             #[transition(Crossfade)]
             match model {
                 Self::Menu => &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
-                    gtk::Label {
-                        set_markup: &format!("<big><b>{}</b> (Systemd)</big>", fl!("power-menu-tooltip")),
-                    },
+                    header_label("Systemd") {},
 
                     #[iterate]
                     append: &action_buttons(actions, sender.clone()),

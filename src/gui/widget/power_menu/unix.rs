@@ -13,7 +13,7 @@ use tokio::process::Command;
 
 use crate::{
     demo, fl,
-    gui::{icons, GAP},
+    gui::{icons, widget::power_menu::header_label, GAP},
     i18n::lowercase_first_char,
 };
 
@@ -57,9 +57,7 @@ impl AsyncComponent for UnixPowerMenu {
             #[transition(Crossfade)]
             match model {
                 Self::Menu => &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
-                    gtk::Label {
-                        set_markup: &format!("<big><b>{}</b> (Unix)</big>", fl!("power-menu-tooltip"))
-                    },
+                    header_label("Unix") {},
 
                     #[iterate]
                     append: &action_buttons(actions, sender.clone()),
