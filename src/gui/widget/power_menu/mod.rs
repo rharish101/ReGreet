@@ -4,6 +4,8 @@
 
 //! A [serde-configurable][`PowerMenuConfig`] power menu.
 
+use adw::glib::markup_escape_text;
+use custom::{CustomPowerMenu, CustomPowerMenuConfig};
 use relm4::prelude::*;
 use serde::Deserialize;
 use systemd::{SystemdPowerMenu, SystemdPowerMenuConfig};
@@ -11,6 +13,7 @@ use unix::{UnixPowerMenu, UnixPowerMenuConfig};
 
 use crate::{fl, gui::icons};
 
+mod custom;
 mod systemd;
 mod unix;
 
@@ -20,6 +23,7 @@ pub enum PowerMenuConfig {
     /// Systemd-aware widget
     Systemd(SystemdPowerMenuConfig),
     Unix(UnixPowerMenuConfig),
+    Custom(CustomPowerMenuConfig),
 }
 
 impl Default for PowerMenuConfig {
@@ -31,6 +35,7 @@ impl Default for PowerMenuConfig {
 pub enum PowerMenu {
     Systemd(AsyncController<SystemdPowerMenu>),
     Unix(AsyncController<UnixPowerMenu>),
+    Custom(AsyncController<CustomPowerMenu>),
 }
 
 #[relm4::component(pub)]
@@ -67,6 +72,12 @@ impl Component for PowerMenu {
                     .launch(unix_power_menu_config)
                     .detach(),
             ),
+
+            Self::Init::Custom(custom_power_menu_config) => Self::Custom(
+                CustomPowerMenu::builder()
+                    .launch(custom_power_menu_config)
+                    .detach(),
+            ),
         };
 
         let widgets = view_output!();
@@ -80,6 +91,17 @@ impl PowerMenu {
         match self {
             Self::Systemd(controller) => controller.widget(),
             Self::Unix(controller) => controller.widget(),
+            Self::Custom(controller) => controller.widget(),
         }
     }
+}
+
+fn header_label(backend: &str) -> gtk::Label {
+    let label = gtk::Label::new(None);
+    label.set_markup(&format!(
+        "<big><b>{}</b></big>\n<small>Backend: {backend}</small>",
+        markup_escape_text(&fl!("power-menu-tooltip"))
+    ));
+
+    label
 }
