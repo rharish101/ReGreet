@@ -3,6 +3,32 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 //! A [serde-configurable][`PowerMenuConfig`] power menu.
+//!
+//! See submodules for information on how to configure each power menu backend.
+//!
+//! ## Implementing a custom power menu backend
+//!
+//! Users of ReGreet can use the [`custom`] backend to specify arbitrary commands you want to run. Although this is not
+//! intended, nothing stops you from adding entries unrelated to power management.
+//!
+//! However, if you want to add support for another init system, for example, it is best to implement a custom backend.
+//! Fortunately, this is easy to do.
+//!
+//! You will need to create a config for this backend. Most likely, only having a single `actions: Vec<Action>` field
+//! will be sufficient. For forward compatibility, please do not skip creating a `struct {}` to hold the config (exactly
+//! the `{}` struct format). Having this struct allows future maintainers to add or rename fields more easily without
+//! having to deal with config structure migrations.
+//!
+//! Make sure to implement sensible defaults for the entire struct. In cases where a default value should be inferred
+//! after the config is parsed, use an [`Option`] to detect that the user did not set the value and generate the default
+//! in the [`PowerMenuInit`] implementation.
+//!
+//! Finally, implement a coversion from your custom config struct using the [`PowerMenuInit`] trait. The [`Action`] can
+//! be used to infer a lot of information such as the [icon](`Action::icon`) and the [translated label](`Action::fl`).
+//! The confirmation requirement logic defaults to checking if the action
+//! [involves a poweroff](`Action::is_like_poweroff`).
+//!
+//! Lastly, add your config type as a variant to the [`PowerMenuConfig`].
 
 use custom::CustomPowerMenuConfig;
 use relm4::{
@@ -72,8 +98,8 @@ pub enum MenuState {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PowerMenuMsg {
-    /// Sent when the user selected a power menu button. If the action requires confirmation (involves a poweroff of the
-    /// system) a confirmation screen is shown ([`PowerMenu::Confirm`] state).
+    /// Sent when the user selected a power menu button. If the action [requires confirmation](`Command::confirm`)
+    /// a confirmation screen is shown ([`MenuState::Confirm`] state).
     Request(usize),
 
     /// A confirmation of a [`PowerMenuMsg::Request`] was cancelled. Has no effect if no confirmation is requested.
@@ -322,6 +348,8 @@ impl Action {
         }
     }
 
+    /// Returns `true` if executing this action would power off the system (meaning reboot counts). Putting the system to
+    /// sleep does not count as it can be easily undone by waking up the system.
     pub const fn is_like_poweroff(&self) -> bool {
         matches!(
             self,
@@ -330,6 +358,7 @@ impl Action {
     }
 }
 
+/// A convenience trait that converts any power menu config into a set of information that the generic UI can display.
 trait PowerMenuInit {
     fn backend(&self) -> String;
     fn commands(self) -> Vec<Command>;

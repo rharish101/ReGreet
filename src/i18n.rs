@@ -4,7 +4,9 @@
 
 //! # Internationalization
 //!
-//! Firstly Initialize the language selection with [`init`]. Then use the [`fl`] macro to request a string by id.
+//! Firstly Initialize the language selection with [`init`]. Then use the [`fl!`] macro to request a string by id.
+//!
+//! [`fl!`]: crate::fl
 
 use std::sync::LazyLock;
 

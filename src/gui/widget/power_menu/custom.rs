@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! A fully customizable power menu widget.
+//! A fully customizable power menu backend.
 
 use super::{Action, PowerMenuInit};
 
@@ -11,13 +11,24 @@ use super::{Action, PowerMenuInit};
 /// A fully-customizable power menu. You can run arbitrary commands and set labels for them. See [`Command`] for a list
 /// of all properties that can be configured
 pub struct CustomPowerMenuConfig {
+    /// A string label in the UI that indicates the backend this menu uses.
+    ///
+    /// For example, if you implement the power menu using `runit` commands, set the backend to Runit.
     backend: String,
     commands: Vec<Command>,
 }
 
+/// A set of customizations that can be done to the power menu item.
+///
+/// Setting [`Self::title`] to [`Title::Action`] allows ReGreet to infer the translated label, the icon to use, and the
+/// need to confirm the action.
+///
+/// However, if the power menu item does not fit any of the known to ReGreet [`Action`]s, you can use the
+/// [`Title::Label`] variant and optionally specify the [`Self::confirm`] and the [`Self::icon`].
 #[derive(Deserialize, Clone)]
 pub struct Command {
-    /// The title of the action.
+    /// The title of the action. This field is flattened in the config, so instead of setting `*command*.title.action`,
+    /// set `*command*.action`.
     #[serde(flatten)]
     title: Title,
 
@@ -27,11 +38,17 @@ pub struct Command {
 
     /// If `true`, a confirmation will be shown before the [`Self::command`] is executed.
     ///
+    /// The [`Option`] is handled according to these rules:
+    ///
     /// If [`Some`], use the value. Otherwise, try to derive the value from the [`Title::Action`], falling back to
     /// `false`. Actions that involve a poweroff are inferred to require confirmation.
     confirm: Option<bool>,
 
     /// The icon name to set for this action. A list of installed icons can be looked up using the `icon-library` app.
+    ///
+    /// If [`None`], the icon is inferred from the value of [`Title::Action`], falling back to no icon.
+    ///
+    /// An empty string can be used to disable the icon for this item.
     icon: Option<String>,
 }
 

@@ -235,6 +235,8 @@ Currently, the following can be configured:
 * Power menu
 * X11 command prefix (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
 
+Refer to [the configuration documentation](./docs/CONFIG.md) for more detail.
+
 ### Widgets
 
 Widgets are additional UI elements that do not interact with `greetd`. Their configuration is under the `[widget]` key.
