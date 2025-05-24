@@ -157,6 +157,15 @@ impl SysUtil {
             SESSION_DIRS.to_string()
         };
 
+        // The session launch command is specified as: Exec=command arg1 arg2...
+        let cmd_regex = Regex::new(r"Exec=(.*)").expect("Invalid regex for session command");
+        // The session name is specified as: Name=My Session
+        let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
+
+        // Hiding could be either as Hidden=true or NoDisplay=true
+        let hidden_regex = Regex::new(r"Hidden=(.*)").expect("Invalid regex for hidden");
+        let no_display_regex = Regex::new(r"NoDisplay=(.*)").expect("Invalid regex for no display");
+
         for sess_dir in session_dirs.split(':') {
             let sess_dir_path = Path::new(sess_dir);
             let sess_parent_dir = if let Some(sess_parent_dir) = sess_dir_path.parent() {
@@ -211,17 +220,6 @@ impl SysUtil {
                     );
                     continue;
                 };
-
-                // The session launch command is specified as: Exec=command arg1 arg2...
-                let cmd_regex =
-                    Regex::new(r"Exec=(.*)").expect("Invalid regex for session command");
-                // The session name is specified as: Name=My Session
-                let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
-
-                // Hiding could be either as Hidden=true or NoDisplay=true
-                let hidden_regex = Regex::new(r"Hidden=(.*)").expect("Invalid regex for hidden");
-                let no_display_regex =
-                    Regex::new(r"NoDisplay=(.*)").expect("Invalid regex for no display");
 
                 let hidden: bool = if let Some(hidden_str) = hidden_regex
                     .captures(text)
