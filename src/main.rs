@@ -7,15 +7,18 @@ mod client;
 mod config;
 mod constants;
 mod gui;
+mod i18n;
 mod sysutil;
 mod tomlutils;
 
 use std::fs::{create_dir_all, OpenOptions};
 use std::io::{Result as IoResult, Write};
 use std::path::{Path, PathBuf};
+use std::sync::OnceLock;
 
 use clap::{Parser, ValueEnum};
 use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, FileRotate};
+use i18n_embed::DesktopLanguageRequester;
 use tracing::subscriber::set_global_default;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{
@@ -31,6 +34,8 @@ extern crate tracing;
 extern crate lazy_static;
 #[macro_use]
 extern crate const_format;
+#[macro_use(Deserialize)]
+extern crate serde;
 
 #[cfg(test)]
 #[macro_use]
@@ -38,6 +43,13 @@ extern crate test_case;
 
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
+
+static DEMO: OnceLock<bool> = OnceLock::new();
+
+/// Get the demo mode status
+fn demo() -> bool {
+    *DEMO.get().unwrap_or(&false)
+}
 
 #[derive(Clone, Debug, ValueEnum)]
 enum LogLevel {
@@ -78,7 +90,11 @@ struct Args {
 }
 
 fn main() {
+    i18n::init(&DesktopLanguageRequester::requested_languages());
+
     let args = Args::parse();
+    DEMO.get_or_init(|| args.demo);
+
     // Keep the guard alive till the end of the function, since logging depends on this.
     let _guard = init_logging(&args.logs, &args.log_level, args.verbose);
 

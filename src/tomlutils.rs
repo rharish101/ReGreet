@@ -17,16 +17,16 @@ pub enum TomlFileError {
     IO(#[from] std::io::Error),
     #[error("Error decoding UTF-8")]
     Utf8(#[from] std::str::Utf8Error),
-    #[error("Error decoding TOML file contents")]
+    #[error("Error decoding TOML file contents: {0}")]
     TomlDecode(#[from] toml::de::Error),
-    #[error("Error encoding into TOML")]
+    #[error("Error encoding into TOML: {0}")]
     TomlEncode(#[from] toml::ser::Error),
 }
 
 pub type TomlFileResult<T> = Result<T, TomlFileError>;
 
 /// Load the TOML file from disk without any checks.
-fn load_raw_toml<T: DeserializeOwned>(path: &Path) -> TomlFileResult<T> {
+pub(crate) fn load_raw_toml<T: DeserializeOwned, P: AsRef<Path>>(path: P) -> TomlFileResult<T> {
     Ok(toml::from_str(std::str::from_utf8(
         read(path)?.as_slice(),
     )?)?)

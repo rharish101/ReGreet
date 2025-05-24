@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install GTK4
-      run: sudo apt update && sudo apt install libgtk-4-dev build-essential
+      run: sudo apt update && sudo apt install libgtk-4-dev build-essential libadwaita-1-dev
     - run: rustup toolchain install 1.75 --profile minimal
     - name: Restore build cache
       uses: Swatinem/rust-cache@v2.7.5
