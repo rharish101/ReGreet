@@ -2,9 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! A power menu widget that uses the generic `man 8 shutdown` linux command.
-//!
-//! See supported actions as variants of [`Action`].
+//! A power menu backend that uses the generic `man 8 shutdown` linux command.
 
 use std::collections::HashSet;
 
@@ -14,10 +12,15 @@ use super::{Action, Command, PowerMenuInit};
 
 #[derive(Deserialize, Clone)]
 pub struct UnixPowerMenuConfig {
-    /// The list of actions to show. Order is preserved. The first unique occurance is used, with duplicates discarded.
+    /// The list of actions to show. Order is preserved.
+    ///
+    /// The first unique occurance is used, with duplicates discarded.
     /// E.g. `["poweroff", "reboot", "poweroff"]` Results in this order of widgets: Poweroff, Reboot.
     ///
-    /// Please note that only `poweroff`, `reboot`, and `halt` are supported by the unix `shutdown` command.
+    /// The button labels, icons and `systemctl` commands are automatically selected based on the action you specify.
+    ///
+    /// Please note that only `poweroff`, `reboot`, and `halt` are supported by the unix `shutdown` command. Other
+    /// actions are silently filtered out.
     #[serde(default = "default_actions")]
     actions: Vec<Action>,
 }
@@ -60,7 +63,10 @@ impl PowerMenuInit for UnixPowerMenuConfig {
                         "--halt".to_string(),
                         "now".to_string(),
                     ],
-                    _ => return acc,
+                    unsupported => {
+                        info!("{unsupported:?} is not supported in the Unix power menu backend.");
+                        return acc;
+                    }
                 };
 
                 acc.push(Command::new(

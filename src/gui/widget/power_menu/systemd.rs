@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-//! A systemd-aware power menu widget.
+//! The Systemd power menu backend.
 //!
 //! See supported actions as variants of [`Action`].
 
@@ -15,8 +15,12 @@ use super::{Action, Command, PowerMenuInit};
 #[derive(Deserialize, Debug, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct SystemdPowerMenuConfig {
-    /// The list of actions to show. Order is preserved. The first unique occurance is used, with duplicates discarded.
+    /// The list of actions to show. Order is preserved.
+    ///
+    /// The first unique occurance is used, with duplicates discarded.
     /// E.g. `["poweroff", "reboot", "poweroff"]` Results in this order of widgets: Poweroff, Reboot.
+    ///
+    /// The button labels, icons and `systemctl` commands are automatically selected based on the action you specify.
     #[serde(default = "default_actions")]
     pub actions: Vec<Action>,
 }
