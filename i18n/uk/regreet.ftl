@@ -15,3 +15,7 @@ power-menu-suspend = Сон
 power-menu-hibernate = Гибернація
 power-menu-hybrid-sleep = Гібрідний сон
 power-menu-confirm-dialog-heading = Точно { $what }?
+
+power-menu-backend-systemd = Systemd
+power-menu-backend-unix = Юнікс
+power-menu-backend = Реалізація
