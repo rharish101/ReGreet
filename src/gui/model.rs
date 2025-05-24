@@ -18,7 +18,7 @@ use relm4::{
         gdk::{Display, Monitor},
         prelude::*,
     },
-    AsyncComponentSender, Component, Controller,
+    prelude::*,
 };
 use tokio::{sync::Mutex, time::sleep};
 
@@ -95,7 +95,7 @@ pub struct Greeter {
     pub(super) demo: bool,
 
     pub(super) clock: Controller<Clock>,
-    pub(super) power_menu: Controller<PowerMenu>,
+    pub(super) power_menu: AsyncController<PowerMenu>,
 }
 
 impl Greeter {

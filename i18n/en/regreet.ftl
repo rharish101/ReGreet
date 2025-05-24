@@ -15,3 +15,7 @@ power-menu-suspend = Suspend
 power-menu-hibernate = Hibernate
 power-menu-hybrid-sleep = Hybrid sleep
 power-menu-confirm-dialog-heading = Really { $what }?
+
+power-menu-backend-systemd = Systemd
+power-menu-backend-unix = Unix
+power-menu-backend = Backend
