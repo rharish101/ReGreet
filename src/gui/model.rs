@@ -552,7 +552,7 @@ impl Greeter {
             SessionType::Unknown => {}
         };
         for (k, v) in env {
-            environment.push(format!("{}={}", k, v));
+            environment.push(format!("{k}={v}"));
         }
 
         if let Some(username) = self.get_current_username() {
