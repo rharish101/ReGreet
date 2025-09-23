@@ -41,6 +41,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
     - Dark mode
     - Icon theme
     - Cursor theme
+    - Cursor blink on/off
     - Font
 * Allows changing reboot & poweroff commands for different init systems
 * Supports custom CSS files for further customizations
@@ -211,6 +212,7 @@ Currently, the following can be configured:
 * Dark mode
 * Icon theme
 * Cursor theme
+* Cursor blink on/off
 * Font
 * Reboot command
 * Shut down command

@@ -41,6 +41,9 @@ fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
         settings.set_gtk_cursor_theme_name(config.cursor_theme_name.as_deref());
     };
 
+    debug!("Setting cursor blink: {}", config.cursor_blink);
+    settings.set_gtk_cursor_blink(config.cursor_blink);
+
     if let Some(font) = &config.font_name {
         debug!("Setting font: {font}");
         settings.set_gtk_font_name(config.font_name.as_deref());

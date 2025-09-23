@@ -23,6 +23,9 @@ application_prefer_dark_theme = true
 # Cursor theme name
 cursor_theme_name = "Adwaita"
 
+# Whether to blink the cursor
+cursor_blink = true
+
 # Font name and size
 font_name = "Cantarell 16"
 

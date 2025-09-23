@@ -27,6 +27,10 @@ impl Default for AppearanceSettings {
     }
 }
 
+fn yes() -> bool {
+    true
+}
+
 /// Struct holding all supported GTK settings
 #[derive(Default, Deserialize, Serialize)]
 pub struct GtkSettings {
@@ -34,6 +38,8 @@ pub struct GtkSettings {
     pub application_prefer_dark_theme: bool,
     #[serde(default)]
     pub cursor_theme_name: Option<String>,
+    #[serde(default = "yes")]
+    pub cursor_blink: bool,
     #[serde(default)]
     pub font_name: Option<String>,
     #[serde(default)]
