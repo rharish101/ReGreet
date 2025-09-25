@@ -174,8 +174,7 @@ user = "greeter"
 
 If using Niri, create a KDL config file (in a path such as `/etc/greetd/niri.kdl`) as follows:
 ```kdl
-spawn-at-startup "regreet"
-spawn-at-startup "niri msg action quit"
+spawn-sh-at-startup "regreet; niri msg action quit --skip-confirmation"
 hotkey-overlay {
     skip-at-startup
 }
