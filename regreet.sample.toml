@@ -52,7 +52,7 @@ greeting_msg = "Welcome back!"
 
 [widget.clock]
 # strftime format argument
-# See https://docs.rs/jiff/0.1.14/jiff/fmt/strtime/index.html#conversion-specifications
+# See https://docs.rs/chrono/latest/chrono/format/strftime/index.html
 format = "%a %H:%M"
 
 # How often to update the text
@@ -65,3 +65,8 @@ timezone = "America/Chicago"
 # Ask GTK to make the label at least this wide. This helps keeps the parent element layout and width consistent.
 # Experiment with different widths, the interpretation of this value is entirely up to GTK.
 label_width = 150
+
+# Locale setting for displaying the clock's time format and language.
+# This controls the language and regional format used for time-related elements like AM/PM symbols, 
+# month and weekday names, and number formatting.
+locale = "en_US"
