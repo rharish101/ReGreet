@@ -14,6 +14,8 @@ license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+chrono = { version = "0.4", features = ["unstable-locales"] }
+chrono-tz = "0.8"
 clap = { version = "4.5", features = ["derive"] }
 const_format = "0.2.33"
 educe = "0.6"
@@ -24,8 +26,8 @@ glycin = { version = "3.0.8", features = ["gdk4", "tokio"] } # This depends on G
 greetd_ipc = { version = "0.10", features = ["tokio-codec"] }
 gtk4 = { version = "0.10", features = ["v4_8"] }
 humantime-serde = "1.1.1"
-jiff = "0.2.24"
 lru = "0.18"
+localzone = "0.3.1"
 regex = "1.10"
 relm4 = "0.10"
 serde = { version = "1.0", features = ["derive"] }
