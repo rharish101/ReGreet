@@ -183,25 +183,6 @@ cursor {
     // `XCURSOR_THEME` and `XCURSOR_SIZE` env variables.
     xcursor-theme "catppuccin-mocha-red-cursors"
 }
-    //Outputs are matched by connector name (i.e. eDP-1, HDMI-A-1), or by monitor manufacturer,
-    //model, and serial, separated by a single space each.
-    //You can find all of these by running niri msg outputs.
-output "DP-1" {
-    // Scale is a floating-point number, but at the moment only integer values work.
-    scale 1
-
-    // Transform allows to rotate the output counter-clockwise, valid values are:
-    // normal, 90, 180, 270, flipped, flipped-90, flipped-180 and flipped-270.
-    transform "normal"
-
-    // Resolution and, optionally, refresh rate of the output.
-    // The format is "<width>x<height>" or "<width>x<height>@<refresh rate>".
-    // If the refresh rate is omitted, niri will pick the highest refresh rate
-    // for the resolution.
-    // If the mode is omitted altogether or is invalid, niri will pick one automatically.
-    // Run `niri msg outputs` while inside a niri instance to list all outputs and their modes.
-    mode "1920x1080@179.998"
-}
 ```
 
 Then, set Niri to use this config (whose path is shown here as `/path/to/custom/niri/config`) as the default greetd session:
