@@ -6,7 +6,12 @@
 
 use std::time::Duration;
 
-use jiff::{fmt::strtime::format, tz::TimeZone, Timestamp, Zoned};
+use chrono::{Locale, Utc};
+use chrono_tz::Tz;
+use localzone;
+
+use std::fmt;
+
 use relm4::{gtk::prelude::*, prelude::*};
 use serde::{
     de::{self, Visitor},
@@ -18,7 +23,7 @@ use tokio::time::sleep;
 pub struct ClockConfig {
     /// A [strftime][fmt] argument
     ///
-    /// [fmt]: jiff::fmt::strtime
+    /// https://docs.rs/chrono/latest/chrono/format/strftime/index.html
     #[serde(alias = "fmt", default = "weekday_and_24h_time")]
     pub format: String,
 
@@ -34,11 +39,15 @@ pub struct ClockConfig {
     /// A timezone from the [IANA Time Zone Database](https://en.wikipedia.org/wiki/Tz_database). If the ID is invalid
     /// or [`None`], uses the system timezone.
     #[serde(alias = "tz", deserialize_with = "parse_tz", default = "system_tz")]
-    pub timezone: TimeZone,
+    pub timezone: Tz,
 
     /// Ask GTK to make the label this wide. This way as the text changes, the label's size can stay static.
     #[serde(default)]
     pub label_width: u32,
+
+    /// The locale to use for time formatting (e.g. "en_US")
+    #[serde(deserialize_with = "locale_deserializer", default)]
+    pub locale: Locale,
 }
 
 fn weekday_and_24h_time() -> String {
@@ -49,12 +58,16 @@ const fn half_second() -> Duration {
     Duration::from_millis(500)
 }
 
-fn system_tz() -> TimeZone {
-    TimeZone::system()
+fn system_tz() -> Tz {
+    chrono_tz::UTC
 }
 
 const fn label_width() -> u32 {
     150
+}
+
+const fn locale() -> Locale {
+    Locale::en_US
 }
 
 impl Default for ClockConfig {
@@ -64,19 +77,21 @@ impl Default for ClockConfig {
             resolution: half_second(),
             timezone: system_tz(),
             label_width: label_width(),
+            locale: locale(),
         }
     }
 }
 
-fn parse_tz<'de, D>(data: D) -> Result<TimeZone, D::Error>
+fn parse_tz<'de, D>(data: D) -> Result<Tz, D::Error>
 where
     D: Deserializer<'de>,
 {
     struct TimeZoneVisitor;
-    impl Visitor<'_> for TimeZoneVisitor {
-        type Value = TimeZone;
 
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+    impl Visitor<'_> for TimeZoneVisitor {
+        type Value = Tz;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
             formatter.write_str("a string containing an IANA Time Zone name")
         }
 
@@ -84,20 +99,67 @@ where
         where
             E: de::Error,
         {
-            Ok(TimeZone::get(time_zone_name).unwrap_or_else(|e| {
-                error!("Invalid timezone '{time_zone_name}' in the config: {e}");
-                TimeZone::system()
-            }))
+            // Try parsing the provided time zone string
+            time_zone_name.parse::<Tz>().or_else(|_e| {
+                // Fallback: try to get the system's IANA timezone via localzone
+                if let Some(sys_tz_name) = localzone::get_local_zone() {
+                    sys_tz_name.parse::<Tz>().map_err(|parse_err| {
+                        E::custom(format!(
+                            "provided TZ '{}' invalid, system TZ '{}' invalid too: {}",
+                            time_zone_name, sys_tz_name, parse_err
+                        ))
+                    })
+                } else {
+                    match localzone::get_local_zone() {
+                        Some(tz_name) => info!("Local system timezone: {}", tz_name),
+                        None => info!("Could not determine system timezone"),
+                    }
+                    // Final fallback: UTC
+                    Ok(chrono_tz::UTC)
+                }
+            })
         }
     }
 
     data.deserialize_any(TimeZoneVisitor)
 }
 
+fn locale_deserializer<'de, D>(deserializer: D) -> Result<Locale, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    struct LocaleVisitor;
+
+    impl Visitor<'_> for LocaleVisitor {
+        type Value = Locale;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("a string representing a locale (e.g., 'en_US')")
+        }
+
+        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            // Attempt to parse the value into a Locale
+            match value.parse::<Locale>() {
+                Ok(locale) => Ok(locale),
+                Err(_) => {
+                    // If parsing fails, handle it gracefully by providing a custom error
+                    Err(E::custom(format!("Invalid locale string: '{}'", value)))
+                }
+            }
+        }
+    }
+
+    deserializer.deserialize_str(LocaleVisitor)
+}
+
 #[derive(Debug)]
 pub struct Clock {
     format: String,
-    timezone: TimeZone,
+    timezone: Tz,
+    locale: Locale,
 
     current_time: String,
 }
@@ -131,6 +193,7 @@ impl Component for Clock {
             resolution,
             timezone,
             label_width,
+            locale,
         }: Self::Init,
         root: Self::Root,
         sender: ComponentSender<Self>,
@@ -153,6 +216,7 @@ impl Component for Clock {
             current_time: String::new(),
             format,
             timezone,
+            locale,
         };
 
         let widgets = view_output!();
@@ -161,13 +225,8 @@ impl Component for Clock {
     }
 
     fn update_cmd(&mut self, Tick: Self::CommandOutput, _: ComponentSender<Self>, _: &Self::Root) {
-        let now = Zoned::new(Timestamp::now(), self.timezone.clone());
-
-        let text = match jiff::fmt::strtime::format(&self.format, &now) {
-            Ok(str) => str,
-            Err(_) => format(weekday_and_24h_time(), &now)
-                .unwrap_or_else(|_| "Time formatting error.".into()),
-        };
+        let now = Utc::now().with_timezone(&self.timezone);
+        let text = now.format_localized(&self.format, self.locale).to_string();
 
         self.current_time = text;
     }
