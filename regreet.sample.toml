@@ -43,12 +43,15 @@ reboot = ["systemctl", "reboot"]
 poweroff = ["systemctl", "poweroff"]
 
 # The command prefix for X11 sessions to start the X server
-x11_prefix = [ "startx", "/usr/bin/env" ]
+x11_prefix = ["startx", "/usr/bin/env"]
 
 [appearance]
 # The message that initially displays on startup
 greeting_msg = "Welcome back!"
 
+[idle_timeout]
+# Time in seconds before turning off screens
+timeout_duration = 30
 
 [widget.clock]
 # strftime format argument
