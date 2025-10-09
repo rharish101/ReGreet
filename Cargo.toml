@@ -37,6 +37,9 @@ tracing = "0.1"
 tracing-appender = "0.2"
 tracing-subscriber = { version = "0.3", features = ["local-time"] }
 tracker = "0.2"
+wayland-client = "0.31.11"
+wayland-protocols = { version = "0.32.9", features = ["staging", "client"] }
+wayland-protocols-wlr = { version = "0.3.9", features = ["client"] }
 
 [features]
 gtk4_8 = ["gtk4/v4_8"]
