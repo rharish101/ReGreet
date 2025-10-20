@@ -32,7 +32,8 @@
 
 use custom::CustomPowerMenuConfig;
 use relm4::{
-    gtk::{glib::markup_escape_text, prelude::*},
+    adw::prelude::*,
+    gtk::glib::markup_escape_text,
     prelude::{AsyncComponentParts, *},
 };
 use serde::Deserialize;
@@ -40,11 +41,7 @@ use systemd::SystemdPowerMenuConfig;
 use tokio::process;
 use unix::UnixPowerMenuConfig;
 
-use crate::{
-    demo, fl,
-    gui::{icons, GAP},
-    i18n::lowercase_first_char,
-};
+use crate::{demo, fl, gui::icons, i18n::lowercase_first_char};
 
 mod custom;
 mod systemd;
@@ -127,49 +124,38 @@ impl AsyncComponent for PowerMenu {
                     #[name = "menu"]
                     #[transition(Crossfade)]
                     match model.state {
-                        MenuState::Menu => &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
-                            gtk::Label {
-                                set_markup: &format!(
-                                    "<big><b>{}</b></big>\n<small>{}: {backend}</small>",
-                                    markup_escape_text(&fl!("power-menu-tooltip")),
-                                    markup_escape_text(&fl!("power-menu-backend")),
-                                ),
-                            },
+                        MenuState::Menu => &adw::PreferencesGroup {
+                            set_title: &markup_escape_text(&fl!("power-menu-tooltip")),
+                            set_description: Some(&format!("{}: {backend}", markup_escape_text(&fl!("power-menu-backend")))),
 
                             #[iterate]
-                            append: &action_buttons(&model.commands, sender.clone()),
+                            add: &action_buttons(&model.commands, sender.clone()),
                         },
 
-                        MenuState::Confirm(index) => &gtk::Box::new(gtk::Orientation::Vertical, GAP) {
-                            gtk::Label {
-                                #[watch]
-                                set_markup: &format!("<big><b>{}</b></big>",
-                                    markup_escape_text(&fl!("power-menu-confirm-dialog-heading",
-                                        what = lowercase_first_char(&model.commands[index].label))
-                                    )
-                                ),
+                        MenuState::Confirm(index) => &adw::PreferencesGroup {
+                            #[watch]
+                            set_title: &markup_escape_text(&fl!("power-menu-confirm-dialog-heading",
+                                what = lowercase_first_char(&model.commands[index].label))
+                            ),
+
+                            set_separate_rows: true,
+
+                            adw::ButtonRow {
+                                set_title: &fl!("dialog-cancel"),
+
+                                connect_activated => PowerMenuMsg::Cancel,
                             },
 
-                            gtk::Box {
-                                set_spacing: GAP,
+                            adw::ButtonRow {
+                                #[watch]
+                                set_title: &model.commands[index].label,
+                                add_css_class: "destructive-action",
 
-                                gtk::Button::with_label(&fl!("dialog-cancel")) {
-                                    connect_clicked => PowerMenuMsg::Cancel,
-                                },
-
-                                gtk::Button {
-                                    add_css_class: "destructive-action",
-
-                                    #[watch]
-                                    set_label: &model.commands[index].label,
-
-                                    connect_clicked => PowerMenuMsg::Confirm,
-                                }
+                                connect_activated => PowerMenuMsg::Confirm,
                             }
-                        },
+                        }
                     }
                 }
-
             },
         }
     }
@@ -267,29 +253,19 @@ impl AsyncComponent for PowerMenu {
 fn action_buttons(
     commands: &[Command],
     sender: AsyncComponentSender<PowerMenu>,
-) -> Vec<gtk::Button> {
+) -> Vec<adw::ButtonRow> {
     commands.iter().enumerate().fold(
         Vec::with_capacity(commands.len()),
         |mut acc, (index, command)| {
-            let button = gtk::Button::new();
+            let button = adw::ButtonRow::new();
+            button.set_title(&command.label);
 
-            if command.icon.is_empty() {
-                button.set_label(&command.label);
-            } else {
-                let icon = gtk::Image::new();
-                icon.set_icon_name(Some(&command.icon));
-
-                let label = gtk::Label::new(Some(&command.label));
-
-                let container = gtk::Box::new(gtk::Orientation::Horizontal, GAP);
-                container.append(&icon);
-                container.append(&label);
-
-                button.set_child(Some(&container));
+            if !command.icon.is_empty() {
+                button.set_start_icon_name(Some(&command.icon));
             }
 
             let sender = sender.clone();
-            button.connect_clicked(move |_| sender.input(PowerMenuMsg::Request(index)));
+            button.connect_activated(move |_| sender.input(PowerMenuMsg::Request(index)));
 
             acc.push(button);
             acc
