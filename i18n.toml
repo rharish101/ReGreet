@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2025 max-ishere <47008271+max-ishere@users.noreply.github.com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Docs: https://crates.io/crates/cargo-i18n/
+
+fallback_language = "en"
+
+[fluent]
+assets_dir = "i18n"

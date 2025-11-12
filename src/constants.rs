@@ -39,11 +39,6 @@ const LOG_DIR: &str = env_or!("LOG_DIR", concatcp!("/var/log/", GREETER_NAME));
 /// Path to the log file
 pub const LOG_PATH: &str = concatcp!(LOG_DIR, "/log");
 
-/// Default command for rebooting
-pub const REBOOT_CMD: &str = env_or!("REBOOT_CMD", "reboot");
-/// Default command for shutting down
-pub const POWEROFF_CMD: &str = env_or!("POWEROFF_CMD", "poweroff");
-
 /// Default greeting message
 pub const GREETING_MSG: &str = "Welcome back!";
 

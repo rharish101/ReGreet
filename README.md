@@ -43,7 +43,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
     - Cursor theme
     - Cursor blink on/off
     - Font
-* Allows changing reboot & poweroff commands for different init systems
+* Power menu: supports `systemd` out-of-the-box, and generic linux `shutdown` command. Support for other init systems is easy to add.
 * Supports custom CSS files for further customizations
 * Respects `XDG_DATA_DIRS` environment variable
 * Respects fields `Hidden` and `NoDisplay` in session files
@@ -51,7 +51,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Demo mode to run ReGreet without greetd for easier development.
 
 ## Requirements
-* Rust 1.75.0+ (for compilation only)
+* Rust 1.80.0+ (for compilation only)
 * greetd
 * GTK 4.0+
 * A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or [Sway](https://swaywm.org/) or [Hyprland](https://hyprland.org/))
@@ -95,8 +95,6 @@ STATE\_DIR | `/var/lib/regreet` | The directory used to store the ReGreet state/
 LOG\_DIR | `/var/log/regreet` | The directory used to store logs
 SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files
 X11\_CMD\_PREFIX | `startx /usr/bin/env` | The default command prefix for X11 sessions to launch the X server (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
-REBOOT\_CMD | `reboot` | The default command used to reboot the system
-POWEROFF\_CMD | `poweroff` | The default command used to shut down the system
 LOGIN\_DEFS\_PATHS | `/etc/login.defs:/usr/etc/login.defs` | A colon (:) separated list of `login.defs` file paths. First found is loaded.
 LOGIN\_DEFS\_UID\_MIN | 1000 | Override the assumed default if `login.defs` doesnt specify `UID_MIN`.
 LOGIN\_DEFS\_UID\_MAX | 60000 | Override the assumed default if `login.defs` doesnt specify `UID_MAX`.
@@ -213,7 +211,7 @@ env = GTK_USE_PORTAL,0
 env = GDK_DEBUG,no-portals
 ```
 
-### Configuration
+## Configuration
 The configuration file must be in the [TOML](https://toml.io/) format.
 By default, it is named `regreet.toml`, and located in the greetd configuration directory specified during compilation (`/etc/greetd/` by default).
 You can use a config file in a different location with the `--config` argument as follows:
@@ -234,9 +232,19 @@ Currently, the following can be configured:
 * Cursor theme
 * Cursor blink on/off
 * Font
-* Reboot command
-* Shut down command
+* Power menu
 * X11 command prefix (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
+
+Refer to [the configuration documentation](./docs/CONFIG.md) for more detail.
+
+### Widgets
+
+Widgets are additional UI elements that do not interact with `greetd`. Their configuration is under the `[widget]` key.
+See `regreet.sample.toml` for examples.
+
+- **Clock**: Located at the top of the screen and allows for `strftime`-like format speficiers.
+- **Power menu**: Supports `systemd` and a generic linux `shutdown` command. You can configure the order and presence of
+  power menu actions.
 
 **NOTE:** For configuring other essential features, such as the keyboard layout/mapping, the choice of monitor to use, etc., please check out the configuration options for the wayland compositor that you are using to run ReGreet.
 For example, if you use Cage, check out the [Cage wiki](https://github.com/cage-kiosk/cage/wiki/Configuration).
@@ -258,22 +266,8 @@ For a general reference on CSS, please refer to the [MDN web docs](https://devel
 
 **Tip:** You might want to use [demo mode](#demo-mode) to test out your CSS before making it permanent.
 
-### Changing Reboot/Shut Down Commands
-The default reboot and shut down commands use the `reboot` and `poweroff` binaries, which are present on most Linux systems.
-However, since the recommended way of using ReGreet is to avoid running it as root, the `reboot`/`poweroff` commands might not work on systems where superuser access is needed to run these commands.
-In this case, if there is another command to reboot or shut down the system without superuser access, these commands can be set in the config file under the `[commands]` section.
-
-For example, to use `loginctl reboot` as the reboot command, use the following config:
-```toml
-[commands]
-reboot = [ "loginctl", "reboot" ]
-```
-Here, each command needs to be separated into a list containing the main command, followed by individual arguments.
-
-These commands can also be specified during compilation using the `REBOOT_CMD` and `POWEROFF_CMD` environment variables.
-
-### Logging and Caching
-The state is are stored in `/var/lib/regreet/state.toml` (configurable during installation).
+## Logging and Caching
+The cache is are stored in `/var/cache/regreet/cache.toml` (configurable during installation).
 It contains the last authenticated user and the last used session per user, which are automatically selected on next login.
 If the greeter is unable to write to this file, then it reverts to the default behaviour.
 
