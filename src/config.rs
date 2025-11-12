@@ -104,6 +104,12 @@ fn default_greeting_msg() -> String {
     GREETING_MSG.to_string()
 }
 
+#[derive(Default, Deserialize, Serialize)]
+pub struct IdleTimeoutSettings {
+    #[serde(default)]
+    timeout_duration: Option<u64>,
+}
+
 /// The configuration struct
 #[derive(Default, Deserialize)]
 pub struct Config {
@@ -124,6 +130,9 @@ pub struct Config {
 
     #[serde(default)]
     pub(crate) widget: WidgetConfig,
+
+    #[serde(default)]
+    idle_timeout: IdleTimeoutSettings,
 }
 
 #[derive(Deserialize, Default)]
@@ -160,5 +169,9 @@ impl Config {
 
     pub fn get_default_message(&self) -> String {
         self.appearance.greeting_msg.clone()
+    }
+
+    pub fn get_idle_timeout(&self) -> Option<u64> {
+        self.idle_timeout.timeout_duration
     }
 }

@@ -7,6 +7,7 @@ mod client;
 mod config;
 mod constants;
 mod gui;
+mod idle;
 mod sysutil;
 mod tomlutils;
 

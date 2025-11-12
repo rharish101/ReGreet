@@ -336,6 +336,19 @@ impl AsyncComponent for Greeter {
         let mut model = Self::new(&input.config_path, input.demo).await;
         let widgets = view_output!();
 
+        // Start idle monitoring in a separate thread if configured
+        if let Some(timeout_seconds) = model.config.get_idle_timeout() {
+            if timeout_seconds > 0 {
+                let timeout_ms = (timeout_seconds * 1000) as u32;
+                std::thread::spawn(move || {
+                    if let Err(e) = crate::idle::run_idle_loop(timeout_ms) {
+                        tracing::error!("Idle monitoring failed: {}", e);
+                    }
+                });
+                tracing::info!("Started idle monitoring with {}s timeout", timeout_seconds);
+            }
+        }
+
         // Make the info bar permanently visible, since it was made invisible during init. The
         // actual visuals are controlled by `InfoBar::set_revealed`.
         widgets.ui.error_info.set_visible(true);
