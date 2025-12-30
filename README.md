@@ -168,7 +168,7 @@ misc {
 Then, set Hyprland to use this config (whose path is shown here as `/path/to/custom/hyprland/config`) as the default greetd session:
 ```toml
 [default_session]
-command = "Hyprland --config /path/to/custom/hyprland/config"
+command = "start-hyprland -- -c /path/to/custom/hyprland/config"
 user = "greeter"
 ```
 
