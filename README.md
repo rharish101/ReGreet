@@ -192,6 +192,13 @@ command = "niri --config /path/to/custom/niri/config"
 user = "greeter"
 ```
 
+Then, if using Gamescope:
+```toml
+[default_session]
+command = "gamescope --backend drm --force-windows-fullscreen -- regreet"
+user = "greeter"
+```
+
 Restart greetd to use the new config.
 
 #### Startup delays
