@@ -135,7 +135,7 @@ Edit the greetd config file (`/etc/greetd/config.toml`) to set ReGreet with a Wa
 For example, if using Cage:
 ```toml
 [default_session]
-command = "cage -s -mlast -- regreet"
+command = "dbus-run-session cage -s -mlast -- regreet"
 user = "greeter"
 ```
 The `-s` argument enables VT switching in cage (0.1.2 and newer only), which is highly recommended to prevent locking yourself out.
@@ -150,7 +150,7 @@ include /etc/sway/config.d/*
 Then, set Sway to use this config (whose path is shown here as `/path/to/custom/sway/config`) as the default greetd session:
 ```toml
 [default_session]
-command = "sway --config /path/to/custom/sway/config"
+command = "dbus-run-session sway --config /path/to/custom/sway/config"
 user = "greeter"
 ```
 
@@ -167,7 +167,7 @@ misc {
 Then, set Hyprland to use this config (whose path is shown here as `/path/to/custom/hyprland/config`) as the default greetd session:
 ```toml
 [default_session]
-command = "start-hyprland -- -c /path/to/custom/hyprland/config"
+command = "dbus-run-session start-hyprland -- -c /path/to/custom/hyprland/config"
 user = "greeter"
 ```
 
@@ -187,23 +187,22 @@ cursor {
 Then, set Niri to use this config (whose path is shown here as `/path/to/custom/niri/config`) as the default greetd session:
 ```toml
 [default_session]
-command = "niri --config /path/to/custom/niri/config"
+command = "dbus-run-session niri --config /path/to/custom/niri/config"
 user = "greeter"
 ```
 
 Restart greetd to use the new config.
 
 #### Startup delays
-If you find that ReGreet takes too much time to start up, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
+It seems that `dbus-run-session` has solved startup delays, but if you find that ReGreet takes too much time to start up, you may be affected by this: [swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
 See this link for the fix.
-Alternatively, the solution proposed in [issue #34](https://github.com/rharish101/ReGreet/issues/34) may resolve it.
 
 As another option, you can disable portals by exporting environment variables for the Wayland compositor launched for ReGreet.
 Simply prepend `env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals` to the start of the default session command in `greetd.toml`.
 For example, with Cage, the session command would be:
 ```toml
 [default_session]
-command = "env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals cage -s -mlast -- regreet"
+command = "env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals dbus-run-session cage -s -mlast -- regreet"
 ```
 
 If using Hyprland, you can instead append the following lines to the Hyprland config for ReGreet:
