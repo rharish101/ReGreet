@@ -25,7 +25,6 @@ humantime-serde = "1.1.1"
 jiff = "0.1.14"
 lazy_static = "1.5.0"
 lru = "0.16"
-pwd = "1.4.0"
 regex = "1.10"
 relm4 = "0.9"
 serde = { version = "1.0", features = ["derive"] }
@@ -37,6 +36,7 @@ tracing = "0.1"
 tracing-appender = "0.2"
 tracing-subscriber = { version = "0.3", features = ["local-time"] }
 tracker = "0.2"
+zbus = { version = "4.4.0", features = ["async-io"], no-default-features = true }
 
 [features]
 gtk4_8 = ["gtk4/v4_8"]
