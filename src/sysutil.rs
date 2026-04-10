@@ -4,21 +4,25 @@
 
 //! Helper for system utilities like users and sessions
 
+mod accounts_service;
+
 use std::collections::{HashMap, HashSet};
 use std::env;
-use std::fs::{read, read_to_string};
+use std::error::Error;
+use std::fs::read;
 use std::io;
-use std::ops::ControlFlow;
 use std::path::Path;
 use std::str::from_utf8;
 
 use glob::glob;
-use pwd::Passwd;
 use regex::Regex;
 use shlex::Shlex;
+use zbus::Connection;
 
+use self::accounts_service::AccountsServiceProxy;
+use self::accounts_service::UserProxy;
 use crate::config::Config;
-use crate::constants::{LOGIN_DEFS_PATHS, LOGIN_DEFS_UID_MAX, LOGIN_DEFS_UID_MIN, SESSION_DIRS};
+use crate::constants::SESSION_DIRS;
 
 /// XDG data directory variable name (parent directory for X11/Wayland sessions)
 const XDG_DIR_ENV_VAR: &str = "XDG_DATA_DIRS";
@@ -52,85 +56,39 @@ pub struct SysUtil {
 }
 
 impl SysUtil {
-    pub fn new(config: &Config) -> io::Result<Self> {
-        let path = (*LOGIN_DEFS_PATHS).iter().try_for_each(|path| {
-            if let Ok(true) = AsRef::<Path>::as_ref(&path).try_exists() {
-                ControlFlow::Break(path)
-            } else {
-                ControlFlow::Continue(())
-            }
-        });
+    pub async fn new(config: &Config) -> Result<Self, Box<dyn Error>> {
+        let conn = Connection::system().await?;
+        let accounts_proxy = AccountsServiceProxy::new(&conn).await?;
 
-        let normal_user = match path {
-            ControlFlow::Break(path) => read_to_string(path)
-                .map_err(|err| {
-                    warn!("Failed to read login.defs from '{path}', using default values: {err}")
-                })
-                .map(|text| NormalUser::parse_login_defs(&text))
-                .unwrap_or_default(),
-            ControlFlow::Continue(()) => {
-                warn!("`login.defs` file not found in these paths: {LOGIN_DEFS_PATHS:?}",);
+        let mut user_proxies = Vec::new();
+        for user_path in accounts_proxy.list_cached_users().await? {
+            let user_proxy = UserProxy::builder(&conn).path(user_path)?.build().await?;
+            user_proxies.push(user_proxy);
+        }
 
-                NormalUser::default()
-            }
-        };
+        let mut usernames = HashMap::new();
 
-        debug!("{normal_user:?}");
+        for user_proxy in &user_proxies {
+            let real_name = user_proxy.real_name().await?;
+            let user_name = user_proxy.user_name().await?;
 
-        let (users, shells) = Self::init_users(normal_user)?;
+            usernames.insert(real_name, user_name);
+        }
+
+        let mut shells = HashMap::new();
+
+        for user_proxy in &user_proxies {
+            let user_name = user_proxy.user_name().await?;
+            let shell = user_proxy.shell().await?;
+
+            shells.insert(user_name, vec![shell]);
+        }
+
         Ok(Self {
-            users,
+            users: usernames,
             shells,
             sessions: Self::init_sessions(config)?,
         })
-    }
-
-    /// Get the list of regular users.
-    ///
-    /// These are defined as a list of users with UID between `UID_MIN` and `UID_MAX`.
-    fn init_users(normal_user: NormalUser) -> io::Result<(UserMap, ShellMap)> {
-        let mut users = HashMap::new();
-        let mut shells = HashMap::new();
-
-        for entry in Passwd::iter().filter(|entry| normal_user.is_normal_user(entry.uid)) {
-            // Use the actual system username if the "full name" is not available.
-            let full_name = if let Some(gecos) = entry.gecos {
-                if gecos.is_empty() {
-                    debug!(
-                        "Found user '{}' with UID '{}' and empty full name",
-                        entry.name, entry.uid
-                    );
-                    entry.name.clone()
-                } else {
-                    // Only take first entry in gecos field.
-                    let gecos_name_part: &str = gecos.split(',').next().unwrap_or(&gecos);
-                    debug!(
-                        "Found user '{}' with UID '{}' and full name: {gecos_name_part}",
-                        entry.name, entry.uid
-                    );
-                    gecos_name_part.into()
-                }
-            } else {
-                debug!(
-                    "Found user '{}' with UID '{}' and missing full name",
-                    entry.name, entry.uid
-                );
-                entry.name.clone()
-            };
-            users.insert(full_name, entry.name.clone());
-
-            if let Some(cmd) = shlex::split(entry.shell.as_str()) {
-                shells.insert(entry.name, cmd);
-            } else {
-                // Skip this user, since a missing command means that we can't use it.
-                warn!(
-                    "Couldn't split shell of username '{}' into arguments: {}",
-                    entry.name, entry.shell
-                );
-            };
-        }
-
-        Ok((users, shells))
     }
 
     /// Get available X11 and Wayland sessions.
@@ -340,161 +298,5 @@ impl SysUtil {
     /// If the full name is not available, the filename stem is used.
     pub fn get_sessions(&self) -> &SessionMap {
         &self.sessions
-    }
-}
-
-/// A named tuple of min and max that stores UID limits for normal users.
-///
-/// Use [`Self::parse_login_defs`] to obtain the system configuration. If the file is missing or there are
-/// parsing errors a fallback of [`Self::default`] should be used.
-#[derive(Debug, PartialEq, Eq)]
-struct NormalUser {
-    uid_min: u64,
-    uid_max: u64,
-}
-
-impl Default for NormalUser {
-    fn default() -> Self {
-        Self {
-            uid_min: *LOGIN_DEFS_UID_MIN,
-            uid_max: *LOGIN_DEFS_UID_MAX,
-        }
-    }
-}
-
-impl NormalUser {
-    /// Parses the `login.defs` file content and looks for `UID_MIN` and `UID_MAX` definitions. If a definition is
-    /// missing or causes parsing errors, the default values [`struct@LOGIN_DEFS_UID_MIN`] and
-    /// [`struct@LOGIN_DEFS_UID_MAX`] are used.
-    ///
-    /// This parser is highly specific to parsing the 2 required values, thus it focuses on doing the least amout of
-    /// compute required to extracting them.
-    ///
-    /// Errors are dropped because they are unlikely and their handling would result in the use of default values
-    /// anyway.
-    pub fn parse_login_defs(text: &str) -> Self {
-        let mut min = None;
-        let mut max = None;
-
-        for line in text.lines().map(str::trim) {
-            const KEY_LENGTH: usize = "UID_XXX".len();
-
-            // At MSRV 1.80 you could use `split_at_checked`, this is just a way to not raise it.
-            // This checks if the string is of sufficient length too.
-            if !line.is_char_boundary(KEY_LENGTH) {
-                continue;
-            }
-            let (key, val) = line.split_at(KEY_LENGTH);
-
-            if !val.starts_with(char::is_whitespace) {
-                continue;
-            }
-
-            match (key, min, max) {
-                ("UID_MIN", None, _) => min = Self::parse_number(val),
-                ("UID_MAX", _, None) => max = Self::parse_number(val),
-                _ => continue,
-            }
-
-            if min.is_some() && max.is_some() {
-                break;
-            }
-        }
-
-        Self {
-            uid_min: min.unwrap_or(*LOGIN_DEFS_UID_MIN),
-            uid_max: max.unwrap_or(*LOGIN_DEFS_UID_MAX),
-        }
-    }
-
-    /// Parses a number value in a `/etc/login.defs` entry. As per the manpage:
-    ///
-    /// - `0x` prefix: hex number
-    /// - `0` prefix: octal number
-    /// - starts with `1..9`: decimal number
-    ///
-    /// In case the string value is not parsable as a number the entry value is considered invalid and `None` is
-    /// returned.
-    fn parse_number(num: &str) -> Option<u64> {
-        let num = num.trim();
-        if num == "0" {
-            return Some(0);
-        }
-
-        if let Some(octal) = num.strip_prefix('0') {
-            if let Some(hex) = octal.strip_prefix('x') {
-                return u64::from_str_radix(hex, 16).ok();
-            }
-
-            return u64::from_str_radix(octal, 8).ok();
-        }
-
-        num.parse().ok()
-    }
-
-    // Returns true for regular users, false for those outside the UID limit, eg. git or root.
-    pub fn is_normal_user<T>(&self, uid: T) -> bool
-    where
-        T: Into<u64>,
-    {
-        (self.uid_min..=self.uid_max).contains(&uid.into())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[allow(non_snake_case)]
-    mod UidLimit {
-        use super::super::*;
-
-        #[test_case(
-            &["UID_MIN 1", "UID_MAX 10"].join("\n")
-            => NormalUser { uid_min: 1, uid_max: 10 };
-            "both configured"
-        )]
-        #[test_case(
-            &["UID_MAX 10", "UID_MIN 1"].join("\n")
-            => NormalUser { uid_min: 1, uid_max: 10 };
-            "reverse order"
-        )]
-        #[test_case(
-            &["OTHER 20",
-            "# Comment",
-            "",
-            "UID_MAX 10",
-            "UID_MIN 1",
-            "MORE_TEXT 40"].join("\n")
-            => NormalUser { uid_min: 1, uid_max: 10 };
-            "complex file"
-        )]
-        #[test_case(
-            "UID_MAX10"
-            => NormalUser::default();
-            "no space"
-        )]
-        #[test_case(
-            "SUB_UID_MAX 10"
-            => NormalUser::default();
-            "invalid field (with prefix)"
-        )]
-        #[test_case(
-            "UID_MAX_BLAH 10"
-            => NormalUser::default();
-            "invalid field (with suffix)"
-        )]
-        fn parse_login_defs(text: &str) -> NormalUser {
-            NormalUser::parse_login_defs(text)
-        }
-
-        #[test_case("" => None; "empty")]
-        #[test_case("no" => None; "string")]
-        #[test_case("0" => Some(0); "zero")]
-        #[test_case("0x" => None; "0x isn't a hex number")]
-        #[test_case("10" => Some(10); "decimal")]
-        #[test_case("0777" => Some(0o777); "octal")]
-        #[test_case("0xDeadBeef" => Some(0xdead_beef); "hex")]
-        fn parse_number(num: &str) -> Option<u64> {
-            NormalUser::parse_number(num)
-        }
     }
 }

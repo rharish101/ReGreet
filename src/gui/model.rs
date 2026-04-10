@@ -127,7 +127,9 @@ impl Greeter {
 
         Self {
             greetd_client,
-            sys_util: SysUtil::new(&config).expect("Couldn't read available users and sessions"),
+            sys_util: SysUtil::new(&config)
+                .await
+                .expect("Couldn't read available users and sessions"),
             cache: Cache::new(),
             sess_info: None,
             config,
