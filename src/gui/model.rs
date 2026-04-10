@@ -518,7 +518,7 @@ impl Greeter {
                 (
                     None,
                     Some(SessionInfo {
-                        command: cmd.clone(),
+                        command: vec![cmd.clone()],
                         sess_type: SessionType::Unknown,
                     }),
                 )
