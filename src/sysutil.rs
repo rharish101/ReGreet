@@ -42,7 +42,7 @@ pub struct SessionInfo {
 
 // Convenient aliases for used maps
 type UserMap = HashMap<String, String>;
-type ShellMap = HashMap<String, Vec<String>>;
+type ShellMap = HashMap<String, String>;
 type SessionMap = HashMap<String, SessionInfo>;
 
 /// Stores info of all regular users and sessions
@@ -81,7 +81,7 @@ impl SysUtil {
             let user_name = user_proxy.user_name().await?;
             let shell = user_proxy.shell().await?;
 
-            shells.insert(user_name, vec![shell]);
+            shells.insert(user_name, shell);
         }
 
         Ok(Self {
