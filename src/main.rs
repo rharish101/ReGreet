@@ -28,13 +28,7 @@ use crate::gui::{Greeter, GreeterInit};
 #[macro_use]
 extern crate tracing;
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate const_format;
-
-#[cfg(test)]
-#[macro_use]
-extern crate test_case;
 
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
