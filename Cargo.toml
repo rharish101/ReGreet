@@ -13,6 +13,9 @@ repository = "https://github.com/rharish101/ReGreet/"
 license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+gtk4_8 = ["gtk4/v4_8"]
+
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
 const_format = { version = "0.2.33", features = ["rust_1_64"] }
@@ -36,6 +39,3 @@ tracing-appender = "0.2"
 tracing-subscriber = { version = "0.3", features = ["local-time"] }
 tracker = "0.2"
 zbus = { version = "4.4.0", features = ["async-io"], default-features = false }
-
-[features]
-gtk4_8 = ["gtk4/v4_8"]
