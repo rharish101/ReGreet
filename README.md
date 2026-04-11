@@ -54,6 +54,8 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Rust 1.75.0+ (for compilation only)
 * greetd
 * GTK 4.0+
+* D-Bus
+* AccountsService
 * A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or [Sway](https://swaywm.org/) or [Hyprland](https://hyprland.org/))
 
 **Note**: Please make sure you have all requirements installed, as having a greetd greeter constantly failing isn't as much fun as it sounds.
@@ -97,9 +99,6 @@ SESSION\_DIRS | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:)
 X11\_CMD\_PREFIX | `startx /usr/bin/env` | The default command prefix for X11 sessions to launch the X server (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
 REBOOT\_CMD | `reboot` | The default command used to reboot the system
 POWEROFF\_CMD | `poweroff` | The default command used to shut down the system
-LOGIN\_DEFS\_PATHS | `/etc/login.defs:/usr/etc/login.defs` | A colon (:) separated list of `login.defs` file paths. First found is loaded.
-LOGIN\_DEFS\_UID\_MIN | 1000 | Override the assumed default if `login.defs` doesnt specify `UID_MIN`.
-LOGIN\_DEFS\_UID\_MAX | 60000 | Override the assumed default if `login.defs` doesnt specify `UID_MAX`.
 
 The greeter can be installed by copying the file `target/release/regreet` to `/usr/bin` (or similar directories like `/bin`).
 
