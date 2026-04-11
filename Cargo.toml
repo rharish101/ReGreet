@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2022 The ReGreet Authors
 #
-# SPDX-License-Identifier: CC0-1.0
+# SPDX-License-Identifier: 0BSD
 
 [package]
 name = "regreet"
