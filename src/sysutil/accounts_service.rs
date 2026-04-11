@@ -1,3 +1,9 @@
+// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+//
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+//! Barebones D-Bus interface for the org.freedesktop.Accounts D-Bus service.
+
 use zbus::{proxy, zvariant::OwnedObjectPath};
 
 #[proxy(
