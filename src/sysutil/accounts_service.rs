@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+// SPDX-FileCopyrightText: 2026 The ReGreet Authors
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 

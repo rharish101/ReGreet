@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 max-ishere <47008271+max-ishere@users.noreply.github.com>
+// SPDX-FileCopyrightText: 2024 The ReGreet Authors
 //
 // SPDX-License-Identifier: GPL-3.0-or-later
 

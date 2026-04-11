@@ -2,5 +2,5 @@ version = 1
 
 [[annotations]]
 path = "Cargo.lock"
-SPDX-FileCopyrightText = "2022 Harish Rajagopal <harish.rajagopals@gmail.com>"
+SPDX-FileCopyrightText = "2022 The ReGreet Authors"
 SPDX-License-Identifier = "CC0-1.0"

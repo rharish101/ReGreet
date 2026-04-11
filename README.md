@@ -1,6 +1,6 @@
 <!--
 SPDX-FileCopyrightText: 2021 Maximilian Moser <maximilian.moser@tuwien.ac.at>
-SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
+SPDX-FileCopyrightText: 2022 The ReGreet Authors
 
 SPDX-License-Identifier: GPL-3.0-or-later AND MIT
 -->
@@ -325,5 +325,8 @@ These credentials are logged with the warning log-level, so that you don't have 
 This repository uses [REUSE](https://reuse.software/) to document licenses.
 Each file either has a header containing copyright and license information, or has an entry in the [TOML file](https://reuse.software/spec-3.3/#reusetoml) at [REUSE.toml](./REUSE.toml).
 The license files that are used in this project can be found in the [LICENSES](./LICENSES) directory.
+
+Individual contributors are grouped under "The ReGreet Authors" for copyright attribution purposes.
+A full list of contributors is available on the [GitHub contributors page](https://github.com/rharish101/ReGreet/graphs/contributors).
 
 A copy of the GPL-3.0-or-later license is placed in [LICENSE](./LICENSE), to signify that it constitutes the majority of the codebase, and for compatibility with GitHub.
