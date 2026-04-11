@@ -192,10 +192,10 @@ command = "dbus-run-session niri --config /path/to/custom/niri/config"
 user = "greeter"
 ```
 
-Then, if using Gamescope:
+If using Gamescope:
 ```toml
 [default_session]
-command = "gamescope --backend drm --force-windows-fullscreen -- regreet"
+command = "dbus-run-session gamescope --backend drm --force-windows-fullscreen -- regreet"
 user = "greeter"
 ```
 
