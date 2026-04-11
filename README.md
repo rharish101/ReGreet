@@ -1,13 +1,8 @@
 <!--
+SPDX-FileCopyrightText: 2021 Maximilian Moser <maximilian.moser@tuwien.ac.at>
 SPDX-FileCopyrightText: 2022 Harish Rajagopal <harish.rajagopals@gmail.com>
 
-SPDX-License-Identifier: GPL-3.0-or-later
--->
-
-<!--
-SPDX-FileCopyrightText: 2021 Maximilian Moser <maximilian.moser@tuwien.ac.at>
-
-SPDX-License-Identifier: MIT
+SPDX-License-Identifier: GPL-3.0-or-later AND MIT
 -->
 
 # ReGreet
