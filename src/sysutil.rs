@@ -57,20 +57,29 @@ pub struct SysUtil {
 
 impl SysUtil {
     pub async fn new(config: &Config) -> Result<Self, Box<dyn Error>> {
-        let conn = Connection::system().await?;
-        let accounts_proxy = AccountsServiceProxy::new(&conn).await?;
+        let dbus_system_conn = Connection::system().await?;
+        let accounts_proxy = AccountsServiceProxy::new(&dbus_system_conn).await?;
 
         let mut user_proxies = Vec::new();
         for user_path in accounts_proxy.list_cached_users().await? {
-            let user_proxy = UserProxy::builder(&conn).path(user_path)?.build().await?;
+            let user_proxy = UserProxy::builder(&dbus_system_conn)
+                .path(user_path)?
+                .build()
+                .await?;
+
             user_proxies.push(user_proxy);
         }
 
         let mut usernames = HashMap::new();
 
         for user_proxy in &user_proxies {
-            let real_name = user_proxy.real_name().await?;
+            let mut real_name = user_proxy.real_name().await?;
             let user_name = user_proxy.user_name().await?;
+
+            // If real name is not set, just use the username instead
+            if real_name.is_empty() {
+                real_name.clone_from(&user_name);
+            }
 
             usernames.insert(real_name, user_name);
         }
