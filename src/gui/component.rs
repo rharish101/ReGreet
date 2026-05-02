@@ -7,10 +7,10 @@
 use std::path::PathBuf;
 
 use relm4::{
+    AsyncComponentSender,
     component::{AsyncComponent, AsyncComponentParts},
     gtk::prelude::*,
     prelude::*,
-    AsyncComponentSender,
 };
 use tracing::{debug, info, warn};
 

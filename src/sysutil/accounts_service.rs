@@ -11,7 +11,7 @@ use zbus::{proxy, zvariant::OwnedObjectPath};
     default_service = "org.freedesktop.Accounts",
     interface = "org.freedesktop.Accounts"
 )]
-trait AccountsService {
+pub trait AccountsService {
     /// Returns an array of [`User`] paths.
     fn list_cached_users(&self) -> zbus::Result<Vec<OwnedObjectPath>>;
 }
@@ -21,7 +21,7 @@ trait AccountsService {
     default_path = "/org/freedesktop/Accounts",
     interface = "org.freedesktop.Accounts.User"
 )]
-trait User {
+pub trait User {
     #[zbus(property)]
     fn user_name(&self) -> zbus::Result<String>;
 

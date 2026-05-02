@@ -8,8 +8,8 @@ use std::env;
 use std::io::Result as IOResult;
 
 use greetd_ipc::{
-    codec::{Error as GreetdError, TokioCodec},
     AuthMessageType, ErrorType, Request, Response,
+    codec::{Error as GreetdError, TokioCodec},
 };
 use tokio::net::UnixStream;
 

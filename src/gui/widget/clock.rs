@@ -6,11 +6,11 @@
 
 use std::time::Duration;
 
-use jiff::{fmt::strtime::format, tz::TimeZone, Timestamp, Zoned};
+use jiff::{Timestamp, Zoned, fmt::strtime::format, tz::TimeZone};
 use relm4::{gtk::prelude::*, prelude::*};
 use serde::{
-    de::{self, Visitor},
     Deserialize, Deserializer,
+    de::{self, Visitor},
 };
 use tokio::time::sleep;
 

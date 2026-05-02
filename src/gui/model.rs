@@ -12,11 +12,11 @@ use std::time::Duration;
 
 use greetd_ipc::{AuthMessageType, ErrorType, Response};
 use relm4::{
+    AsyncComponentSender, Component, Controller,
     gtk::{
         gdk::{Display, Monitor},
         prelude::*,
     },
-    AsyncComponentSender, Component, Controller,
 };
 use tokio::{sync::Mutex, time::sleep};
 

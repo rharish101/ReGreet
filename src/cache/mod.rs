@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use self::lru::LruCache;
 use crate::constants::CACHE_PATH;
-use crate::tomlutils::{load_toml, TomlFileResult};
+use crate::tomlutils::{TomlFileResult, load_toml};
 
 /// Limit to the size of the user to last-used session mapping.
 const CACHE_LIMIT: usize = 100;

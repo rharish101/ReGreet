@@ -6,7 +6,7 @@
 
 use educe::Educe;
 use greetd_ipc::Response;
-use relm4::gtk::{glib::GString, prelude::*, ComboBoxText, Entry};
+use relm4::gtk::{ComboBoxText, Entry, glib::GString, prelude::*};
 
 #[derive(Debug)]
 /// Info about the current user and chosen session

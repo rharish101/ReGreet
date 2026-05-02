@@ -10,12 +10,12 @@ mod gui;
 mod sysutil;
 mod tomlutils;
 
-use std::fs::{create_dir_all, OpenOptions};
+use std::fs::{OpenOptions, create_dir_all};
 use std::io::{Result as IoResult, Write};
 use std::path::{Path, PathBuf};
 
 use clap::{Parser, ValueEnum};
-use file_rotate::{compression::Compression, suffix::AppendCount, ContentLimit, FileRotate};
+use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
 use tracing::subscriber::set_global_default;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{

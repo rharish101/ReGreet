@@ -15,9 +15,9 @@ use std::ops::{Deref, DerefMut};
 
 use lru::{DefaultHasher, LruCache as OrigLruCache};
 use serde::{
+    Deserialize, Deserializer, Serialize, Serializer,
     de::{MapAccess, Visitor},
     ser::SerializeMap,
-    Deserialize, Deserializer, Serialize, Serializer,
 };
 
 /// Wrapper to enable (de)serialization

@@ -6,7 +6,7 @@
 #![allow(dead_code)] // Silence dead code warnings for UI code that isn't dead
 
 use gtk::prelude::*;
-use relm4::{gtk, RelmWidgetExt, WidgetTemplate};
+use relm4::{RelmWidgetExt, WidgetTemplate, gtk};
 
 /// Button that ends the greeter (eg. Reboot)
 #[relm4::widget_template(pub)]
