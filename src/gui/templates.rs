@@ -160,8 +160,6 @@ impl WidgetTemplate for Ui {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Start,
 
-                add_css_class: "background",
-
                 // Make it fit cleanly onto the top edge of the screen.
                 inline_css: "
                     border-top-right-radius: 0px;

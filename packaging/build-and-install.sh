@@ -35,6 +35,10 @@ sudo dnf install -y greetd greetd-selinux cage
 echo "==> Installing ReGreet RPM..."
 sudo rpm -Uvh --force "$RPM"
 
+echo "==> Installing systemd-tmpfiles config (log/state dirs for greetd user)..."
+sudo cp "$REPO_ROOT/systemd-tmpfiles.conf" /etc/tmpfiles.d/regreet.conf
+sudo systemd-tmpfiles --create /etc/tmpfiles.d/regreet.conf
+
 echo ""
 echo "==> Done. Next steps:"
 echo "    1. Configure greetd:  sudo cp $SCRIPT_DIR/config/greetd.toml /etc/greetd/config.toml"
