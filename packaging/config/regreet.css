@@ -1,0 +1,93 @@
+/* Hyprland/wallust palette — regreet login screen */
+
+window {
+    background-color: transparent;
+    color: #FDF8FE;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 14px;
+}
+
+/* Login box: grid is the actual background surface */
+frame.background grid {
+    background-color: rgba(10, 5, 20, 0.60);
+    border-radius: 8px;
+}
+
+/* Frame provides border + glow only */
+frame.background {
+    border: 2px solid rgba(125, 74, 180, 0.75);
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(125, 74, 180, 0.45),
+                0 4px 48px rgba(0, 0, 0, 0.6);
+}
+
+label {
+    color: #FDF8FE;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
+entry,
+passwordentry {
+    background-color: rgba(5, 2, 12, 0.70);
+    color: #FDF8FE;
+    border: 1px solid rgba(125, 74, 180, 0.65);
+    border-radius: 8px;
+    padding: 4px 8px;
+    caret-color: #9A5BDD;
+}
+
+entry:focus,
+passwordentry:focus {
+    border-color: #9A5BDD;
+    box-shadow: 0 0 0 2px rgba(154, 91, 221, 0.25);
+}
+
+combobox,
+comboboxtext {
+    background-color: rgba(5, 2, 12, 0.70);
+    color: #FDF8FE;
+    border: 1px solid rgba(125, 74, 180, 0.65);
+    border-radius: 8px;
+}
+
+button {
+    background-color: rgba(30, 15, 50, 0.55);
+    color: #FDF8FE;
+    border: 1px solid rgba(125, 74, 180, 0.55);
+    border-radius: 8px;
+    padding: 4px 12px;
+}
+
+button:hover {
+    background-color: rgba(125, 74, 180, 0.30);
+    border-color: #9A5BDD;
+    box-shadow: 0 0 8px rgba(154, 91, 221, 0.35);
+}
+
+button.suggested-action {
+    background-color: rgba(125, 74, 180, 0.55);
+    border-color: #9A5BDD;
+}
+
+button.suggested-action:hover {
+    background-color: rgba(154, 91, 221, 0.70);
+    box-shadow: 0 0 12px rgba(154, 91, 221, 0.45);
+}
+
+button.destructive-action {
+    background-color: rgba(30, 5, 15, 0.60);
+    color: #ff7a93;
+    border-color: rgba(255, 122, 147, 0.50);
+}
+
+button.destructive-action:hover {
+    background-color: rgba(255, 122, 147, 0.18);
+    box-shadow: 0 0 8px rgba(255, 122, 147, 0.30);
+}
+
+infobar {
+    background-color: rgba(40, 5, 15, 0.85);
+    border: 1px solid #ff7a93;
+    border-radius: 8px;
+    color: #ff7a93;
+}

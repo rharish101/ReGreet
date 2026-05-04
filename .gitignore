@@ -3,3 +3,4 @@
 # SPDX-License-Identifier: 0BSD
 
 target/
+packaging/output/
