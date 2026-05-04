@@ -383,6 +383,11 @@ impl AsyncComponent for Greeter {
             );
         };
 
+        widgets
+            .ui
+            .login_frame
+            .set_opacity(model.config.get_login_box_opacity());
+
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
 

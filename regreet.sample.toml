@@ -12,6 +12,12 @@ path = "/usr/share/backgrounds/greeter.jpg"
 # NOTE: This is ignored if ReGreet isn't compiled with GTK v4.8 support.
 fit = "Contain"
 
+# Opacity of the login box (0.0 = fully transparent, 1.0 = fully opaque)
+# Allows the wallpaper to show through the login box. Default is 1.0 (opaque).
+# NOTE: CSS `opacity` on the frame widget is not respected by GTK4 at the theme
+# rendering level; this option applies opacity via the GTK widget API instead.
+login_box_opacity = 1.0
+
 # The entries defined in this section will be passed to the session as environment variables when it is started
 [env]
 ENV_VARIABLE = "value"
