@@ -56,6 +56,8 @@ RUN VERSION=$(grep '^version' /build/regreet/Cargo.toml | sed 's/.*"\(.*\)".*/\1
     --depends gtk4 \
     --depends glib2 \
     --depends gdk-pixbuf2 \
+    --depends gstreamer1 \
+    --depends gstreamer1-plugins-good \
     -C /staging \
     --prefix / \
     usr/local/bin/regreet && \

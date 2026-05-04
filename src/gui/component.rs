@@ -124,7 +124,7 @@ impl AsyncComponent for Greeter {
             #[template]
             Ui {
                 #[template_child]
-                background { set_filename: model.config.get_background() },
+                background {},
 
                 #[template_child]
                 clock_frame {
@@ -339,6 +339,18 @@ impl AsyncComponent for Greeter {
         // Make the info bar permanently visible, since it was made invisible during init. The
         // actual visuals are controlled by `InfoBar::set_revealed`.
         widgets.ui.error_info.set_visible(true);
+
+        // Set up background: video via GStreamer MediaFile, static image via set_filename.
+        if let Some(path) = model.config.get_background() {
+            if model.config.get_background_is_video() {
+                let media = gtk::MediaFile::for_filename(path);
+                media.set_loop(true);
+                media.play();
+                widgets.ui.background.set_paintable(Some(&media));
+            } else {
+                widgets.ui.background.set_filename(Some(path));
+            }
+        }
 
         // cfg directives don't work inside Relm4 view! macro.
         #[cfg(feature = "gtk4_8")]

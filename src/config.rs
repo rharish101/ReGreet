@@ -181,4 +181,13 @@ impl Config {
     pub fn get_login_box_opacity(&self) -> f64 {
         self.background.login_box_opacity
     }
+
+    pub fn get_background_is_video(&self) -> bool {
+        self.background.path.as_deref().is_some_and(|p| {
+            matches!(
+                std::path::Path::new(p).extension().and_then(|e| e.to_str()),
+                Some("mp4" | "webm" | "mkv" | "mov" | "avi")
+            )
+        })
+    }
 }
