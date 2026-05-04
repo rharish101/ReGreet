@@ -4,6 +4,7 @@
 # sudo chmod 644 /usr/share/greetd/wallpaper.png
 path = "/usr/share/greetd/wallpaper.png"
 fit = "Cover"
+login_box_opacity = 0.82
 
 [GTK]
 application_prefer_dark_theme = true
