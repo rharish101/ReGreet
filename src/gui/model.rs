@@ -96,6 +96,8 @@ pub struct Greeter {
     pub(super) demo: bool,
     /// The clock widget
     pub(super) clock: Controller<Clock>,
+    /// Has the first click of the login button been handled previously?
+    first_login_handled: bool,
 }
 
 impl Greeter {
@@ -137,6 +139,7 @@ impl Greeter {
             updates,
             demo,
             clock,
+            first_login_handled: false,
         }
     }
 
@@ -296,11 +299,19 @@ impl Greeter {
     ) {
         match response {
             Response::Success => {
-                // Authentication was successful and the session may be started.
-                // This may happen on the first request, in which case logging in
-                // as the given user requires no authentication.
-                info!("Successfully logged in; starting session");
-                self.start_session(sender).await;
+                if self.config.skip_selection() && !self.first_login_handled {
+                    // This happens when the last logged-in user has no password or any other auth
+                    // set. Since the login button is auto-clicked, it would've otherwise logged
+                    // them in without any possibility of changing the user or session!
+                    warn!("Preventing auto-login for user without auth: cancelling session");
+                    self.cancel_click_handler().await
+                } else {
+                    // Authentication was successful and the session may be started.
+                    // This may happen on the first request, in which case logging in
+                    // as the given user requires no authentication.
+                    info!("Successfully logged in; starting session");
+                    self.start_session(sender).await
+                }
                 return;
             }
             Response::AuthMessage {
@@ -431,6 +442,7 @@ impl Greeter {
                 self.create_session(sender).await;
             }
         };
+        self.first_login_handled = true;
     }
 
     /// Send the entered input for logging in.
