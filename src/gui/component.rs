@@ -99,6 +99,15 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     }
 }
 
+async fn setup_background(model: &Greeter, widgets: &GreeterWidgets) {
+    if let Some(bg_path) = model.config.get_background() {
+        let media = gtk::MediaFile::for_filename(bg_path);
+        media.set_loop(true);
+        media.play();
+        widgets.ui.background.set_paintable(Some(&media));
+    }
+}
+
 /// The info required to initialize the greeter
 pub struct GreeterInit {
     pub config_path: PathBuf,
@@ -124,7 +133,7 @@ impl AsyncComponent for Greeter {
             #[template]
             Ui {
                 #[template_child]
-                background { set_filename: model.config.get_background() },
+                background,
 
                 #[template_child]
                 clock_frame {
@@ -371,6 +380,7 @@ impl AsyncComponent for Greeter {
         // full-screening.
         setup_settings(&model, &root);
         setup_users_sessions(&model, &widgets);
+        setup_background(&model, &widgets).await;
 
         if input.css_path.exists() {
             debug!("Loading custom CSS from file: {}", input.css_path.display());

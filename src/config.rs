@@ -58,7 +58,7 @@ pub enum BgFit {
     ScaleDown,
 }
 
-/// Struct for info about the background image
+/// Struct for info about the background image/video
 #[derive(Default, Deserialize, Serialize)]
 struct Background {
     #[serde(default)]

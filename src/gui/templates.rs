@@ -35,7 +35,7 @@ impl WidgetTemplate for EntryLabel {
 impl WidgetTemplate for Ui {
     view! {
         gtk::Overlay {
-            /// Background image
+            /// Background image/video
             #[name = "background"]
             gtk::Picture,
 

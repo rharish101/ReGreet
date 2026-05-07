@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 [background]
-# Path to the background image
+# Path to the background image/video
 path = "/usr/share/backgrounds/greeter.jpg"
 
 # How the background image covers the screen if the aspect ratio doesn't match

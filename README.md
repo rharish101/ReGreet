@@ -51,6 +51,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * GTK 4.0+
 * D-Bus
 * AccountsService
+* GStreamer (for background media; supported formats depend on installed plugins)
 * A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or [Sway](https://swaywm.org/) or [Hyprland](https://hyprland.org/))
 
 **Note**: Please make sure you have all requirements installed, as having a greetd greeter constantly failing isn't as much fun as it sounds.
@@ -224,7 +225,7 @@ regreet --config /path/to/custom/regreet/config.toml
 
 A sample configuration is provided along with sample values for all available options in [`regreet.sample.toml`](regreet.sample.toml).
 Currently, the following can be configured:
-* Background image
+* Background image (supported formats depend on your installed GStreamer plugins)
 * How the background image fits the screen (needs GTK 4.8+ support compiled)
 * Environment variables for created sessions
 * Greeting message
