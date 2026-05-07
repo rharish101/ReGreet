@@ -318,6 +318,15 @@ impl Greeter {
                 auth_message,
                 auth_message_type,
             } => {
+                let auto_select_msg = if self.config.skip_selection() && !self.first_login_handled {
+                    self.sess_info
+                        .as_ref()
+                        .and_then(|s| s.sess_id.as_ref())
+                        .map(|s| format!("Auto-selecting session \"{s}\""))
+                } else {
+                    None
+                };
+
                 match auth_message_type {
                     AuthMessageType::Secret => {
                         // Greetd has requested input that should be hidden
@@ -327,6 +336,9 @@ impl Greeter {
                         self.updates.set_input(String::new());
                         self.updates
                             .set_input_prompt(auth_message.trim_end().to_string());
+                        if let Some(msg) = auto_select_msg {
+                            self.display_info(sender, &msg, "Skipped user/session selection");
+                        }
                         return;
                     }
                     AuthMessageType::Visible => {
@@ -336,6 +348,9 @@ impl Greeter {
                         self.updates.set_input(String::new());
                         self.updates
                             .set_input_prompt(auth_message.trim_end().to_string());
+                        if let Some(msg) = auto_select_msg {
+                            self.display_info(sender, &msg, "Skipped user/session selection");
+                        }
                         return;
                     }
                     AuthMessageType::Info => {
