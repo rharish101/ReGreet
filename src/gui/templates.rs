@@ -178,6 +178,10 @@ impl WidgetTemplate for Ui {
                 set_spacing: 15,
 
                 gtk::Frame {
+                    inline_css: "
+                        border: none;
+                    ",
+
                     /// Notification bar for error messages
                     #[name = "error_info"]
                     gtk::InfoBar {
