@@ -165,8 +165,7 @@ impl AsyncComponent for Greeter {
 
                 #[template_child]
                 message_label {
-                    #[track(model.updates.changed(Updates::message()))]
-                    set_label: &model.updates.message,
+                    set_label: model.config.get_default_message(),
                 },
                 #[template_child]
                 session_label {
@@ -332,14 +331,16 @@ impl AsyncComponent for Greeter {
                     }
                 },
                 #[template_child]
-                error_info {
-                    #[track(model.updates.changed(Updates::error()))]
-                    set_revealed: model.updates.error.is_some(),
+                notif_info {
+                    #[track(model.updates.changed(Updates::notif_msg()))]
+                    set_revealed: model.updates.notif_msg.is_some(),
+                    #[track(model.updates.changed(Updates::notif_type()))]
+                    set_message_type: model.updates.notif_type,
                 },
                 #[template_child]
-                error_label {
-                    #[track(model.updates.changed(Updates::error()))]
-                    set_label: model.updates.error.as_ref().unwrap_or(&"".to_string()),
+                notif_label {
+                    #[track(model.updates.changed(Updates::notif_msg()))]
+                    set_label: model.updates.notif_msg.as_ref().unwrap_or(&"".to_string()),
                 },
                 #[template_child]
                 reboot_button { connect_clicked => Self::Input::Reboot },
@@ -368,9 +369,9 @@ impl AsyncComponent for Greeter {
         let mut model = Self::new(&input.config_path, input.demo).await;
         let widgets = view_output!();
 
-        // Make the info bar permanently visible, since it was made invisible during init. The
-        // actual visuals are controlled by `InfoBar::set_revealed`.
-        widgets.ui.error_info.set_visible(true);
+        // Make the notification bar permanently visible, since it was made invisible during init.
+        // The actual visuals are controlled by `InfoBar::set_revealed`.
+        widgets.ui.notif_info.set_visible(true);
 
         // cfg directives don't work inside Relm4 view! macro.
         #[cfg(feature = "gtk4_8")]
@@ -467,7 +468,11 @@ impl AsyncComponent for Greeter {
         self.updates.reset();
 
         match msg {
-            Self::CommandOutput::ClearErr => self.updates.set_error(None),
+            Self::CommandOutput::ClearNotif(version) => {
+                if self.updates.notif_ver == version {
+                    self.updates.set_notif_msg(None);
+                }
+            }
             Self::CommandOutput::HandleGreetdResponse(response) => {
                 self.handle_greetd_response(&sender, response).await
             }

@@ -182,17 +182,17 @@ impl WidgetTemplate for Ui {
                         border: none;
                     ",
 
-                    /// Notification bar for error messages
-                    #[name = "error_info"]
+                    /// Notification bar for messages
+                    #[name = "notif_info"]
                     gtk::InfoBar {
                         // During init, the info bar closing animation is shown. To hide that, make
                         // it invisible. Later, the code will permanently make it visible, so that
                         // `InfoBar::set_revealed` will work properly with animations.
                         set_visible: false,
-                        set_message_type: gtk::MessageType::Error,
+                        set_message_type: gtk::MessageType::Info,
 
-                        /// The actual error message
-                        #[name = "error_label"]
+                        /// The actual notification message
+                        #[name = "notif_label"]
                         gtk::Label {
                             set_halign: gtk::Align::Center,
                             set_margin_top: 10,

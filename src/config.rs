@@ -181,7 +181,7 @@ impl Config {
         &self.commands
     }
 
-    pub fn get_default_message(&self) -> String {
-        self.appearance.greeting_msg.clone()
+    pub fn get_default_message(&self) -> &str {
+        &self.appearance.greeting_msg
     }
 }

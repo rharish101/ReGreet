@@ -14,6 +14,7 @@ use greetd_ipc::{AuthMessageType, ErrorType, Response};
 use relm4::{
     AsyncComponentSender, Component, Controller,
     gtk::{
+        MessageType,
         gdk::{Display, Monitor},
         prelude::*,
     },
@@ -30,7 +31,7 @@ use super::{
     widget::clock::Clock,
 };
 
-const ERROR_MSG_CLEAR_DELAY: u64 = 5;
+const NOTIF_CLEAR_DELAY: u64 = 5;
 
 #[derive(PartialEq)]
 pub(super) enum InputMode {
@@ -42,10 +43,12 @@ pub(super) enum InputMode {
 // Fields only set by the model, that are meant to be read only by the widgets
 #[tracker::track]
 pub(super) struct Updates {
-    /// Message to be shown to the user
-    pub(super) message: String,
-    /// Error message to be shown to the user below the prompt
-    pub(super) error: Option<String>,
+    /// Notification message to be shown to the user below the prompt
+    pub(super) notif_msg: Option<String>,
+    /// Type of the notification to be shown to the user
+    pub(super) notif_type: MessageType,
+    /// Notification timer version: prevents earlier timer clearing out later notifications
+    pub(super) notif_ver: u8,
     /// Text in the password field
     pub(super) input: String,
     /// Whether the username is being entered manually
@@ -100,8 +103,9 @@ impl Greeter {
         let config = Config::new(config_path);
 
         let updates = Updates {
-            message: config.get_default_message(),
-            error: None,
+            notif_msg: None,
+            notif_type: MessageType::Info,
+            notif_ver: 0,
             input: String::new(),
             manual_user_mode: false,
             manual_sess_mode: false,
@@ -230,7 +234,6 @@ impl Greeter {
         };
         self.updates.set_input(String::new());
         self.updates.set_input_mode(InputMode::None);
-        self.updates.set_message(self.config.get_default_message())
     }
 
     /// Create a greetd session, i.e. start a login attempt for the current user.
@@ -329,13 +332,15 @@ impl Greeter {
                         // e.g.: asking for a fingerprint
                         info!("greetd sent an info: {auth_message}");
                         self.updates.set_input_mode(InputMode::None);
-                        self.updates.set_message(auth_message);
+                        self.display_info(
+                            sender,
+                            &capitalize(&auth_message),
+                            &format!("Authentication message info from greetd: {auth_message}"),
+                        );
                     }
                     AuthMessageType::Error => {
                         // Greetd has sent an error message that should be displayed and logged
                         self.updates.set_input_mode(InputMode::None);
-                        // Reset outdated info message, if any
-                        self.updates.set_message(self.config.get_default_message());
                         self.display_error(
                             sender,
                             &capitalize(&auth_message),
@@ -597,6 +602,18 @@ impl Greeter {
         }
     }
 
+    /// Show a notification to the user.
+    fn display_notif(&mut self, sender: &AsyncComponentSender<Self>, display_text: &str) {
+        self.updates.set_notif_msg(Some(display_text.to_string()));
+
+        let version = self.updates.notif_ver + 1;
+        self.updates.set_notif_ver(version);
+        sender.oneshot_command(async move {
+            sleep(Duration::from_secs(NOTIF_CLEAR_DELAY)).await;
+            CommandMsg::ClearNotif(version)
+        });
+    }
+
     /// Show an error message to the user.
     fn display_error(
         &mut self,
@@ -604,13 +621,21 @@ impl Greeter {
         display_text: &str,
         log_text: &str,
     ) {
-        self.updates.set_error(Some(display_text.to_string()));
+        self.updates.set_notif_type(MessageType::Error);
         error!("{log_text}");
+        self.display_notif(sender, display_text);
+    }
 
-        sender.oneshot_command(async move {
-            sleep(Duration::from_secs(ERROR_MSG_CLEAR_DELAY)).await;
-            CommandMsg::ClearErr
-        });
+    /// Show an info message to the user.
+    fn display_info(
+        &mut self,
+        sender: &AsyncComponentSender<Self>,
+        display_text: &str,
+        log_text: &str,
+    ) {
+        self.updates.set_notif_msg(Some(display_text.to_string()));
+        info!("{log_text}");
+        self.display_notif(sender, display_text);
     }
 }
 
