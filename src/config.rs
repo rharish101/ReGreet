@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 
 use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
 use crate::gui::widget::clock::ClockConfig;
@@ -49,13 +49,31 @@ pub struct GtkSettings {
 }
 
 /// Analogue to `gtk4::ContentFit`
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Serialize)]
 pub enum BgFit {
     Fill,
     #[default]
     Contain,
     Cover,
     ScaleDown,
+}
+
+impl<'de> Deserialize<'de> for BgFit {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        match s.to_lowercase().as_str() {
+            "fill" => Ok(BgFit::Fill),
+            "contain" => Ok(BgFit::Contain),
+            "cover" => Ok(BgFit::Cover),
+            "scaledown" | "scale-down" => Ok(BgFit::ScaleDown),
+            _ => Err(serde::de::Error::custom(format!(
+                "Invalid background fit: {s}"
+            ))),
+        }
+    }
 }
 
 /// Struct for info about the background image/video
