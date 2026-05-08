@@ -258,7 +258,9 @@ regreet --style /path/to/custom.css
 Please refer to the GTK4 docs on [CSS in GTK](https://docs.gtk.org/gtk4/css-overview.html) and [GTK CSS Properties](https://docs.gtk.org/gtk4/css-properties.html) to learn how to style a GTK4 app using CSS.
 For a general reference on CSS, please refer to the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax).
 
-**Tip:** You might want to use [demo mode](#demo-mode) to test out your CSS before making it permanent.
+**Tip:** You might want to use [demo mode](#demo-mode) with the [GTK Inspector](https://docs.gtk.org/gtk4/running.html#interactive-debugging) to explore the CSS hierarchy and test out your CSS before making it permanent.
+
+**Tip:** If you're using an LLM to help you create a basic CSS file, give it all the links above in this subsection along with this file from the ReGreet source code: [src/gui/templates.rs](./src/gui/templates.rs).
 
 ### Changing Reboot/Shut Down Commands
 The default reboot and shut down commands use the `reboot` and `poweroff` binaries, which are present on most Linux systems.
