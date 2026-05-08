@@ -7,13 +7,13 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Deserializer};
 
 use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
 use crate::gui::widget::clock::ClockConfig;
 use crate::tomlutils::load_toml;
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize)]
 pub struct AppearanceSettings {
     #[serde(default = "default_greeting_msg")]
     pub greeting_msg: String,
@@ -32,7 +32,7 @@ fn yes() -> bool {
 }
 
 /// Struct holding all supported GTK settings
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize)]
 pub struct GtkSettings {
     #[serde(default)]
     pub application_prefer_dark_theme: bool,
@@ -49,7 +49,7 @@ pub struct GtkSettings {
 }
 
 /// Analogue to `gtk4::ContentFit`
-#[derive(Default, Serialize)]
+#[derive(Default)]
 pub enum BgFit {
     Fill,
     #[default]
@@ -77,16 +77,17 @@ impl<'de> Deserialize<'de> for BgFit {
 }
 
 /// Struct for info about the background image/video
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize)]
 struct Background {
     #[serde(default)]
     path: Option<String>,
+    #[cfg(feature = "gtk4_8")]
     #[serde(default)]
     fit: BgFit,
 }
 
 /// Struct for various system commands
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize)]
 pub struct SystemCommands {
     #[serde(default = "default_reboot_command")]
     pub reboot: Vec<String>,
