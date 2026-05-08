@@ -1,0 +1,22 @@
+[background]
+# Set to any wallpaper from ~/Pictures/wallpapers/ — must be readable by greeter user
+# sudo cp ~/Pictures/wallpapers/<file> /usr/share/greetd/wallpaper.png
+# sudo chmod 644 /usr/share/greetd/wallpaper.png
+path = "/usr/share/greetd/wallpaper.webm"
+fit = "Cover"
+login_box_opacity = 0.82
+
+[GTK]
+application_prefer_dark_theme = true
+icon_theme_name = "Adwaita"
+cursor_theme_name = "Adwaita"
+font_name = "JetBrainsMono Nerd Font Medium 11"
+css_file = "/etc/greetd/regreet.css"
+
+[commands]
+reboot = ["systemctl", "reboot"]
+poweroff = ["systemctl", "poweroff"]
+
+[widget.clock]
+format = "%A %B %-d  %I:%M %p"
+label_width = 380

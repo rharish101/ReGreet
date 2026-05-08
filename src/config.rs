@@ -58,13 +58,29 @@ pub enum BgFit {
     ScaleDown,
 }
 
+fn default_login_box_opacity() -> f64 {
+    1.0
+}
+
 /// Struct for info about the background image
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Deserialize, Serialize)]
 struct Background {
     #[serde(default)]
     path: Option<String>,
     #[serde(default)]
     fit: BgFit,
+    #[serde(default = "default_login_box_opacity")]
+    login_box_opacity: f64,
+}
+
+impl Default for Background {
+    fn default() -> Self {
+        Background {
+            path: None,
+            fit: BgFit::default(),
+            login_box_opacity: default_login_box_opacity(),
+        }
+    }
 }
 
 /// Struct for various system commands
@@ -160,5 +176,18 @@ impl Config {
 
     pub fn get_default_message(&self) -> String {
         self.appearance.greeting_msg.clone()
+    }
+
+    pub fn get_login_box_opacity(&self) -> f64 {
+        self.background.login_box_opacity
+    }
+
+    pub fn get_background_is_video(&self) -> bool {
+        self.background.path.as_deref().is_some_and(|p| {
+            matches!(
+                std::path::Path::new(p).extension().and_then(|e| e.to_str()),
+                Some("mp4" | "webm" | "mkv" | "mov" | "avi")
+            )
+        })
     }
 }

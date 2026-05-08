@@ -40,6 +40,7 @@ impl WidgetTemplate for Ui {
             gtk::Picture,
 
             /// Main login box
+            #[name = "login_frame"]
             add_overlay = &gtk::Frame {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Center,
@@ -158,8 +159,6 @@ impl WidgetTemplate for Ui {
             add_overlay = &gtk::Frame {
                 set_halign: gtk::Align::Center,
                 set_valign: gtk::Align::Start,
-
-                add_css_class: "background",
 
                 // Make it fit cleanly onto the top edge of the screen.
                 inline_css: "

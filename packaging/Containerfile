@@ -1,0 +1,64 @@
+# ── Stage 1: base ─────────────────────────────────────────────────────────────
+# Rust toolchain + fpm. Heavy and stable — only changes if toolchain shifts.
+FROM fedora:43 AS base
+
+RUN dnf install -y \
+    # Rust toolchain
+    rust cargo \
+    # Build essentials
+    pkg-config \
+    # fpm packaging
+    ruby ruby-devel rpm-build \
+    && dnf clean all
+
+RUN gem install fpm --no-document
+
+# ── Stage 2: extras ───────────────────────────────────────────────────────────
+# GTK4 ecosystem dev libs. Add here when cargo reports a missing C library.
+FROM base AS extras
+
+RUN dnf install -y \
+    # GTK4 and core deps
+    gtk4-devel \
+    glib2-devel \
+    gdk-pixbuf2-devel \
+    # Pango / Cairo (text rendering)
+    pango-devel \
+    cairo-devel \
+    cairo-gobject-devel \
+    # Graphene (GTK4 geometry)
+    graphene-devel \
+    # GObject introspection (needed by gtk4-rs build scripts)
+    gobject-introspection-devel \
+    && dnf clean all
+
+# ── Stage 3: builder ──────────────────────────────────────────────────────────
+# Builds from the local fork source — no external clone needed.
+FROM extras AS builder
+
+COPY . /build/regreet
+
+RUN cd /build/regreet && \
+    cargo build --release && \
+    install -Dm755 target/release/regreet /staging/usr/local/bin/regreet
+
+# ── RPM packaging ─────────────────────────────────────────────────────────────
+RUN VERSION=$(grep '^version' /build/regreet/Cargo.toml | sed 's/.*"\(.*\)".*/\1/') && \
+    mkdir -p /output && \
+    cd /output && \
+    fpm -s dir -t rpm \
+    --name regreet \
+    --version "$VERSION" \
+    --iteration 1 \
+    --description "ReGreet - clean GTK4 greeter for greetd" \
+    --url "https://github.com/jkinum/ReGreet" \
+    --license "GPL-3.0" \
+    --depends gtk4 \
+    --depends glib2 \
+    --depends gdk-pixbuf2 \
+    --depends gstreamer1 \
+    --depends gstreamer1-plugins-good \
+    -C /staging \
+    --prefix / \
+    usr/local/bin/regreet && \
+    ls -lh /output/*.rpm
