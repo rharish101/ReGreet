@@ -64,6 +64,9 @@ fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
 fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     // The user that is shown during initial login
     let mut initial_username = None;
+    // The session that is shown during initial login, used when there is no last-used session for
+    // the chosen user.
+    let mut initial_session = None;
 
     // Populate the usernames combo box.
     for (user, username) in model.sys_util.get_users().iter() {
@@ -77,6 +80,9 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     // Populate the sessions combo box.
     for session in model.sys_util.get_sessions().keys() {
         debug!("Found session: {session}");
+        if initial_session.is_none() {
+            initial_session = Some(session.clone());
+        }
         widgets.ui.sessions_box.append(Some(session), session);
     }
 
@@ -93,8 +99,25 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
         .usernames_box
         .set_active_id(initial_username.as_deref())
     {
-        if let Some(user) = initial_username {
+        if let Some(user) = &initial_username {
             warn!("Couldn't find user '{user}' to set as the initial user");
+        }
+    }
+
+    // If there's no last-used session for the initial user, then the sessions box won't have
+    // anything chosen, and thus remain empty. So detect this case (which should be
+    // mutually-exclusive) with setting the initial user as above.
+    if let Some(user) = &initial_username {
+        if !model.cache.has_last_session(user)
+            && initial_session.is_some()
+            && !widgets
+                .ui
+                .sessions_box
+                .set_active_id(initial_session.as_deref())
+        {
+            if let Some(sess) = &initial_session {
+                warn!("Couldn't find session '{sess}' to set as the initial session");
+            }
         }
     }
 }
