@@ -75,7 +75,11 @@ impl Updates {
 
 /// Capitalize the first letter of the string.
 fn capitalize(string: &str) -> String {
-    string[0..1].to_uppercase() + &string[1..]
+    let mut chars = string.chars();
+    match chars.next() {
+        None => string.to_string(),
+        Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+    }
 }
 
 /// Greeter model that holds its state
