@@ -37,7 +37,7 @@ pub struct ClockConfig {
     pub timezone: TimeZone,
 
     /// Ask GTK to make the label this wide. This way as the text changes, the label's size can stay static.
-    #[serde(default)]
+    #[serde(default = "label_width")]
     pub label_width: u32,
 }
 
