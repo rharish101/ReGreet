@@ -4,13 +4,11 @@
 
 //! A [serde-configurable][`ClockConfig`] clock label widget.
 
+use std::fmt;
 use std::time::Duration;
 
 use chrono::{Locale, Utc};
 use chrono_tz::Tz;
-use localzone;
-
-use std::fmt;
 
 use relm4::{gtk::prelude::*, prelude::*};
 use serde::{
@@ -46,7 +44,7 @@ pub struct ClockConfig {
     pub label_width: u32,
 
     /// The locale to use for time formatting (e.g. "en_US")
-    #[serde(deserialize_with = "locale_deserializer", default)]
+    #[serde(deserialize_with = "parse_locale", default = "system_locale")]
     pub locale: Locale,
 }
 
@@ -59,15 +57,33 @@ const fn half_second() -> Duration {
 }
 
 fn system_tz() -> Tz {
-    chrono_tz::UTC
+    if let Some(tz_name) = localzone::get_local_zone() {
+        debug!("Local system timezone: {tz_name}");
+        tz_name.parse().unwrap_or_else(|e| {
+            warn!("Could not parse system timezone {tz_name}: {e}");
+            chrono_tz::UTC
+        })
+    } else {
+        warn!("Could not determine system timezone");
+        chrono_tz::UTC
+    }
 }
 
 const fn label_width() -> u32 {
     150
 }
 
-const fn locale() -> Locale {
-    Locale::en_US
+fn system_locale() -> Locale {
+    if let Some(locale) = sys_locale::get_locale() {
+        debug!("Local system timezone: {locale}");
+        locale.parse::<Locale>().unwrap_or_else(|_| {
+            warn!("Could not parse system locale {locale}");
+            Locale::en_US
+        })
+    } else {
+        warn!("Could not determine system locale");
+        Locale::en_US
+    }
 }
 
 impl Default for ClockConfig {
@@ -77,7 +93,7 @@ impl Default for ClockConfig {
             resolution: half_second(),
             timezone: system_tz(),
             label_width: label_width(),
-            locale: locale(),
+            locale: system_locale(),
         }
     }
 }
@@ -99,24 +115,9 @@ where
         where
             E: de::Error,
         {
-            // Try parsing the provided time zone string
-            time_zone_name.parse::<Tz>().or_else(|_e| {
-                // Fallback: try to get the system's IANA timezone via localzone
-                if let Some(sys_tz_name) = localzone::get_local_zone() {
-                    sys_tz_name.parse::<Tz>().map_err(|parse_err| {
-                        E::custom(format!(
-                            "provided TZ '{}' invalid, system TZ '{}' invalid too: {}",
-                            time_zone_name, sys_tz_name, parse_err
-                        ))
-                    })
-                } else {
-                    match localzone::get_local_zone() {
-                        Some(tz_name) => info!("Local system timezone: {}", tz_name),
-                        None => info!("Could not determine system timezone"),
-                    }
-                    // Final fallback: UTC
-                    Ok(chrono_tz::UTC)
-                }
+            time_zone_name.parse::<Tz>().or_else(|e| {
+                error!("Invalid timezone '{time_zone_name}' in the config: {e}");
+                Ok(system_tz())
             })
         }
     }
@@ -124,7 +125,7 @@ where
     data.deserialize_any(TimeZoneVisitor)
 }
 
-fn locale_deserializer<'de, D>(deserializer: D) -> Result<Locale, D::Error>
+fn parse_locale<'de, D>(data: D) -> Result<Locale, D::Error>
 where
     D: Deserializer<'de>,
 {
@@ -137,22 +138,18 @@ where
             formatter.write_str("a string representing a locale (e.g., 'en_US')")
         }
 
-        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+        fn visit_str<E>(self, locale_name: &str) -> Result<Self::Value, E>
         where
             E: de::Error,
         {
-            // Attempt to parse the value into a Locale
-            match value.parse::<Locale>() {
-                Ok(locale) => Ok(locale),
-                Err(_) => {
-                    // If parsing fails, handle it gracefully by providing a custom error
-                    Err(E::custom(format!("Invalid locale string: '{}'", value)))
-                }
-            }
+            locale_name.parse::<Locale>().or_else(|_| {
+                error!("Invalid locale '{locale_name}' in the config");
+                Ok(system_locale())
+            })
         }
     }
 
-    deserializer.deserialize_str(LocaleVisitor)
+    data.deserialize_str(LocaleVisitor)
 }
 
 #[derive(Debug)]
@@ -160,7 +157,6 @@ pub struct Clock {
     format: String,
     timezone: Tz,
     locale: Locale,
-
     current_time: String,
 }
 
@@ -227,6 +223,7 @@ impl Component for Clock {
 
     fn update_cmd(&mut self, Tick: Self::CommandOutput, _: ComponentSender<Self>, _: &Self::Root) {
         let now = Utc::now().with_timezone(&self.timezone);
+
         let text = now.format_localized(&self.format, self.locale).to_string();
 
         self.current_time = text;
