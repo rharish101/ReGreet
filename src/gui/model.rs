@@ -48,7 +48,7 @@ pub(super) struct Updates {
     /// Type of the notification to be shown to the user
     pub(super) notif_type: MessageType,
     /// Notification timer version: prevents earlier timer clearing out later notifications
-    pub(super) notif_ver: u8,
+    pub(super) notif_ver: u32,
     /// Text in the password field
     pub(super) input: String,
     /// Whether the username is being entered manually

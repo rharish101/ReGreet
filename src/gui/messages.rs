@@ -64,7 +64,7 @@ pub enum InputMsg {
 /// The messages sent to the sender to run tasks in the background
 pub enum CommandMsg {
     /// Clear the notification
-    ClearNotif(u8),
+    ClearNotif(u32),
     /// Handle a response received from greetd
     HandleGreetdResponse(Response),
     /// Notify the greeter that a monitor was removed.
