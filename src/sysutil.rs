@@ -9,13 +9,10 @@ mod accounts_service;
 use std::collections::{HashMap, HashSet};
 use std::env;
 use std::error::Error;
-use std::fs::read;
-use std::io;
 use std::path::Path;
-use std::str::from_utf8;
 
+use freedesktop_entry_parser::Entry;
 use glob::glob;
-use regex::Regex;
 use shlex::Shlex;
 use zbus::Connection;
 
@@ -96,7 +93,7 @@ impl SysUtil {
         Ok(Self {
             users: usernames,
             shells,
-            sessions: Self::init_sessions(config)?,
+            sessions: Self::init_sessions(config).await?,
         })
     }
 
@@ -104,7 +101,7 @@ impl SysUtil {
     ///
     /// These are defined as either X11 or Wayland session desktop files stored in specific
     /// directories.
-    fn init_sessions(config: &Config) -> io::Result<SessionMap> {
+    async fn init_sessions(config: &Config) -> Result<SessionMap, Box<dyn Error>> {
         let mut found_session_names = HashSet::new();
         let mut sessions = HashMap::new();
 
@@ -123,15 +120,6 @@ impl SysUtil {
         } else {
             SESSION_DIRS.to_string()
         };
-
-        // The session launch command is specified as: Exec=command arg1 arg2...
-        let cmd_regex = Regex::new(r"Exec=(.*)").expect("Invalid regex for session command");
-        // The session name is specified as: Name=My Session
-        let name_regex = Regex::new(r"Name=(.*)").expect("Invalid regex for session name");
-
-        // Hiding could be either as Hidden=true or NoDisplay=true
-        let hidden_regex = Regex::new(r"Hidden=(.*)").expect("Invalid regex for hidden");
-        let no_display_regex = Regex::new(r"NoDisplay=(.*)").expect("Invalid regex for no display");
 
         for sess_dir in session_dirs.split(':') {
             let sess_dir_path = Path::new(sess_dir);
@@ -167,11 +155,6 @@ impl SysUtil {
                 };
                 info!("Now scanning session file: {}", path.display());
 
-                let contents = read(&path)?;
-                let text = from_utf8(contents.as_slice()).unwrap_or_else(|err| {
-                    panic!("Session file '{}' is not UTF-8: {}", path.display(), err)
-                });
-
                 let fname_and_type = match path.strip_prefix(sess_parent_dir) {
                     Ok(fname_and_type) => fname_and_type.to_owned(),
                     Err(err) => {
@@ -188,23 +171,22 @@ impl SysUtil {
                     continue;
                 };
 
-                let hidden: bool = if let Some(hidden_str) = hidden_regex
-                    .captures(text)
-                    .and_then(|capture| capture.get(1))
-                {
-                    hidden_str.as_str().parse().unwrap_or(false)
+                let entry = Entry::parse(tokio::fs::read(&path).await?)?;
+                let section = if let Some(section) = entry.section("Desktop Entry") {
+                    section
                 } else {
-                    false
+                    warn!("Session file {} is not a desktop entry", path.display());
+                    continue;
                 };
 
-                let no_display: bool = if let Some(no_display_str) = no_display_regex
-                    .captures(text)
-                    .and_then(|capture| capture.get(1))
-                {
-                    no_display_str.as_str().parse().unwrap_or(false)
-                } else {
-                    false
-                };
+                let hidden = section
+                    .attr("Hidden")
+                    .first()
+                    .is_some_and(|s| s.parse().unwrap_or(false));
+                let no_display = section
+                    .attr("NoDisplay")
+                    .first()
+                    .is_some_and(|s| s.parse().unwrap_or(false));
 
                 if hidden | no_display {
                     found_session_names.insert(fname_and_type);
@@ -212,9 +194,7 @@ impl SysUtil {
                 };
 
                 // Parse the desktop file to get the session command.
-                let cmd = if let Some(cmd_str) =
-                    cmd_regex.captures(text).and_then(|capture| capture.get(1))
-                {
+                let cmd = if let Some(cmd_str) = section.attr("Exec").first() {
                     let mut cmd = if let Some(prefix) = cmd_prefix {
                         prefix.clone()
                     } else {
@@ -241,9 +221,7 @@ impl SysUtil {
                 };
 
                 // Get the full name of this session.
-                let name = if let Some(name) =
-                    name_regex.captures(text).and_then(|capture| capture.get(1))
-                {
+                let name = if let Some(name) = section.attr("Name").first() {
                     debug!(
                         "Found name '{}' for session '{}' with command '{:?}'",
                         name.as_str(),
