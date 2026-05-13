@@ -46,7 +46,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Demo mode to run ReGreet without greetd for easier development.
 
 ## Requirements
-* Rust 1.75.0+ (for compilation only)
+* Rust 1.85.0+ (for compilation only)
 * greetd
 * GTK 4.0+
 * D-Bus
