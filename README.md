@@ -28,6 +28,7 @@ These screenshots use the [Canta GTK theme](https://github.com/vinceliuice/Canta
 * Allows manual entry of username and session command
 * Remembers the last authenticated user
 * Automatically selects the last used session per user
+* Can also skip selecting the user/session and choose the last user and their last used session.
 * Allows setting environment variables for created sessions
 * Supports customizing:
     - Background image
@@ -239,6 +240,7 @@ Currently, the following can be configured:
 * Reboot command
 * Shut down command
 * X11 command prefix (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/))
+* Whether to skip selecting the user/session and choose the last user and session.
 
 **NOTE:** For configuring other essential features, such as the keyboard layout/mapping, the choice of monitor to use, etc., please check out the configuration options for the wayland compositor that you are using to run ReGreet.
 For example, if you use Cage, check out the [Cage wiki](https://github.com/cage-kiosk/cage/wiki/Configuration).

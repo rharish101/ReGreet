@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use relm4::{
     AsyncComponentSender,
     component::{AsyncComponent, AsyncComponentParts},
-    gtk::prelude::*,
+    gtk::{glib::GString, prelude::*},
     prelude::*,
 };
 use tracing::{debug, info, warn};
@@ -419,6 +419,26 @@ impl AsyncComponent for Greeter {
 
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
+
+        if let Some(user) = model.cache.get_last_user() {
+            if model.config.skip_selection() && model.cache.has_last_session(user) {
+                debug!("Skipping user & session selection and using those from the cache");
+                // Queue up a login event after the Self::Input::UserChanged that will be fired by
+                // setup_users_sessions (as sender.input queues). This way we avoid any race
+                // conditions. Use cached values directly instead of extracting from widgets.
+                let user = user.to_string();
+                let last_session = model.cache.get_last_session(&user).unwrap().to_string();
+                sender.input(Self::Input::Login {
+                    input: String::new(),
+                    info: UserSessInfo {
+                        user_id: Some(user.into()),
+                        user_text: GString::new(),
+                        sess_id: Some(last_session.into()),
+                        sess_text: GString::new(),
+                    },
+                });
+            }
+        }
 
         AsyncComponentParts { model, widgets }
     }

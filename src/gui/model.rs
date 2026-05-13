@@ -98,8 +98,10 @@ pub struct Greeter {
     pub(super) updates: Updates,
     /// Is it run as demo
     pub(super) demo: bool,
-
+    /// The clock widget
     pub(super) clock: Controller<Clock>,
+    /// Has the first click of the login button been handled previously?
+    first_login_handled: bool,
 }
 
 impl Greeter {
@@ -141,6 +143,7 @@ impl Greeter {
             updates,
             demo,
             clock,
+            first_login_handled: false,
         }
     }
 
@@ -300,17 +303,34 @@ impl Greeter {
     ) {
         match response {
             Response::Success => {
-                // Authentication was successful and the session may be started.
-                // This may happen on the first request, in which case logging in
-                // as the given user requires no authentication.
-                info!("Successfully logged in; starting session");
-                self.start_session(sender).await;
+                if self.config.skip_selection() && !self.first_login_handled {
+                    // This happens when the last logged-in user has no password or any other auth
+                    // set. Since the login button is auto-clicked, it would've otherwise logged
+                    // them in without any possibility of changing the user or session!
+                    warn!("Preventing auto-login for user without auth: cancelling session");
+                    self.cancel_click_handler().await
+                } else {
+                    // Authentication was successful and the session may be started.
+                    // This may happen on the first request, in which case logging in
+                    // as the given user requires no authentication.
+                    info!("Successfully logged in; starting session");
+                    self.start_session(sender).await
+                }
                 return;
             }
             Response::AuthMessage {
                 auth_message,
                 auth_message_type,
             } => {
+                let auto_select_msg = if self.config.skip_selection() && !self.first_login_handled {
+                    self.sess_info
+                        .as_ref()
+                        .and_then(|s| s.sess_id.as_ref())
+                        .map(|s| format!("Auto-selecting session \"{s}\""))
+                } else {
+                    None
+                };
+
                 match auth_message_type {
                     AuthMessageType::Secret => {
                         // Greetd has requested input that should be hidden
@@ -320,6 +340,9 @@ impl Greeter {
                         self.updates.set_input(String::new());
                         self.updates
                             .set_input_prompt(auth_message.trim_end().to_string());
+                        if let Some(msg) = auto_select_msg {
+                            self.display_info(sender, &msg, "Skipped user/session selection");
+                        }
                         return;
                     }
                     AuthMessageType::Visible => {
@@ -329,6 +352,9 @@ impl Greeter {
                         self.updates.set_input(String::new());
                         self.updates
                             .set_input_prompt(auth_message.trim_end().to_string());
+                        if let Some(msg) = auto_select_msg {
+                            self.display_info(sender, &msg, "Skipped user/session selection");
+                        }
                         return;
                     }
                     AuthMessageType::Info => {
@@ -435,6 +461,7 @@ impl Greeter {
                 self.create_session(sender).await;
             }
         };
+        self.first_login_handled = true;
     }
 
     /// Send the entered input for logging in.
