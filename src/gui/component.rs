@@ -379,10 +379,10 @@ impl AsyncComponent for Greeter {
             .ui
             .background
             .set_content_fit(match model.config.get_background_fit() {
-                BgFit::Fill => gtk4::ContentFit::Fill,
-                BgFit::Contain => gtk4::ContentFit::Contain,
-                BgFit::Cover => gtk4::ContentFit::Cover,
-                BgFit::ScaleDown => gtk4::ContentFit::ScaleDown,
+                BgFit::Fill => gtk::ContentFit::Fill,
+                BgFit::Contain => gtk::ContentFit::Contain,
+                BgFit::Cover => gtk::ContentFit::Cover,
+                BgFit::ScaleDown => gtk::ContentFit::ScaleDown,
             });
 
         // Cancel any previous session, just in case someone started one.
