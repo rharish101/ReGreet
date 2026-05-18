@@ -131,11 +131,12 @@ Edit the greetd config file (`/etc/greetd/config.toml`) to set ReGreet with a Wa
 For example, if using Cage:
 ```toml
 [default_session]
-command = "dbus-run-session cage -s -mlast -- regreet"
+command = "dbus-run-session cage -s -mlast -d -- regreet"
 user = "greeter"
 ```
 The `-s` argument enables VT switching in cage (0.1.2 and newer only), which is highly recommended to prevent locking yourself out.
 The `-mlast` argument tells Cage to use the last-connected monitor only, which is useful since ReGreet is a single-monitor application.
+The `-d` argument tells Cage to avoid using client-side decorations for ReGreet's application window.
 The `dbus-run-session` command as a prefix is optional, but multiple users report that it helps solve [startup delays](#startup-delays).
 
 If using Sway, create a Sway config file (in a path such as `/etc/greetd/sway-config`) as follows:
