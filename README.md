@@ -225,8 +225,8 @@ hl.config({
 })
 ```
 
-If your Hyprland version doesn't support Lua configs, create instead a Hyprland
-config file (in a path such as `/etc/greetd/hyprland.conf`) as follows:
+If your Hyprland version doesn't support Lua configs, create instead a legacy
+Hyprlang config file (in a path such as `/etc/greetd/hyprland.conf`) as follows:
 
 ```
 exec-once = regreet; hyprctl dispatch exit
