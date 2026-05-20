@@ -152,7 +152,21 @@ command = "dbus-run-session sway --config /path/to/custom/sway/config"
 user = "greeter"
 ```
 
-If using Hyprland, create a Hyprland config file (in a path such as `/etc/greetd/hyprland.conf`) as follows:
+If using Hyprland, create a Hyprland config file (in a path such as `/etc/greetd/hyprland.lua`) as follows:
+```lua
+hl.on("hyprland.start", function()
+	hl.exec_cmd("regreet; hyprctl dispatch 'hl.dsp.exit()'")
+end)
+hl.config({
+	misc = {
+		disable_hyprland_logo = true,
+		disable_splash_rendering = true,
+        disable_hyprland_guiutils_check = true,
+	},
+})
+```
+
+If your Hyprland version doesn't support Lua configs, create instead a Hyprland config file (in a path such as `/etc/greetd/hyprland.conf`) as follows:
 ```
 exec-once = regreet; hyprctl dispatch exit
 misc {
