@@ -167,7 +167,12 @@ cargo build --all-features --release
 ### Set as Default Session
 
 Edit the greetd config file (`/etc/greetd/config.toml`) to set ReGreet with a
-Wayland compositor as the default session. For example, if using Cage:
+Wayland compositor as the default session, and then restart greetd to use the
+new config. Below you will find some examples of different Wayland compositors.
+
+#### Cage
+
+Set the greetd config file to:
 
 ```toml
 [default_session]
@@ -183,8 +188,10 @@ client-side decorations for ReGreet's application window. The `dbus-run-session`
 command as a prefix is optional, but multiple users report that it helps solve
 [startup delays](#startup-delays).
 
-If using Sway, create a Sway config file (in a path such as
-`/etc/greetd/sway-config`) as follows:
+#### Sway
+
+Create a Sway config file (in a path such as `/etc/greetd/sway-config`) as
+follows:
 
 ```
 exec "regreet; swaymsg exit"
@@ -200,8 +207,10 @@ command = "dbus-run-session sway --config /path/to/custom/sway/config"
 user = "greeter"
 ```
 
-If using Hyprland, create a Hyprland config file (in a path such as
-`/etc/greetd/hyprland.lua`) as follows:
+#### Hyprland
+
+Create a Hyprland config file (in a path such as `/etc/greetd/hyprland.lua`) as
+follows:
 
 ```lua
 hl.on("hyprland.start", function()
@@ -237,8 +246,9 @@ command = "dbus-run-session start-hyprland -- -c /path/to/custom/hyprland/config
 user = "greeter"
 ```
 
-If using Niri, create a KDL config file (in a path such as
-`/etc/greetd/niri.kdl`) as follows:
+#### Niri
+
+Create a KDL config file (in a path such as `/etc/greetd/niri.kdl`) as follows:
 
 ```kdl
 spawn-sh-at-startup "regreet; niri msg action quit --skip-confirmation"
@@ -261,39 +271,14 @@ command = "dbus-run-session niri --config /path/to/custom/niri/config"
 user = "greeter"
 ```
 
-If using Gamescope:
+#### Gamescope
+
+Set the greetd config file to:
 
 ```toml
 [default_session]
 command = "dbus-run-session gamescope --backend drm --force-windows-fullscreen -- regreet"
 user = "greeter"
-```
-
-Restart greetd to use the new config.
-
-#### Startup delays
-
-It seems that `dbus-run-session` has solved startup delays, but if you find that
-ReGreet takes too much time to start up, you may be affected by this:
-[swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
-See this link for the fix.
-
-As another option, you can disable portals by exporting environment variables
-for the Wayland compositor launched for ReGreet. Simply prepend
-`env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals` to the start of the default session
-command in `greetd.toml`. For example, with Cage, the session command would be:
-
-```toml
-[default_session]
-command = "env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals dbus-run-session cage -s -mlast -- regreet"
-```
-
-If using Hyprland, you can instead append the following lines to the Hyprland
-config for ReGreet:
-
-```
-env = GTK_USE_PORTAL,0
-env = GDK_DEBUG,no-portals
 ```
 
 ### Configuration
@@ -423,6 +408,33 @@ The recommended configuration is to run greetd greeters as a separate user
 either creating the state/log directories, or writing to them. To make use of
 the caching and logging features, please create the directories manually with
 the correct permissions, if not done during installation with systemd-tmpfiles.
+
+## Troubleshooting
+
+### Startup delays
+
+It seems that `dbus-run-session` has solved startup delays, but if you find that
+ReGreet takes too much time to start up, you may be affected by this:
+[swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start](https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start).
+See this link for the fix.
+
+As another option, you can disable portals by exporting environment variables
+for the Wayland compositor launched for ReGreet. Simply prepend
+`env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals` to the start of the default session
+command in `greetd.toml`. For example, with Cage, the session command would be:
+
+```toml
+[default_session]
+command = "env GTK_USE_PORTAL=0 GDK_DEBUG=no-portals dbus-run-session cage -s -mlast -- regreet"
+```
+
+If using Hyprland, you can instead append the following lines to the Hyprland
+config for ReGreet:
+
+```
+env = GTK_USE_PORTAL,0
+env = GDK_DEBUG,no-portals
+```
 
 ## Contributing
 
