@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use relm4::{
     AsyncComponentSender,
     component::{AsyncComponent, AsyncComponentParts},
-    gtk::{glib::GString, prelude::*},
+    gtk::{gdk::Display, glib::GString, prelude::*},
     prelude::*,
 };
 use tracing::{debug, info, warn};
@@ -129,6 +129,19 @@ async fn setup_background(model: &Greeter, widgets: &GreeterWidgets) {
         media.play();
         widgets.ui.background.set_paintable(Some(&media));
     }
+}
+
+fn is_multi_monitor(display_name: &str) -> bool {
+    let Some(display) = Display::open(Some(display_name)) else {
+        error!("Couldn't get display with name: {display_name}");
+        return false;
+    };
+    let monitors = display.monitors();
+    let mut iter = monitors.into_iter();
+    if iter.next().is_none() {
+        return false;
+    }
+    iter.next().is_some()
 }
 
 /// The info required to initialize the greeter
@@ -391,12 +404,17 @@ impl AsyncComponent for Greeter {
         };
 
         model.choose_monitor(widgets.ui.display().name().as_str(), &sender);
-        if let Some(monitor) = &model.updates.monitor {
-            // The window needs to be manually fullscreened, since the monitor is `None` at widget
-            // init.
-            root.fullscreen_on_monitor(monitor);
-        } else {
-            // Couldn't choose a monitor, so let the compositor choose it for us.
+        if is_multi_monitor(widgets.ui.display().name().as_str()) {
+            if let Some(monitor) = &model.updates.monitor {
+                // The window needs to be manually fullscreened, since the monitor is `None` at widget
+                // init.
+                root.fullscreen_on_monitor(monitor);
+            } else {
+                // Couldn't choose a monitor, so let the compositor choose it for us.
+                root.fullscreen();
+            }
+            // Using `fullscreen_on_monitor()` on a single-monitor setup causes flashes where ReGreet
+            // switches from being unthemed to being themed.
             root.fullscreen();
         }
 
