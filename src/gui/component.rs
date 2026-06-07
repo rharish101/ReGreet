@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use relm4::{
     AsyncComponentSender,
     component::{AsyncComponent, AsyncComponentParts},
-    gtk::{glib::GString, prelude::*},
+    gtk::{gdk::Texture, gio::File, glib::GString, prelude::*},
     prelude::*,
 };
 use tracing::{debug, info, warn};
@@ -122,13 +122,30 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     }
 }
 
+async fn load_image(path: &str) -> Result<Option<Texture>, glycin::ErrorCtx> {
+    let image = glycin::Loader::new(File::for_path(path)).load().await?;
+    let texture = image.next_frame().await?.texture();
+    if image.next_frame().await.is_ok() {
+        // Another frame available, so this image is animated; fall back to GStreamer.
+        Ok(None)
+    } else {
+        Ok(Some(texture))
+    }
+}
+
 async fn setup_background(model: &Greeter, widgets: &GreeterWidgets) {
-    if let Some(bg_path) = model.config.get_background() {
+    let Some(bg_path) = model.config.get_background() else {
+        return;
+    };
+
+    if let Ok(Some(texture)) = load_image(bg_path).await {
+        widgets.ui.background.set_paintable(Some(&texture));
+    } else {
         let media = gtk::MediaFile::for_filename(bg_path);
         media.set_loop(true);
         media.play();
         widgets.ui.background.set_paintable(Some(&media));
-    }
+    };
 }
 
 /// The info required to initialize the greeter
