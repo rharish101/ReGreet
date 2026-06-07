@@ -23,6 +23,7 @@ educe = "0.6"
 file-rotate = "0.8"
 freedesktop_entry_parser = "2.0.1"
 glob = "0.3"
+glycin = { version = "3.0.8", features = ["gdk4", "tokio"] }
 greetd_ipc = { version = "0.10", features = ["tokio-codec"] }
 gtk4 = "0.10"
 humantime-serde = "1.1.1"
