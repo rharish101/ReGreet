@@ -413,6 +413,7 @@ impl AsyncComponent for Greeter {
                 // Couldn't choose a monitor, so let the compositor choose it for us.
                 root.fullscreen();
             }
+        } else {
             // Using `fullscreen_on_monitor()` on a single-monitor setup causes flashes where ReGreet
             // switches from being unthemed to being themed.
             root.fullscreen();
