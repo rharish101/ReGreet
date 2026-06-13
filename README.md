@@ -64,8 +64,9 @@ the Roboto font. All screenshots are provided under the
 - GTK 4.16+
 - D-Bus
 - AccountsService
-- GStreamer (for background media; supported formats depend on installed
-  plugins)
+- Glycin (for background images; supported formats depend on installed plugins)
+- GStreamer (for background animated images & video; supported formats depend on
+  installed plugins)
 - A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or
   [Sway](https://swaywm.org/) or [Hyprland](https://hyprland.org/))
 
