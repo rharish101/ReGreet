@@ -18,12 +18,12 @@ jobs:
   check:
     runs-on: ubuntu-26.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Install GTK4
       run: sudo apt update && sudo apt install libgtk-4-dev build-essential
     - run: rustup toolchain install 1.85 --profile minimal
     - name: Restore build cache
-      uses: Swatinem/rust-cache@v2.7.5
+      uses: Swatinem/rust-cache@v2
 
     - run: cargo build --verbose
     - run: cargo test --verbose
