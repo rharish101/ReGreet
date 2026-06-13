@@ -13,9 +13,6 @@ repository = "https://github.com/rharish101/ReGreet/"
 license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[features]
-gtk4_8 = ["gtk4/v4_8"]
-
 [dependencies]
 clap = { version = "4.5", features = ["derive"] }
 const_format = "0.2.33"
@@ -23,9 +20,9 @@ educe = "0.6"
 file-rotate = "0.8"
 freedesktop_entry_parser = "2.0.1"
 glob = "0.3"
-glycin = { version = "3.0.8", features = ["gdk4", "tokio"] }
+glycin = { version = "3.0.8", features = ["gdk4", "tokio"] } # This depends on GTK>=4.16
 greetd_ipc = { version = "0.10", features = ["tokio-codec"] }
-gtk4 = "0.10"
+gtk4 = { version = "0.10", features = ["v4_8"] }
 humantime-serde = "1.1.1"
 jiff = "0.2.24"
 lru = "0.18"

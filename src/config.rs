@@ -8,7 +8,6 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use serde::Deserialize;
-#[cfg(feature = "gtk4_8")]
 use serde::Deserializer;
 
 use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
@@ -51,7 +50,6 @@ pub struct GtkSettings {
 }
 
 /// Analogue to `gtk4::ContentFit`
-#[cfg(feature = "gtk4_8")]
 #[derive(Default)]
 pub enum BgFit {
     Fill,
@@ -61,7 +59,6 @@ pub enum BgFit {
     ScaleDown,
 }
 
-#[cfg(feature = "gtk4_8")]
 impl<'de> Deserialize<'de> for BgFit {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -85,7 +82,6 @@ impl<'de> Deserialize<'de> for BgFit {
 struct Background {
     #[serde(default)]
     path: Option<String>,
-    #[cfg(feature = "gtk4_8")]
     #[serde(default)]
     fit: BgFit,
 }
@@ -171,7 +167,6 @@ impl Config {
         self.background.path.as_deref()
     }
 
-    #[cfg(feature = "gtk4_8")]
     pub fn get_background_fit(&self) -> &BgFit {
         &self.background.fit
     }

@@ -14,7 +14,6 @@ use relm4::{
 };
 use tracing::{debug, info, warn};
 
-#[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
 
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
@@ -391,7 +390,6 @@ impl AsyncComponent for Greeter {
         widgets.ui.notif_info.set_visible(true);
 
         // cfg directives don't work inside Relm4 view! macro.
-        #[cfg(feature = "gtk4_8")]
         widgets
             .ui
             .background

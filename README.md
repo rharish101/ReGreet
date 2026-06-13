@@ -61,7 +61,7 @@ the Roboto font. All screenshots are provided under the
 
 - Rust 1.85.0+ (for compilation only)
 - greetd
-- GTK 4.0+
+- GTK 4.16+
 - D-Bus
 - AccountsService
 - GStreamer (for background media; supported formats depend on installed
@@ -140,29 +140,6 @@ either of the following:
   ```sh
   systemd-tmpfiles --create "$PWD/systemd-tmpfiles.conf"
   ```
-
-#### GTK4 Versions
-
-ReGreet targets GTK version 4.0 or above. If you have higher versions of GTK,
-then you can enable additional features in ReGreet. Currently, the extra
-features enabled are:
-
-| GTK Version | Feature Flag | Features                                                            |
-| ----------- | ------------ | ------------------------------------------------------------------- |
-| 4.8         | `gtk4_8`     | <ul><li>Changing how the background image fits the screen</li></ul> |
-
-To compile with support for a GTK version, pass the corresponding feature flag
-during building. For example, to compile with GTK 4.8+ support, run:
-
-```sh
-cargo build -F gtk4_8 --release
-```
-
-To compile with full support, run:
-
-```sh
-cargo build --all-features --release
-```
 
 ## Usage
 
@@ -300,7 +277,7 @@ following can be configured:
 
 - Background image (supported formats depend on your installed GStreamer
   plugins)
-- How the background image fits the screen (needs GTK 4.8+ support compiled)
+- How the background image fits the screen
 - Environment variables for created sessions
 - Greeting message
 - Clock
