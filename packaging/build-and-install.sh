@@ -9,7 +9,10 @@ OUTPUT_DIR="$SCRIPT_DIR/output"
 mkdir -p "$OUTPUT_DIR"
 
 echo "==> Building regreet image (first run ~10-15 minutes for cargo deps)..."
-podman build \
+# Rootful: rootless podman on Fedora 43 fails to chown cups-filesystem (a hard dep
+# of gtk4) during rpm unpack. Build + extract under sudo so the throwaway builder
+# image installs cleanly; production containers stay rootless.
+sudo podman build \
     --network=host \
     --pull=missing \
     --tag "$IMAGE" \
@@ -17,7 +20,7 @@ podman build \
     "$REPO_ROOT"
 
 echo "==> Extracting RPM from container..."
-podman run --rm \
+sudo podman run --rm \
     -v "$OUTPUT_DIR:/out:z" \
     "$IMAGE" \
     bash -c 'cp /output/*.rpm /out/'

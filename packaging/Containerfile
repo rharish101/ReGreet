@@ -30,6 +30,8 @@ RUN dnf install -y \
     graphene-devel \
     # GObject introspection (needed by gtk4-rs build scripts)
     gobject-introspection-devel \
+    # wlr-layer-shell support for GTK4 (multi-output greeter)
+    gtk4-layer-shell-devel \
     && dnf clean all
 
 # ── Stage 3: builder ──────────────────────────────────────────────────────────
@@ -54,6 +56,7 @@ RUN VERSION=$(grep '^version' /build/regreet/Cargo.toml | sed 's/.*"\(.*\)".*/\1
     --url "https://github.com/jkinum/ReGreet" \
     --license "GPL-3.0" \
     --depends gtk4 \
+    --depends gtk4-layer-shell \
     --depends glib2 \
     --depends gdk-pixbuf2 \
     --depends gstreamer1 \

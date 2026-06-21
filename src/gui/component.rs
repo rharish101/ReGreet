@@ -14,15 +14,47 @@ use relm4::{
 };
 use tracing::{debug, info, warn};
 
+use gtk4_layer_shell::{Edge, KeyboardMode, Layer, LayerShell};
+
 #[cfg(feature = "gtk4_8")]
 use crate::config::BgFit;
+
+/// Build the greeter window as a full-output layer-shell surface.
+///
+/// This runs as the root *constructor* so it executes inside relm4's `init_root` — before
+/// the window is shown. Layer-shell anchors must be set before the surface is realized, and
+/// an AsyncComponent's root is shown *before* `init` runs, so configuring layer-shell in the
+/// `view!` body (which is applied during `init`) is too late: the anchors are ignored and the
+/// surface stays at its default size. Anchoring all four edges stretches it to fill the
+/// output; the compositor applies each output's transform, so it renders upright on rotated
+/// monitors. The overlay layer keeps it above everything; Exclusive keyboard lets it type.
+trait LayerShellRoot {
+    fn new_greeter() -> Self;
+}
+
+impl LayerShellRoot for gtk::Window {
+    fn new_greeter() -> Self {
+        let window = gtk::Window::new();
+        window.init_layer_shell();
+        window.set_layer(Layer::Overlay);
+        window.set_namespace(Some("regreet"));
+        window.set_keyboard_mode(KeyboardMode::Exclusive);
+        for edge in [Edge::Left, Edge::Right, Edge::Top, Edge::Bottom] {
+            window.set_anchor(edge, true);
+        }
+        // Cover the whole output, ignoring any panel's reserved space (-1). A greeter session
+        // has no panels, but this keeps the surface full-output regardless.
+        window.set_exclusive_zone(-1);
+        window
+    }
+}
 
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
 use super::model::{Greeter, InputMode, Updates};
 use super::templates::Ui;
 
 /// Load GTK settings from the greeter config.
-fn setup_settings(model: &Greeter, root: &gtk::ApplicationWindow) {
+fn setup_settings(model: &Greeter, root: &gtk::Window) {
     let settings = root.settings();
     let config = if let Some(config) = model.config.get_gtk_settings() {
         config
@@ -116,7 +148,7 @@ impl AsyncComponent for Greeter {
     view! {
         // The `view!` macro needs a proper widget, not a template, as the root.
         #[name = "window"]
-        gtk::ApplicationWindow {
+        gtk::Window::new_greeter() {
             set_visible: true,
 
             // Name the UI widget, otherwise the inner children cannot be accessed by name.
@@ -333,6 +365,7 @@ impl AsyncComponent for Greeter {
         root: Self::Root,
         sender: AsyncComponentSender<Self>,
     ) -> AsyncComponentParts<Self> {
+        // Layer-shell setup is done in the `view!` macro (before the window is realized).
         let mut model = Self::new(&input.config_path, input.demo).await;
         let widgets = view_output!();
 
@@ -369,18 +402,10 @@ impl AsyncComponent for Greeter {
             warn!("Couldn't cancel greetd session: {err}");
         };
 
-        model.choose_monitor(widgets.ui.display().name().as_str(), &sender);
-        if let Some(monitor) = &model.updates.monitor {
-            // The window needs to be manually fullscreened, since the monitor is `None` at widget
-            // init.
-            root.fullscreen_on_monitor(monitor);
-        } else {
-            // Couldn't choose a monitor, so let the compositor choose it for us.
-            root.fullscreen();
-        }
+        // Monitor selection / fullscreening is handled by the layer-shell surface set up at
+        // the top of `init` (anchored to all edges), so there is no `fullscreen_on_monitor`
+        // call here.
 
-        // For some reason, the GTK settings are reset when changing monitors, so apply them after
-        // full-screening.
         setup_settings(&model, &root);
         setup_users_sessions(&model, &widgets);
 
