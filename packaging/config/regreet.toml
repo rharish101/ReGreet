@@ -17,6 +17,13 @@ css_file = "/etc/greetd/regreet.css"
 reboot = ["systemctl", "reboot"]
 poweroff = ["systemctl", "poweroff"]
 
+[monitors]
+# The login box appears on the first entry that is currently connected, walking down
+# as outputs disappear (lid close = eDP removed). Matched as a substring against the
+# monitor's GDK description ("make model serial (connector)") or connector name:
+# laptop by connector (stable); externals by EDID serial (dock ports shuffle names).
+primary = ["eDP-1", "85103651NA", "85103652NA"]
+
 [widget.clock]
 format = "%A %B %-d  %I:%M %p"
 label_width = 380

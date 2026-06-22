@@ -49,6 +49,61 @@ impl LayerShellRoot for gtk::Window {
     }
 }
 
+/// The monitor's GDK description, e.g. `"NEC Corporation EA275UHD 85103651NA (DVI-I-1)"`.
+///
+/// Read via the GObject "description" property rather than `MonitorExt::description()` — the
+/// typed getter (GDK 4.10) isn't bound by this gtk4-rs version, but the property is present at
+/// runtime. The string carries make, model, EDID serial, and connector, so a single substring
+/// test covers both serial matches (external monitors) and connector matches (the laptop).
+fn monitor_description(monitor: &gtk::gdk::Monitor) -> String {
+    monitor
+        .property_value("description")
+        .get::<Option<String>>()
+        .ok()
+        .flatten()
+        .unwrap_or_default()
+}
+
+/// Pick the monitor to place the login box on. Walk the configured priority list and return the
+/// first currently-connected monitor whose description contains the entry as a substring. Falls
+/// back to the first monitor if nothing matches or the list is empty, preserving sensible
+/// behaviour for an unconfigured greeter.
+fn select_primary_monitor(
+    display: &gtk::gdk::Display,
+    priority: &[String],
+) -> Option<gtk::gdk::Monitor> {
+    let monitors: Vec<gtk::gdk::Monitor> = display
+        .monitors()
+        .into_iter()
+        .filter_map(|item| {
+            item.ok()
+                .and_then(|object| object.downcast::<gtk::gdk::Monitor>().ok())
+        })
+        .filter(gtk::gdk::Monitor::is_valid)
+        .collect();
+
+    for key in priority {
+        if let Some(monitor) = monitors
+            .iter()
+            .find(|&monitor| monitor_description(monitor).contains(key.as_str()))
+        {
+            return Some(monitor.clone());
+        }
+    }
+
+    monitors.into_iter().next()
+}
+
+/// Pin the layer-shell login window to the configured primary monitor.
+fn apply_primary_monitor(window: &gtk::Window, display: &gtk::gdk::Display, priority: &[String]) {
+    let monitor = select_primary_monitor(display, priority);
+    match &monitor {
+        Some(monitor) => info!("Placing greeter on monitor: {}", monitor_description(monitor)),
+        None => warn!("No monitor available to place the greeter"),
+    }
+    window.set_monitor(monitor.as_ref());
+}
+
 use super::messages::{CommandMsg, InputMsg, UserSessInfo};
 use super::model::{Greeter, InputMode, Updates};
 use super::templates::Ui;
@@ -349,16 +404,6 @@ impl AsyncComponent for Greeter {
         }
     }
 
-    fn post_view() {
-        if model.updates.changed(Updates::monitor()) {
-            if let Some(monitor) = &model.updates.monitor {
-                widgets.window.fullscreen_on_monitor(monitor);
-                // For some reason, the GTK settings are reset when changing monitors, so re-apply them.
-                setup_settings(self, &widgets.window);
-            }
-        }
-    }
-
     /// Initialize the greeter.
     async fn init(
         input: Self::Init,
@@ -402,9 +447,9 @@ impl AsyncComponent for Greeter {
             warn!("Couldn't cancel greetd session: {err}");
         };
 
-        // Monitor selection / fullscreening is handled by the layer-shell surface set up at
-        // the top of `init` (anchored to all edges), so there is no `fullscreen_on_monitor`
-        // call here.
+        // The layer-shell surface (anchored to all edges in the root constructor) fills the
+        // output; placement on the configured primary monitor happens later in `init` via
+        // `apply_primary_monitor`, so there is no `fullscreen_on_monitor` call here.
 
         setup_settings(&model, &root);
         setup_users_sessions(&model, &widgets);
@@ -427,6 +472,19 @@ impl AsyncComponent for Greeter {
 
         // Set the default behaviour of pressing the Return key to act like the login button.
         root.set_default_widget(Some(&widgets.ui.login_button));
+
+        // Pin the layer-shell surface to the configured primary monitor (the layer surface
+        // otherwise lands on whatever output the compositor picks). Re-pin whenever monitors
+        // come or go — a lid open/close shows up as a monitor add/remove — so placement stays
+        // deterministic and follows the priority list down as outputs disappear.
+        let display = WidgetExt::display(&root);
+        let priority = model.config.get_primary_monitors().to_vec();
+        apply_primary_monitor(&root, &display, &priority);
+        let window = root.clone();
+        let display_for_cb = display.clone();
+        display.monitors().connect_items_changed(move |_, _, _, _| {
+            apply_primary_monitor(&window, &display_for_cb, &priority);
+        });
 
         AsyncComponentParts { model, widgets }
     }
@@ -479,9 +537,6 @@ impl AsyncComponent for Greeter {
             Self::CommandOutput::ClearErr => self.updates.set_error(None),
             Self::CommandOutput::HandleGreetdResponse(response) => {
                 self.handle_greetd_response(&sender, response).await
-            }
-            Self::CommandOutput::MonitorRemoved(display_name) => {
-                self.choose_monitor(display_name.as_str(), &sender)
             }
         };
     }

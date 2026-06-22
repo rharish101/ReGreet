@@ -83,6 +83,17 @@ impl Default for Background {
     }
 }
 
+/// Struct for choosing which monitor the login box appears on
+#[derive(Default, Deserialize, Serialize)]
+pub struct Monitors {
+    /// Ordered priority list. The login box is placed on the first entry that is currently
+    /// connected. Each string is matched as a substring against the monitor's GDK description
+    /// ("make model serial (connector)") or its connector name. Match the laptop by connector
+    /// (stable) and external monitors by EDID serial (dock ports shuffle connector names).
+    #[serde(default)]
+    pub primary: Vec<String>,
+}
+
 /// Struct for various system commands
 #[derive(Deserialize, Serialize)]
 pub struct SystemCommands {
@@ -139,6 +150,9 @@ pub struct Config {
     commands: SystemCommands,
 
     #[serde(default)]
+    monitors: Monitors,
+
+    #[serde(default)]
     pub(crate) widget: WidgetConfig,
 }
 
@@ -172,6 +186,10 @@ impl Config {
 
     pub fn get_sys_commands(&self) -> &SystemCommands {
         &self.commands
+    }
+
+    pub fn get_primary_monitors(&self) -> &[String] {
+        &self.monitors.primary
     }
 
     pub fn get_default_message(&self) -> String {

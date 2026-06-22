@@ -67,7 +67,4 @@ pub enum CommandMsg {
     ClearErr,
     /// Handle a response received from greetd
     HandleGreetdResponse(Response),
-    /// Notify the greeter that a monitor was removed.
-    // The Gstring is the name of the display.
-    MonitorRemoved(GString),
 }
