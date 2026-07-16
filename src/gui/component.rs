@@ -455,6 +455,8 @@ impl AsyncComponent for Greeter {
 
         // Set window visible after all the setup is done.
         root.set_visible(true);
+        // Restore the intended initial focus.
+        widgets.ui.login_button.grab_focus();
 
         AsyncComponentParts { model, widgets }
     }
