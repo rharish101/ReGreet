@@ -165,8 +165,6 @@ impl AsyncComponent for Greeter {
         // The `view!` macro needs a proper widget, not a template, as the root.
         #[name = "window"]
         gtk::ApplicationWindow {
-            set_visible: true,
-
             // Name the UI widget, otherwise the inner children cannot be accessed by name.
             #[name = "ui"]
             #[template]
@@ -454,6 +452,9 @@ impl AsyncComponent for Greeter {
                 });
             }
         }
+
+        // Set window visible after all the setup is done.
+        root.set_visible(true);
 
         AsyncComponentParts { model, widgets }
     }

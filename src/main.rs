@@ -76,7 +76,8 @@ fn main() {
     // Keep the guard alive till the end of the function, since logging depends on this.
     let _guard = init_logging(&args.logs, &args.log_level, args.verbose);
 
-    let app = relm4::RelmApp::new(APP_ID);
+    // We will make the app invisible on startup, then make it visible after style loaded and initialized.
+    let app = relm4::RelmApp::new(APP_ID).visible_on_activate(false);
     app.with_args(vec![]).run_async::<Greeter>(GreeterInit {
         config_path: args.config,
         css_path: args.style,
