@@ -4,7 +4,7 @@
 
 [package]
 name = "regreet"
-version = "0.4.0"
+version = "0.5.0"
 authors = ["Harish Rajagopal <harish.rajagopals@gmail.com>"]
 edition = "2024"
 rust-version = "1.85"
