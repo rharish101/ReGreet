@@ -383,6 +383,15 @@ impl AsyncComponent for Greeter {
         let mut model = Self::new(&input.config_path, input.demo).await;
         let widgets = view_output!();
 
+        let clock_pos = &model.config.widget.clock;
+
+        widgets.ui.clock_frame.set_halign(clock_pos.halign);
+        widgets.ui.clock_frame.set_valign(clock_pos.valign);
+        widgets.ui.clock_frame.set_margin_top(clock_pos.margin_top);
+        widgets.ui.clock_frame.set_margin_bottom(clock_pos.margin_bottom);
+        widgets.ui.clock_frame.set_margin_start(clock_pos.margin_start);
+        widgets.ui.clock_frame.set_margin_end(clock_pos.margin_end);
+
         // Make the notification bar permanently visible, since it was made invisible during init.
         // The actual visuals are controlled by `InfoBar::set_revealed`.
         widgets.ui.notif_info.set_visible(true);
