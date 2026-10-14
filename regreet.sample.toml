@@ -57,6 +57,8 @@ greeting_msg = "Welcome back!"
 # Clock date & time format
 # See https://docs.rs/chrono/latest/chrono/format/strftime/index.html
 format = "%a %H:%M"
+# Or, you can use this line with alignment and justification options, see below:
+# format = "%A, %e %B %Y%n%H:%M"
 
 # How often to update the text
 resolution = "500ms"
@@ -74,3 +76,17 @@ label_width = 150
 # month and weekday names, and number formatting.
 # Remove to use the system locale.
 locale = "en_US"
+
+# You can specify how the text will be look in the clock widget.
+# Vertical and horizontal alignment of the widget itself. Can be "top", "center", or "bottom", "start", "end" or "fill".
+# By default, "center" is used.
+# valign = "top"
+# halign = "right"
+
+# You can set a margins of top, bottom, start and end, respectively. Default is 0.
+# These settings will place the clock widget at top-right corner and set the right margin to 15 px.
+# Alternatively, you can define this in the regreet.css style file, see https://github.com/rharish101/ReGreet/pull/171
+# margin_top = 0
+# margin_bottom = 0
+# margin_start = 0
+# margin_end = 15
