@@ -158,6 +158,13 @@ pub struct Clock {
     timezone: Tz,
     locale: Locale,
     current_time: String,
+    halign: Align,
+    valign: Align,
+    margin_top: i32,
+    margin_bottom: i32,
+    margin_start: i32,
+    margin_end: i32,
+    justification: gtk::Justification,
 }
 
 /// A fixed-interval command output.
@@ -178,6 +185,13 @@ impl Component for Clock {
         gtk::Label {
             set_width_request: label_width.min(i32::MAX as u32) as i32,
             set_justify: gtk::Justification::Center,
+            set_halign: model.halign,
+            set_valign: model.valign,
+            set_justify: model.justification,
+            set_margin_top: model.margin_top,
+            set_margin_bottom: model.margin_bottom,
+            set_margin_start: model.margin_start,
+            set_margin_end: model.margin_end,
 
             #[watch]
             set_markup: &model.current_time
@@ -191,6 +205,13 @@ impl Component for Clock {
             timezone,
             label_width,
             locale,
+            halign,
+            valign,
+            margin_top,
+            margin_bottom,
+            margin_start,
+            margin_end,
+            justification,
         }: Self::Init,
         root: Self::Root,
         sender: ComponentSender<Self>,
@@ -214,6 +235,13 @@ impl Component for Clock {
             format,
             timezone,
             locale,
+            halign,
+            valign,
+            margin_top,
+            margin_bottom,
+            margin_start,
+            margin_end,
+            justification,
         };
 
         let widgets = view_output!();

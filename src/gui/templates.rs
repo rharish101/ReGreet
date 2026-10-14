@@ -160,6 +160,7 @@ impl WidgetTemplate for Ui {
                 set_valign: gtk::Align::Start,
 
                 add_css_class: "background",
+                add_css_class: "widget-clock",
 
                 // Make it fit cleanly onto the top edge of the screen.
                 inline_css: "
