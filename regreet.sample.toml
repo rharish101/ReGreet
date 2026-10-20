@@ -82,11 +82,3 @@ locale = "en_US"
 # By default, "center" is used.
 # valign = "top"
 # halign = "right"
-
-# You can set a margins of top, bottom, start and end, respectively. Default is 0.
-# These settings will place the clock widget at top-right corner and set the right margin to 15 px.
-# Alternatively, you can define this in the regreet.css style file, see https://github.com/rharish101/ReGreet/pull/171
-# margin_top = 0
-# margin_bottom = 0
-# margin_start = 0
-# margin_end = 15

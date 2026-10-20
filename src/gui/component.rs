@@ -387,16 +387,6 @@ impl AsyncComponent for Greeter {
 
         widgets.ui.clock_frame.set_halign(clock_pos.halign);
         widgets.ui.clock_frame.set_valign(clock_pos.valign);
-        widgets.ui.clock_frame.set_margin_top(clock_pos.margin_top);
-        widgets
-            .ui
-            .clock_frame
-            .set_margin_bottom(clock_pos.margin_bottom);
-        widgets
-            .ui
-            .clock_frame
-            .set_margin_start(clock_pos.margin_start);
-        widgets.ui.clock_frame.set_margin_end(clock_pos.margin_end);
 
         // Make the notification bar permanently visible, since it was made invisible during init.
         // The actual visuals are controlled by `InfoBar::set_revealed`.
