@@ -245,10 +245,8 @@ impl Component for Clock {
     view! {
         gtk::Label {
             set_width_request: label_width.min(i32::MAX as u32) as i32,
-            set_justify: gtk::Justification::Center,
             set_halign: model.halign,
             set_valign: model.valign,
-            set_justify: model.justification,
             set_justify: model.justification,
 
             #[watch]
