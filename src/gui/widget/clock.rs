@@ -63,17 +63,14 @@ pub struct ClockConfig {
 }
 
 fn default_justification() -> Justification {
-    warn!("No known config option for justification given, using \"center\" as default");
     Justification::Center
 }
 
 fn default_halign() -> Align {
-    warn!("No known config option for horizontal alignment given, using \"center\" as default");
     Align::Center
 }
 
 fn default_valign() -> Align {
-    warn!("No known config option for vertical alignment given, using \"start\" as default");
     Align::Start
 }
 
@@ -87,7 +84,10 @@ where
         "end" | "right" | "bottom" => Ok(Align::End),
         "center" => Ok(Align::Center),
         "fill" => Ok(Align::Fill),
-        _ => Ok(Align::Center),
+        _ => {
+            warn!("Invalid config option for alignment given: {s}, using \"center\" as default");
+            Ok(Align::Center)
+        }
     }
 }
 
@@ -101,7 +101,12 @@ where
         "right" => Ok(Justification::Right),
         "center" => Ok(Justification::Center),
         "fill" => Ok(Justification::Fill),
-        _ => Ok(Justification::Center),
+        _ => {
+            warn!(
+                "Invalid config option for justification given: {s}, using \"center\" as default"
+            );
+            Ok(Justification::Center)
+        }
     }
 }
 
