@@ -10,7 +10,7 @@ use std::time::Duration;
 use chrono::{Locale, Utc};
 use chrono_tz::Tz;
 
-use relm4::{gtk::prelude::*, prelude::*, gtk::Align, gtk::Justification};
+use relm4::{gtk::Align, gtk::Justification, gtk::prelude::*, prelude::*};
 use serde::{
     Deserialize, Deserializer,
     de::{self, Visitor},
@@ -55,7 +55,10 @@ pub struct ClockConfig {
     pub valign: Align,
 
     /// Justification inside the clock widget
-    #[serde(default = "default_justification", deserialize_with = "parse_justification")]
+    #[serde(
+        default = "default_justification",
+        deserialize_with = "parse_justification"
+    )]
     pub justification: Justification,
 
     #[serde(default)]
@@ -71,11 +74,20 @@ pub struct ClockConfig {
     pub margin_end: i32,
 }
 
-fn default_justification() -> Justification { Justification::Center }
+fn default_justification() -> Justification {
+    warn!("No known config option for justification given, using \"center\" as default");
+    Justification::Center
+}
 
-fn default_halign() -> Align { Align::Center }
+fn default_halign() -> Align {
+    warn!("No known config option for horizontal alignment given, using \"center\" as default");
+    Align::Center
+}
 
-fn default_valign() -> Align { Align::Start }
+fn default_valign() -> Align {
+    warn!("No known config option for vertical alignment given, using \"start\" as default");
+    Align::Start
+}
 
 fn parse_align<'de, D>(data: D) -> Result<Align, D::Error>
 where
