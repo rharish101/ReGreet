@@ -223,8 +223,6 @@ pub struct Clock {
     timezone: Tz,
     locale: Locale,
     current_time: String,
-    halign: Align,
-    valign: Align,
     justification: gtk::Justification,
 }
 
@@ -245,8 +243,6 @@ impl Component for Clock {
     view! {
         gtk::Label {
             set_width_request: label_width.min(i32::MAX as u32) as i32,
-            set_halign: model.halign,
-            set_valign: model.valign,
             set_justify: model.justification,
 
             #[watch]
@@ -261,8 +257,8 @@ impl Component for Clock {
             timezone,
             label_width,
             locale,
-            halign,
-            valign,
+            halign: _,
+            valign: _,
             justification,
         }: Self::Init,
         root: Self::Root,
@@ -287,8 +283,6 @@ impl Component for Clock {
             format,
             timezone,
             locale,
-            halign,
-            valign,
             justification,
         };
 
