@@ -52,7 +52,6 @@ x11_prefix = [ "startx", "/usr/bin/env" ]
 # The message that initially displays on startup
 greeting_msg = "Welcome back!"
 
-
 [widget.clock]
 # Clock date & time format
 # See https://docs.rs/chrono/latest/chrono/format/strftime/index.html
@@ -78,7 +77,11 @@ label_width = 150
 locale = "en_US"
 
 # You can specify how the text will be look in the clock widget.
-# Vertical and horizontal alignment of the widget itself. Can be "top", "center", or "bottom", "start", "end" or "fill".
-# By default, "center" is used.
-# valign = "top"
-# halign = "right"
+# By default, "center" is used for justification.
+justification = "center"
+
+# Vertical and horizontal alignment of the widget itself.
+# valign can be "top", "bottom", "start", "end", "center", or "fill". By default, "top" is used.
+# halign can be "left", "right", "start", "end", "center", or "fill". By default, "center" is used.
+valign = "top"
+halign = "center"
