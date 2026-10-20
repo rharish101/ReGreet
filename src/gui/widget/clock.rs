@@ -60,18 +60,6 @@ pub struct ClockConfig {
         deserialize_with = "parse_justification"
     )]
     pub justification: Justification,
-
-    #[serde(default)]
-    pub margin_top: i32,
-
-    #[serde(default)]
-    pub margin_bottom: i32,
-
-    #[serde(default)]
-    pub margin_start: i32,
-
-    #[serde(default)]
-    pub margin_end: i32,
 }
 
 fn default_justification() -> Justification {
@@ -165,10 +153,6 @@ impl Default for ClockConfig {
             locale: system_locale(),
             halign: default_halign(),
             valign: default_valign(),
-            margin_top: 0,
-            margin_bottom: 0,
-            margin_start: 0,
-            margin_end: 0,
             justification: default_justification(),
         }
     }
@@ -236,10 +220,6 @@ pub struct Clock {
     current_time: String,
     halign: Align,
     valign: Align,
-    margin_top: i32,
-    margin_bottom: i32,
-    margin_start: i32,
-    margin_end: i32,
     justification: gtk::Justification,
 }
 
@@ -264,10 +244,6 @@ impl Component for Clock {
             set_halign: model.halign,
             set_valign: model.valign,
             set_justify: model.justification,
-            set_margin_top: model.margin_top,
-            set_margin_bottom: model.margin_bottom,
-            set_margin_start: model.margin_start,
-            set_margin_end: model.margin_end,
             set_justify: model.justification,
 
             #[watch]
@@ -284,10 +260,6 @@ impl Component for Clock {
             locale,
             halign,
             valign,
-            margin_top,
-            margin_bottom,
-            margin_start,
-            margin_end,
             justification,
         }: Self::Init,
         root: Self::Root,
@@ -314,10 +286,6 @@ impl Component for Clock {
             locale,
             halign,
             valign,
-            margin_top,
-            margin_bottom,
-            margin_start,
-            margin_end,
             justification,
         };
 
