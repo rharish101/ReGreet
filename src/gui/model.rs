@@ -384,9 +384,13 @@ impl Greeter {
                 error_type,
             } => {
                 // some general response error. This can be an authentication failure or a general error
+                let display_text = match &error_type {
+                    ErrorType::AuthError => "Authentication failed".to_string(),
+                    _ => format!("Login failed: {}", capitalize(&description)),
+                };
                 self.display_error(
                     sender,
-                    &format!("Login failed: {}", capitalize(&description)),
+                    &display_text,
                     &format!("Error from greetd: {description}"),
                 );
 
