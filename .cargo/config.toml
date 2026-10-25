@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: 2022 The ReGreet Authors
+#
+# SPDX-License-Identifier: 0BSD
+
+[env]
+REGREET_LOCALEDIR = { value = "target/locale", relative = true }
