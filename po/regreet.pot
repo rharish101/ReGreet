@@ -1,0 +1,61 @@
+# SPDX-FileCopyrightText: 2022 The ReGreet Authors
+#
+# SPDX-License-Identifier: 0BSD
+#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 The ReGreet Authors
+# yars068 <yars068@yandex.ru>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-13 00:11+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/client.rs:22
+msgid "One-Time Password:"
+msgstr ""
+
+#: src/client.rs:26
+msgid "Password:"
+msgstr ""
+
+#: src/gui/templates.rs:76
+msgid "User:"
+msgstr ""
+
+#: src/gui/templates.rs:84
+msgid "Session:"
+msgstr ""
+
+#: src/gui/templates.rs:123
+msgid "Manually enter username"
+msgstr ""
+
+#: src/gui/templates.rs:130
+msgid "Manually enter session command"
+msgstr ""
+
+#: src/gui/templates.rs:142
+msgid "Cancel"
+msgstr ""
+
+#: src/gui/templates.rs:149
+msgid "Login"
+msgstr ""
+
+#: src/gui/templates.rs:216
+msgid "Reboot"
+msgstr ""
+
+#: src/gui/templates.rs:221
+msgid "Power Off"
+msgstr ""

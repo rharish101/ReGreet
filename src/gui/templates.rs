@@ -5,6 +5,7 @@
 //! Templates for various GUI components
 #![allow(dead_code)] // Silence dead code warnings for UI code that isn't dead
 
+use gettextrs::gettext;
 use gtk::prelude::*;
 use relm4::{RelmWidgetExt, WidgetTemplate, gtk};
 
@@ -72,7 +73,7 @@ impl WidgetTemplate for Ui {
 
                     #[template]
                     attach[0, 1, 1, 1] = &EntryLabel {
-                        set_label: "User:",
+                        set_label: &gettext("User:"),
                         set_height_request: 45,
                     },
 
@@ -80,7 +81,7 @@ impl WidgetTemplate for Ui {
                     #[name = "session_label"]
                     #[template]
                     attach[0, 2, 1, 1] = &EntryLabel {
-                        set_label: "Session:",
+                        set_label: &gettext("Session:"),
                         set_height_request: 45,
                     },
 
@@ -119,14 +120,14 @@ impl WidgetTemplate for Ui {
                     #[name = "user_toggle"]
                     attach[2, 1, 1, 1] = &gtk::ToggleButton {
                         set_icon_name: "document-edit-symbolic",
-                        set_tooltip_text: Some("Manually enter username"),
+                        set_tooltip_text: Some(&gettext("Manually enter username")),
                     },
 
                     /// Button to toggle manual session entry
                     #[name = "sess_toggle"]
                     attach[2, 2, 1, 1] = &gtk::ToggleButton {
                         set_icon_name: "document-edit-symbolic",
-                        set_tooltip_text: Some("Manually enter session command"),
+                        set_tooltip_text: Some(&gettext("Manually enter session command")),
                     },
 
                     /// Collection of action buttons (eg. Login)
@@ -138,14 +139,14 @@ impl WidgetTemplate for Ui {
                         #[name = "cancel_button"]
                         gtk::Button {
                             set_focusable: true,
-                            set_label: "Cancel",
+                            set_label: &gettext("Cancel"),
                         },
 
                         /// Button to enter the password and login
                         #[name = "login_button"]
                         gtk::Button {
                             set_focusable: true,
-                            set_label: "Login",
+                            set_label: &gettext("Login"),
                             set_receives_default: true,
                             add_css_class: "suggested-action",
                         },
@@ -213,12 +214,12 @@ impl WidgetTemplate for Ui {
                     /// Button to reboot
                     #[name = "reboot_button"]
                     #[template]
-                    EndButton { set_label: "Reboot" },
+                    EndButton { set_label: &gettext("Reboot") },
 
                     /// Button to power-off
                     #[name = "poweroff_button"]
                     #[template]
-                    EndButton { set_label: "Power Off" },
+                    EndButton { set_label: &gettext("Power Off") },
                 },
             },
         }

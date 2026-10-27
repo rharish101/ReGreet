@@ -10,12 +10,13 @@ mod gui;
 mod sysutil;
 mod tomlutils;
 
+use clap::{Parser, ValueEnum};
+use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
+use gettextrs::{LocaleCategory, bindtextdomain, setlocale, textdomain};
+use std::env;
 use std::fs::{OpenOptions, create_dir_all};
 use std::io::{Result as IoResult, Write};
 use std::path::{Path, PathBuf};
-
-use clap::{Parser, ValueEnum};
-use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
 use tracing::subscriber::set_global_default;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{
@@ -72,6 +73,16 @@ struct Args {
 }
 
 fn main() {
+    unsafe {
+        setlocale(LocaleCategory::LcAll, "");
+
+        let locale_dir =
+            env::var("REGREET_LOCALEDIR").unwrap_or_else(|_| "/usr/share/locale".to_string());
+
+        bindtextdomain("regreet", &locale_dir).unwrap();
+        textdomain("regreet").unwrap();
+    }
+
     let args = Args::parse();
     // Keep the guard alive till the end of the function, since logging depends on this.
     let _guard = init_logging(&args.logs, &args.log_level, args.verbose);

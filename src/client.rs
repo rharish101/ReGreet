@@ -4,6 +4,7 @@
 
 //! Client that communicates with greetd
 
+use gettextrs::gettext;
 use std::env;
 use std::io::Result as IOResult;
 
@@ -17,8 +18,13 @@ use tokio::net::UnixStream;
 const GREETD_SOCK_ENV_VAR: &str = "GREETD_SOCK";
 
 /// Demo mode credentials
-const DEMO_AUTH_MSG_OPT: &str = "One-Time Password:";
-const DEMO_AUTH_MSG_PASSWD: &str = "Password:";
+fn demo_auth_msg_opt() -> String {
+    gettext("One-Time Password:")
+}
+
+fn demo_auth_msg_passwd() -> String {
+    gettext("Password:")
+}
 const DEMO_AUTH_MSG_ERROR: &str = "pam_authenticate: AUTH_ERR";
 const DEMO_OTP: &str = "0248";
 const DEMO_PASSWD: &str = "pass";
@@ -76,7 +82,7 @@ impl GreetdClient {
         } else {
             Response::AuthMessage {
                 auth_message_type: AuthMessageType::Secret,
-                auth_message: DEMO_AUTH_MSG_OPT.to_string(),
+                auth_message: demo_auth_msg_opt(),
             }
         };
 
@@ -106,7 +112,7 @@ impl GreetdClient {
             match input.as_deref() {
                 Some(DEMO_OTP) => Response::AuthMessage {
                     auth_message_type: AuthMessageType::Secret,
-                    auth_message: DEMO_AUTH_MSG_PASSWD.to_string(),
+                    auth_message: demo_auth_msg_passwd(),
                 },
                 Some(DEMO_PASSWD) => Response::Success,
                 _ => Response::Error {
