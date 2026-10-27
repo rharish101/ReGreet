@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-27 21:22+0300\n"
+"POT-Creation-Date: 2026-10-27 22:33+0300\n"
 "PO-Revision-Date: 2026-10-12 21:40+0300\n"
 "Last-Translator: yars <yars068@yandex.ru>\n"
 "Language-Team: Russian <gnu@d07.ru>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/gui/model.rs:342 src/client.rs:26
+#: src/gui/model.rs:343 src/client.rs:26
 msgid "Password:"
 msgstr "Пароль:"
 

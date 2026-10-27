@@ -5,6 +5,7 @@
 
 //! The main logic for the greeter
 
+use gettextrs::gettext;
 use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;
@@ -338,8 +339,12 @@ impl Greeter {
                         info!("greetd asks for a secret auth input: {auth_message}");
                         self.updates.set_input_mode(InputMode::Secret);
                         self.updates.set_input(String::new());
-                        self.updates
-                            .set_input_prompt(auth_message.trim_end().to_string());
+                        if auth_message.contains("Password:") {
+                            self.updates.set_input_prompt(gettext("Password:"));
+                        } else {
+                            self.updates
+                                .set_input_prompt(auth_message.trim_end().to_string());
+                        }
                         if let Some(msg) = auto_select_msg {
                             self.display_info(sender, &msg, "Skipped user/session selection");
                         }

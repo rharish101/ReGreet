@@ -1,17 +1,18 @@
 # SPDX-FileCopyrightText: 2022 The ReGreet Authors
 #
 # SPDX-License-Identifier: 0BSD
-#
+
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2026 The ReGreet Authors
-# yars068 <yars068@yandex.ru>, 2026.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-13 00:11+0300\n"
+"POT-Creation-Date: 2026-10-27 22:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,11 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/client.rs:22
-msgid "One-Time Password:"
-msgstr ""
-
-#: src/client.rs:26
+#: src/gui/model.rs:343 src/client.rs:26
 msgid "Password:"
 msgstr ""
 
@@ -52,10 +49,14 @@ msgstr ""
 msgid "Login"
 msgstr ""
 
-#: src/gui/templates.rs:216
+#: src/gui/templates.rs:217
 msgid "Reboot"
 msgstr ""
 
-#: src/gui/templates.rs:221
+#: src/gui/templates.rs:222
 msgid "Power Off"
+msgstr ""
+
+#: src/client.rs:22
+msgid "One-Time Password:"
 msgstr ""
