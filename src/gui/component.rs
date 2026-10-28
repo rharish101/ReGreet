@@ -121,9 +121,16 @@ fn setup_users_sessions(model: &Greeter, widgets: &GreeterWidgets) {
     }
 }
 
-async fn load_image(path: &str) -> Result<Option<Texture>, glycin::ErrorCtx> {
-    let image = glycin::Loader::new(File::for_path(path)).load().await?;
-    let texture = image.next_frame().await?.texture();
+async fn load_image(path: &str) -> Result<Option<Texture>, Box<glycin::ErrorCtx>> {
+    // The `?` operator cannot automatically box custom errors inside async blocks in some cases,
+    // so we explicitly wrap the `glycin::ErrorCtx` in a `Box` using `.map_err(Box::new)`.
+    let image = glycin::Loader::new(File::for_path(path))
+        .load()
+        .await
+        .map_err(Box::new)?;
+
+    let texture = image.next_frame().await.map_err(Box::new)?.texture();
+
     if image.next_frame().await.is_ok() {
         // Another frame available, so this image is animated; fall back to GStreamer.
         Ok(None)
@@ -137,7 +144,9 @@ async fn setup_background(model: &Greeter, widgets: &GreeterWidgets) {
         return;
     };
 
-    if let Ok(Some(texture)) = load_image(bg_path).await {
+    // The method .ok() converts Result to Option, discarding the boxed error,
+    // and .flatten() flattens Option<Option<Texture>> to Option<Texture>.
+    if let Some(texture) = load_image(bg_path).await.ok().flatten() {
         widgets.ui.background.set_paintable(Some(&texture));
     } else {
         let media = gtk::MediaFile::for_filename(bg_path);
