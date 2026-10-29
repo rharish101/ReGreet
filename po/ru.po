@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-27 22:33+0300\n"
+"POT-Creation-Date: 2026-10-29 20:55+0300\n"
 "PO-Revision-Date: 2026-10-12 21:40+0300\n"
 "Last-Translator: yars <yars068@yandex.ru>\n"
 "Language-Team: Russian <gnu@d07.ru>\n"
@@ -24,6 +24,10 @@ msgstr ""
 #: src/gui/model.rs:343 src/client.rs:26
 msgid "Password:"
 msgstr "Пароль:"
+
+#: src/gui/model.rs:393
+msgid "Authentication failed"
+msgstr "Ошибка авторизации"
 
 #: src/gui/templates.rs:76
 msgid "User:"
