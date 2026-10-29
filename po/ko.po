@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2022 The ReGreet Authors
+#
+# SPDX-License-Identifier: 0BSD
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 20:55+0300\n"
+"PO-Revision-Date: 2026-10-29 21:00+0300\n"
+"Last-Translator: AI Translator\n"
+"Language-Team: Korean <LL@li.org>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/gui/model.rs:343 src/client.rs:26
+msgid "Password:"
+msgstr "비밀번호:"
+
+#: src/gui/model.rs:393
+msgid "Authentication failed"
+msgstr "인증 실패"
+
+#: src/gui/templates.rs:76
+msgid "User:"
+msgstr "사용자:"
+
+#: src/gui/templates.rs:84
+msgid "Session:"
+msgstr "세션:"
+
+#: src/gui/templates.rs:123
+msgid "Manually enter username"
+msgstr "사용자 이름 수동 입력"
+
+#: src/gui/templates.rs:130
+msgid "Manually enter session command"
+msgstr "세션 명령 수동 입력"
+
+#: src/gui/templates.rs:142
+msgid "Cancel"
+msgstr "취소"
+
+#: src/gui/templates.rs:149
+msgid "Login"
+msgstr "로그인"
+
+#: src/gui/templates.rs:217
+msgid "Reboot"
+msgstr "재부팅"
+
+#: src/gui/templates.rs:222
+msgid "Power Off"
+msgstr "전원 끄기"
+
+#: src/client.rs:22
+msgid "One-Time Password:"
+msgstr "일회용 비밀번호:"

@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: 2022 The ReGreet Authors
+#
+# SPDX-License-Identifier: 0BSD
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 20:55+0300\n"
+"PO-Revision-Date: 2026-10-29 21:00+0300\n"
+"Last-Translator: AI Translator\n"
+"Language-Team: German <LL@li.org>\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/gui/model.rs:343 src/client.rs:26
+msgid "Password:"
+msgstr "Passwort:"
+
+#: src/gui/model.rs:393
+msgid "Authentication failed"
+msgstr "Authentifizierung failed"
+
+#: src/gui/templates.rs:76
+msgid "User:"
+msgstr "Benutzer:"
+
+#: src/gui/templates.rs:84
+msgid "Session:"
+msgstr "Sitzung:"
+
+#: src/gui/templates.rs:123
+msgid "Manually enter username"
+msgstr "Benutzername manuell eingeben"
+
+#: src/gui/templates.rs:130
+msgid "Manually enter session command"
+msgstr "Sitzungsbefehl manuell eingeben"
+
+#: src/gui/templates.rs:142
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: src/gui/templates.rs:149
+msgid "Login"
+msgstr "Anmelden"
+
+#: src/gui/templates.rs:217
+msgid "Reboot"
+msgstr "Neu starten"
+
+#: src/gui/templates.rs:222
+msgid "Power Off"
+msgstr "Ausschalten"
+
+#: src/client.rs:22
+msgid "One-Time Password:"
+msgstr "Einmalpasswort:"
