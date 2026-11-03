@@ -18,7 +18,7 @@ macro_rules! env_or {
 }
 
 /// The name for this greeter
-const GREETER_NAME: &str = "regreet";
+pub const GREETER_NAME: &str = "regreet";
 /// The app ID for this GTK app
 pub const APP_ID: &str = concatcp!("apps.", GREETER_NAME);
 
@@ -33,6 +33,9 @@ pub const CSS_PATH: &str = concatcp!(GREETD_CONFIG_DIR, "/", GREETER_NAME, ".css
 const CACHE_DIR: &str = env_or!("STATE_DIR", concatcp!("/var/lib/", GREETER_NAME));
 /// Path to the cache file
 pub const CACHE_PATH: &str = concatcp!(CACHE_DIR, "/state.toml");
+
+/// Path to translations
+pub const LOCALE_DIR: &str = env_or!("LOCALE_DIR", "/usr/share/locale/");
 
 /// The directory for system log files
 const LOG_DIR: &str = env_or!("LOG_DIR", concatcp!("/var/log/", GREETER_NAME));

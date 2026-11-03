@@ -13,7 +13,7 @@ mod tomlutils;
 use clap::{Parser, ValueEnum};
 use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
 use gettextrs::{LocaleCategory, bindtextdomain, setlocale, textdomain};
-use std::env;
+
 use std::fs::{OpenOptions, create_dir_all};
 use std::io::{Result as IoResult, Write};
 use std::path::{Path, PathBuf};
@@ -23,7 +23,7 @@ use tracing_subscriber::{
     filter::LevelFilter, fmt::layer, fmt::time::OffsetTime, layer::SubscriberExt,
 };
 
-use crate::constants::{APP_ID, CONFIG_PATH, CSS_PATH, LOG_PATH};
+use crate::constants::{APP_ID, CONFIG_PATH, CSS_PATH, GREETER_NAME, LOCALE_DIR, LOG_PATH};
 use crate::gui::{Greeter, GreeterInit};
 
 #[macro_use]
@@ -75,12 +75,8 @@ struct Args {
 fn main() {
     unsafe {
         setlocale(LocaleCategory::LcAll, "");
-
-        let locale_dir =
-            env::var("REGREET_LOCALEDIR").unwrap_or_else(|_| "/usr/share/locale".to_string());
-
-        bindtextdomain("regreet", &locale_dir).unwrap();
-        textdomain("regreet").unwrap();
+        bindtextdomain(GREETER_NAME, LOCALE_DIR).unwrap();
+        textdomain(GREETER_NAME).unwrap();
     }
 
     let args = Args::parse();
