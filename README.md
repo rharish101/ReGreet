@@ -69,6 +69,7 @@ the Roboto font. All screenshots are provided under the
   installed plugins)
 - A Wayland compositor (such as [Cage](https://www.hjdskes.nl/projects/cage/) or
   [Sway](https://swaywm.org/) or [Hyprland](https://hyprland.org/))
+- gettext (for translations)
 
 **Note**: Please make sure you have all requirements installed, as having a
 greetd greeter constantly failing isn't as much fun as it sounds.
@@ -123,6 +124,7 @@ variables. These are:
 | GREETD_CONFIG_DIR    | `/etc/greetd`                                      | The configuration directory used by greetd                                                                                                                                                                                                     |
 | STATE_DIR            | `/var/lib/regreet`                                 | The directory used to store the ReGreet state/cache                                                                                                                                                                                            |
 | LOG_DIR              | `/var/log/regreet`                                 | The directory used to store logs                                                                                                                                                                                                               |
+| LOCALE_DIR           | `/usr/share/locale`                                | Translations will live in this directory
 | SESSION_DIRS         | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files                                                                                                                                                            |
 | X11_CMD_PREFIX       | `startx /usr/bin/env`                              | The default command prefix for X11 sessions to launch the X server (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/)) |
 | REBOOT_CMD           | `reboot`                                           | The default command used to reboot the system                                                                                                                                                                                                  |
@@ -445,6 +447,40 @@ regreet --demo
 Since the demo mode doesn't use greetd, authentication is done using hardcoded
 credentials within the codebase. These credentials are logged with the warning
 log-level, so that you don't have to read the source code.
+
+## Translations
+
+Regreet now uses [GNU gettext](https://www.gnu.org/software/gettext/) for 
+translation of user interface. This serves a template file, that have the
+suffix `.pot`, and that contains a translatable strings that collected from
+all the project sources, and a translation files, that have a suffix `.po`,
+both live in `po` directory.
+
+### Adding a new translatable strings
+
+If you want to translate ReGreet to your native language, you need to add a new
+translatable strings to template. It can be done using following command:
+
+```
+xgettext --omit-header -j -o po/regreet.pot --keyword=gettext \
+src/*/*.rs \
+src/*.rs
+```
+This step can be skipped, if you have no new strings to add.
+Then, you need to create a translation file using this template:
+
+```
+msgmerge --update po/$LANG.po po/regreet.pot
+```
+
+Now, at build time, `msgfmt` will be called, as follows:
+
+```
+msgfmt -o po/LANG.po $OUT_LOCALE_DIR/$LANG/LC_MESSAGES/regreet.mo
+```
+
+Substitute your language to $LANG. A ready to use translations will be installed
+to LOCALE_DIR.
 
 ## Licenses
 
