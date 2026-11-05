@@ -10,9 +10,11 @@ use std::path::Path;
 use serde::Deserialize;
 use serde::Deserializer;
 
-use crate::constants::{GREETING_MSG, POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
+use crate::constants::{POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
 use crate::gui::widget::clock::ClockConfig;
 use crate::tomlutils::load_toml;
+
+use gettextrs::gettext;
 
 #[derive(Deserialize)]
 pub struct AppearanceSettings {
@@ -120,7 +122,7 @@ fn default_x11_command_prefix() -> Vec<String> {
 }
 
 fn default_greeting_msg() -> String {
-    GREETING_MSG.to_string()
+    gettext("Welcome back!").to_string()
 }
 
 /// The configuration struct
