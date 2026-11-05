@@ -7,14 +7,13 @@
 use std::collections::HashMap;
 use std::path::Path;
 
+use gettextrs::gettext;
 use serde::Deserialize;
 use serde::Deserializer;
 
 use crate::constants::{POWEROFF_CMD, REBOOT_CMD, X11_CMD_PREFIX};
 use crate::gui::widget::clock::ClockConfig;
 use crate::tomlutils::load_toml;
-
-use gettextrs::gettext;
 
 #[derive(Deserialize)]
 pub struct AppearanceSettings {

@@ -4,10 +4,10 @@
 
 //! Client that communicates with greetd
 
-use gettextrs::gettext;
 use std::env;
 use std::io::Result as IOResult;
 
+use gettextrs::gettext;
 use greetd_ipc::{
     AuthMessageType, ErrorType, Request, Response,
     codec::{Error as GreetdError, TokioCodec},
@@ -25,6 +25,7 @@ fn demo_auth_msg_opt() -> String {
 fn demo_auth_msg_passwd() -> String {
     gettext("Password:")
 }
+
 const DEMO_AUTH_MSG_ERROR: &str = "pam_authenticate: AUTH_ERR";
 const DEMO_OTP: &str = "0248";
 const DEMO_PASSWD: &str = "pass";
