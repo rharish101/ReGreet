@@ -124,7 +124,8 @@ variables. These are:
 | GREETD_CONFIG_DIR    | `/etc/greetd`                                      | The configuration directory used by greetd                                                                                                                                                                                                     |
 | STATE_DIR            | `/var/lib/regreet`                                 | The directory used to store the ReGreet state/cache                                                                                                                                                                                            |
 | LOG_DIR              | `/var/log/regreet`                                 | The directory used to store logs                                                                                                                                                                                                               |
-| LOCALE_DIR           | `/usr/share/locale`                                | Translations will live in this directory
+| LOCALE_DIR           | `/usr/share/locale`                                | The directory from where translations will be loaded                                                                                                                                                                                           |
+| TARGET_LOCALE_DIR    | `./target/locale`                                  | The directory where generated translations will be saved during build time                                                                                                                                                                     |
 | SESSION_DIRS         | `/usr/share/xsessions:/usr/share/wayland-sessions` | A colon (:) separated list of directories where the greeter looks for session files                                                                                                                                                            |
 | X11_CMD_PREFIX       | `startx /usr/bin/env`                              | The default command prefix for X11 sessions to launch the X server (see [this explanation on Reddit](https://web.archive.org/web/20240803120131/https://old.reddit.com/r/linux/comments/1c8zdcw/using_x11_window_managers_with_greetd_login/)) |
 | REBOOT_CMD           | `reboot`                                           | The default command used to reboot the system                                                                                                                                                                                                  |
@@ -450,37 +451,40 @@ log-level, so that you don't have to read the source code.
 
 ## Translations
 
-Regreet now uses [GNU gettext](https://www.gnu.org/software/gettext/) for 
-translation of user interface. This serves a template file, that have the
-suffix `.pot`, and that contains a translatable strings that collected from
-all the project sources, and a translation files, that have a suffix `.po`,
-both live in `po` directory.
+ReGreet now uses [GNU gettext](https://www.gnu.org/software/gettext/) for
+translating the user interface. It provides [a template file](./po/regreet.pot)
+with the suffix `.pot`, which contains the translatable strings collected from
+all the project sources, and translation files with the suffix `.po`; all live
+in the [`po` directory](./po).
 
-### Adding a new translatable strings
+### Adding translations
 
-If you want to translate ReGreet to your native language, you need to add a new
-translatable strings to template. It can be done using following command:
-
-```
-xgettext --omit-header -j -o po/regreet.pot --keyword=gettext \
-src/*/*.rs \
-src/*.rs
-```
-This step can be skipped, if you have no new strings to add.
-Then, you need to create a translation file using this template:
+If you want to translate ReGreet to your native language, you need to add the
+new translatable strings to the template. This can be done using the following
+command:
 
 ```
-msgmerge --update po/$LANG.po po/regreet.pot
+xgettext --omit-header -j -o po/regreet.pot --keyword=gettext src/**/*.rs
 ```
 
-Now, at build time, `msgfmt` will be called, as follows:
+This step can be skipped if you have no new strings to add. Then, you need to
+create a translation file `po/$LANG.po` using this template:
 
 ```
-msgfmt -o po/LANG.po $OUT_LOCALE_DIR/$LANG/LC_MESSAGES/regreet.mo
+msgmerge -U po/$LANG.po po/regreet.pot
 ```
 
-Substitute your language to $LANG. A ready to use translations will be installed
-to LOCALE_DIR.
+Substitute `$LANG` with your language. This step can be skipped if your language
+already has a translation file. Now, make edits in your language's translation
+file.
+
+At build time, `msgfmt` will be called on each language `$LANG` as follows:
+
+```
+msgfmt po/$LANG.po -o $TARGET_LOCALE_DIR/$LANG/LC_MESSAGES/regreet.mo
+```
+
+The ready-to-use translations will be installed to `$TARGET_LOCALE_DIR`.
 
 ## Licenses
 
