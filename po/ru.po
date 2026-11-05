@@ -2,10 +2,6 @@
 #
 # SPDX-License-Identifier: 0BSD
 #
-# Russian translations for ReGreet.
-# Copyright (C) 2026 The Regreet Authors
-# yars068 <yars068@yandex.ru>, 2026.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -25,7 +21,11 @@ msgstr ""
 msgid "Password:"
 msgstr "Пароль:"
 
-#: src/gui/model.rs:393
+#: src/gui/model.rs:345 src/client.rs:22
+msgid "One-Time Password:"
+msgstr "Одноразовый пароль"
+
+#: src/gui/model.rs:396
 msgid "Authentication failed"
 msgstr "Ошибка авторизации"
 
@@ -60,7 +60,3 @@ msgstr "Перезагрузка"
 #: src/gui/templates.rs:222
 msgid "Power Off"
 msgstr "Выключение"
-
-#: src/client.rs:22
-msgid "One-Time Password:"
-msgstr "Одноразовый пароль"
