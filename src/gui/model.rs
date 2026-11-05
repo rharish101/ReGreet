@@ -339,11 +339,15 @@ impl Greeter {
                         info!("greetd asks for a secret auth input: {auth_message}");
                         self.updates.set_input_mode(InputMode::Secret);
                         self.updates.set_input(String::new());
-                        if auth_message.contains("Password:") {
+
+                        let auth_msg = auth_message.trim_end().to_string();
+                        if auth_msg == "Password:" {
                             self.updates.set_input_prompt(gettext("Password:"));
+                        } else if auth_msg == "One-Time Password:" {
+                            self.updates.set_input_prompt(gettext("One-Time Password:"));
                         } else {
-                            self.updates
-                                .set_input_prompt(auth_message.trim_end().to_string());
+                            // this else-block should never be reached
+                            self.updates.set_input_prompt(auth_msg);
                         }
                         if let Some(msg) = auto_select_msg {
                             self.display_info(sender, &msg, "Skipped user/session selection");
