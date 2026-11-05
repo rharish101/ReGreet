@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: 2022 The ReGreet Authors
 #
 # SPDX-License-Identifier: 0BSD
-
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -19,7 +18,11 @@ msgstr ""
 msgid "Password:"
 msgstr "Password:"
 
-#: src/gui/model.rs:393
+#: src/gui/model.rs:345 src/client.rs:22
+msgid "One-Time Password:"
+msgstr "One-Time Password:"
+
+#: src/gui/model.rs:396
 msgid "Authentication failed"
 msgstr "Autenticazione non riuscita"
 
@@ -54,7 +57,3 @@ msgstr "Riavvia"
 #: src/gui/templates.rs:222
 msgid "Power Off"
 msgstr "Spegni"
-
-#: src/client.rs:22
-msgid "One-Time Password:"
-msgstr "One-Time Password:"

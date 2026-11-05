@@ -1,11 +1,6 @@
 # SPDX-FileCopyrightText: 2022 The ReGreet Authors
 #
 # SPDX-License-Identifier: 0BSD
-
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
@@ -25,7 +20,11 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: src/gui/model.rs:393
+#: src/gui/model.rs:345 src/client.rs:22
+msgid "One-Time Password:"
+msgstr ""
+
+#: src/gui/model.rs:396
 msgid "Authentication failed"
 msgstr ""
 
@@ -59,8 +58,4 @@ msgstr ""
 
 #: src/gui/templates.rs:222
 msgid "Power Off"
-msgstr ""
-
-#: src/client.rs:22
-msgid "One-Time Password:"
 msgstr ""
