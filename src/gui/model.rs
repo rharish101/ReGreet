@@ -5,12 +5,12 @@
 
 //! The main logic for the greeter
 
-use gettextrs::gettext;
 use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;
 use std::time::Duration;
 
+use gettextrs::gettext;
 use greetd_ipc::{AuthMessageType, ErrorType, Response};
 use relm4::{
     AsyncComponentSender, Component, Controller,
