@@ -10,13 +10,13 @@ mod gui;
 mod sysutil;
 mod tomlutils;
 
-use clap::{Parser, ValueEnum};
-use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
-use gettextrs::{LocaleCategory, bindtextdomain, setlocale, textdomain};
-
 use std::fs::{OpenOptions, create_dir_all};
 use std::io::{Result as IoResult, Write};
 use std::path::{Path, PathBuf};
+
+use clap::{Parser, ValueEnum};
+use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
+use gettextrs::{LocaleCategory, bindtextdomain, setlocale, textdomain};
 use tracing::subscriber::set_global_default;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{
