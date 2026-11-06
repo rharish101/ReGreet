@@ -61,3 +61,30 @@ msgstr "Вимкнути"
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "З поверненням!"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "Чистий та настраиваний greeter для greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "Шлях до файлу журналу"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "Рівень деталізації журналу"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "Виводити всі журнали в stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "Шлях до конфігураційного файлу"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "Шлях до кастомного CSS-файлу стилів"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "Запуск у демо-режимі"

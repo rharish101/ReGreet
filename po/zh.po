@@ -61,3 +61,30 @@ msgstr "关机"
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "欢迎回来！"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "greetd 用的干净且可定制的 greeter"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "日志文件的路径"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "日志的详细程度"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "将所有日志输出到 stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "配置文件的路径"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "自定义 CSS 样式表的路径"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "以演示模式运行"

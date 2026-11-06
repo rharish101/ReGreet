@@ -61,3 +61,30 @@ msgstr "Zima"
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Karibu tena!"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "Greeter safi na inayoweza kubadilishwa kwa ajili ya greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "Njia ya faili ya logi"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "Kiwango cha maelezo ya logi"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "Toa logi zote kwenye stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "Njia ya faili ya usanidi"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "Njia ya mtindo wa CSS iliyorekebishwa"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "Endesha katika hali ya demo"

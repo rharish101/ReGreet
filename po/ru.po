@@ -64,3 +64,30 @@ msgstr "Выключение"
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Добро пожаловать!"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "Чистый и настраиваемый greeter для greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "Путь к файлу журнала"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "Уровень детализации журналов"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "Выводить все журналы в stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "Путь к файлу конфигурации"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "Путь к пользовательскому CSS-файлу стилей"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "Запуск в демо-режиме"

@@ -61,3 +61,30 @@ msgstr "बंद करें"
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "आपका स्वागत है!"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "greetd के लिए एक स्वच्छ और अनुकूलन योग्य ग्रीटर"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "लॉग फ़ाइल का पथ"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "लॉग की वर्बोसिटी स्तर"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "सभी लॉग stdout पर आउटपुट करें"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "कॉन्फ़िगरेशन फ़ाइल का पथ"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "कस्टम CSS स्टाइलशीट का पथ"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "डेमो मोड में चलाएं"
