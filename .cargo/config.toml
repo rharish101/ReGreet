@@ -1,6 +1,0 @@
-# SPDX-FileCopyrightText: 2022 The ReGreet Authors
-#
-# SPDX-License-Identifier: 0BSD
-
-[env]
-OUT_LOCALE_DIR = { value = "target/locale", relative = true }
