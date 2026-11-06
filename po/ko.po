@@ -14,15 +14,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui/model.rs:343 src/client.rs:26
+#: src/gui/model.rs:345 src/client.rs:26
 msgid "Password:"
 msgstr "비밀번호:"
 
-#: src/gui/model.rs:345 src/client.rs:22
+#: src/gui/model.rs:347 src/client.rs:22
 msgid "One-Time Password:"
 msgstr "일회용 비밀번호:"
 
-#: src/gui/model.rs:396
+#: src/gui/model.rs:397
 msgid "Authentication failed"
 msgstr "인증 실패"
 
@@ -57,3 +57,7 @@ msgstr "재부팅"
 #: src/gui/templates.rs:222
 msgid "Power Off"
 msgstr "전원 끄기"
+
+#: src/config.rs:125
+msgid "Welcome back!"
+msgstr "환영합니다!"

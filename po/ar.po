@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: 2022 The ReGreet Authors
+#
+# SPDX-License-Identifier: 0BSD
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-29 20:55+0300\n"
+"PO-Revision-Date: 2026-10-29 21:00+0300\n"
+"Last-Translator: AI Translator\n"
+"Language-Team: Arabic <LL@li.org>\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/gui/model.rs:345 src/client.rs:26
+msgid "Password:"
+msgstr "كلمة المرور:"
+
+#: src/gui/model.rs:347 src/client.rs:22
+msgid "One-Time Password:"
+msgstr "كلمة مرور لمرة واحدة:"
+
+#: src/gui/model.rs:397
+msgid "Authentication failed"
+msgstr "فشلت المصادقة"
+
+#: src/gui/templates.rs:76
+msgid "User:"
+msgstr "المستخدم:"
+
+#: src/gui/templates.rs:84
+msgid "Session:"
+msgstr "الجلسة:"
+
+#: src/gui/templates.rs:123
+msgid "Manually enter username"
+msgstr "إدخال اسم المستخدم يدويًا"
+
+#: src/gui/templates.rs:130
+msgid "Manually enter session command"
+msgstr "إدخال أمر الجلسة يدويًا"
+
+#: src/gui/templates.rs:142
+msgid "Cancel"
+msgstr "إلغاء"
+
+#: src/gui/templates.rs:149
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+#: src/gui/templates.rs:217
+msgid "Reboot"
+msgstr "إعادة التشغيل"
+
+#: src/gui/templates.rs:222
+msgid "Power Off"
+msgstr "إيقاف التشغيل"
+
+#: src/config.rs:125
+msgid "Welcome back!"
+msgstr "مرحبًا بعودتك!"
