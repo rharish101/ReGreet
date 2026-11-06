@@ -16,15 +16,15 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui/model.rs:343 src/client.rs:26
+#: src/gui/model.rs:345 src/client.rs:26
 msgid "Password:"
 msgstr ""
 
-#: src/gui/model.rs:345 src/client.rs:22
+#: src/gui/model.rs:347 src/client.rs:22
 msgid "One-Time Password:"
 msgstr ""
 
-#: src/gui/model.rs:396
+#: src/gui/model.rs:397
 msgid "Authentication failed"
 msgstr ""
 
@@ -58,4 +58,8 @@ msgstr ""
 
 #: src/gui/templates.rs:222
 msgid "Power Off"
+msgstr ""
+
+#: src/config.rs:125
+msgid "Welcome back!"
 msgstr ""

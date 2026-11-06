@@ -14,15 +14,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui/model.rs:343 src/client.rs:26
+#: src/gui/model.rs:345 src/client.rs:26
 msgid "Password:"
 msgstr "Mot de passe :"
 
-#: src/gui/model.rs:345 src/client.rs:22
+#: src/gui/model.rs:347 src/client.rs:22
 msgid "One-Time Password:"
 msgstr "Mot de passe à usage unique :"
 
-#: src/gui/model.rs:396
+#: src/gui/model.rs:397
 msgid "Authentication failed"
 msgstr "Échec de l'authentification"
 
@@ -48,7 +48,7 @@ msgstr "Annuler"
 
 #: src/gui/templates.rs:149
 msgid "Login"
-msgstr "Connexion"
+msgstr "Se connecter"
 
 #: src/gui/templates.rs:217
 msgid "Reboot"
@@ -57,3 +57,7 @@ msgstr "Redémarrer"
 #: src/gui/templates.rs:222
 msgid "Power Off"
 msgstr "Éteindre"
+
+#: src/config.rs:125
+msgid "Welcome back!"
+msgstr "Bon retour !"

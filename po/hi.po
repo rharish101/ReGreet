@@ -14,17 +14,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui/model.rs:343 src/client.rs:26
+#: src/gui/model.rs:345 src/client.rs:26
 msgid "Password:"
 msgstr "पासवर्ड:"
 
-#: src/gui/model.rs:345 src/client.rs:22
+#: src/gui/model.rs:347 src/client.rs:22
 msgid "One-Time Password:"
 msgstr "वन-टाइम पासवर्ड:"
 
-#: src/gui/model.rs:396
+#: src/gui/model.rs:397
 msgid "Authentication failed"
-msgstr "प्रмаणीकरण विफल"
+msgstr "प्रमाणीकरण विफल"
 
 #: src/gui/templates.rs:76
 msgid "User:"
@@ -52,8 +52,12 @@ msgstr "लॉगिन"
 
 #: src/gui/templates.rs:217
 msgid "Reboot"
-msgstr "पुनः आरंभ करें"
+msgstr "पुनर्प्रारंभ करें"
 
 #: src/gui/templates.rs:222
 msgid "Power Off"
-msgstr "बिजली बंद करें"
+msgstr "बंद करें"
+
+#: src/config.rs:125
+msgid "Welcome back!"
+msgstr "आपका स्वागत है!"

@@ -14,17 +14,17 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/gui/model.rs:343 src/client.rs:26
+#: src/gui/model.rs:345 src/client.rs:26
 msgid "Password:"
 msgstr "Passwort:"
 
-#: src/gui/model.rs:345 src/client.rs:22
+#: src/gui/model.rs:347 src/client.rs:22
 msgid "One-Time Password:"
 msgstr "Einmalpasswort:"
 
-#: src/gui/model.rs:396
+#: src/gui/model.rs:397
 msgid "Authentication failed"
-msgstr "Authentifizierung failed"
+msgstr "Authentifizierung fehlgeschlagen"
 
 #: src/gui/templates.rs:76
 msgid "User:"
@@ -36,7 +36,7 @@ msgstr "Sitzung:"
 
 #: src/gui/templates.rs:123
 msgid "Manually enter username"
-msgstr "Benutzername manuell eingeben"
+msgstr "Benutzernamen manuell eingeben"
 
 #: src/gui/templates.rs:130
 msgid "Manually enter session command"
@@ -57,3 +57,7 @@ msgstr "Neu starten"
 #: src/gui/templates.rs:222
 msgid "Power Off"
 msgstr "Ausschalten"
+
+#: src/config.rs:125
+msgid "Welcome back!"
+msgstr "Willkommen zurück!"
