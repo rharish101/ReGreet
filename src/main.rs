@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 mod cache;
+mod cli;
 mod client;
 mod config;
 mod constants;
@@ -12,9 +13,9 @@ mod tomlutils;
 
 use std::fs::{OpenOptions, create_dir_all};
 use std::io::{Result as IoResult, Write};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-use clap::{Parser, ValueEnum};
+use clap::Parser;
 use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
 use gettextrs::{LocaleCategory, bindtextdomain, setlocale, textdomain};
 use tracing::subscriber::set_global_default;
@@ -23,7 +24,8 @@ use tracing_subscriber::{
     filter::LevelFilter, fmt::layer, fmt::time::OffsetTime, layer::SubscriberExt,
 };
 
-use crate::constants::{APP_ID, CONFIG_PATH, CSS_PATH, GREETER_NAME, LOCALE_DIR, LOG_PATH};
+use crate::cli::{Args, LogLevel};
+use crate::constants::{APP_ID, GREETER_NAME, LOCALE_DIR, LOG_PATH};
 use crate::gui::{Greeter, GreeterInit};
 
 #[macro_use]
@@ -33,44 +35,6 @@ extern crate const_format;
 
 const MAX_LOG_FILES: usize = 3;
 const MAX_LOG_SIZE: usize = 1024 * 1024;
-
-#[derive(Clone, Debug, ValueEnum)]
-enum LogLevel {
-    Off,
-    Error,
-    Warn,
-    Info,
-    Debug,
-    Trace,
-}
-
-#[derive(Parser, Debug)]
-#[command(author, version, about)]
-struct Args {
-    /// The path to the log file
-    #[arg(short = 'l', long, value_name = "PATH", default_value = LOG_PATH)]
-    logs: PathBuf,
-
-    /// The verbosity level of the logs
-    #[arg(short = 'L', long, value_name = "LEVEL", default_value = "info")]
-    log_level: LogLevel,
-
-    /// Output all logs to stdout
-    #[arg(short, long)]
-    verbose: bool,
-
-    /// The path to the config file
-    #[arg(short, long, value_name = "PATH", default_value = CONFIG_PATH)]
-    config: PathBuf,
-
-    /// The path to the custom CSS stylesheet
-    #[arg(short, long, value_name = "PATH", default_value = CSS_PATH)]
-    style: PathBuf,
-
-    /// Run in demo mode
-    #[arg(long)]
-    demo: bool,
-}
 
 fn main() {
     unsafe {

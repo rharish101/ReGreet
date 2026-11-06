@@ -63,3 +63,31 @@ msgstr ""
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr ""
+
+#: src/cli.rs:17
+msgid "Clean and customizable greeter for greetd"
+msgstr ""
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr ""
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr ""
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr ""
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr ""
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr ""
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr ""
