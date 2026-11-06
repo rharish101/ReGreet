@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@v6
-    - name: Install GTK4
-      run: sudo apt update && sudo apt install libgtk-4-dev build-essential
+    - name: Install GTK4 & gettext
+      run: sudo apt update && sudo apt install libgtk-4-dev build-essential gettext
     - run: rustup toolchain install 1.85 --profile default && rustup default 1.85
     - name: Restore build cache
       uses: Swatinem/rust-cache@v2
