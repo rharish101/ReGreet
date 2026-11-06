@@ -42,12 +42,27 @@ fn main() {
                         .arg(&mo_path)
                         .status();
 
-                    if let Err(e) = status {
-                        println!(
-                            "cargo:warning=Unable to compile translation {}: {}. Check that the 'gettext' package is istalled.",
-                            path.display(),
-                            e
-                        );
+                    match status {
+                        Ok(s) if s.success() => {
+                            println!(
+                                "cargo:warning=Translation {} rebuilt successfully",
+                                path.display(),
+                            );
+                        }
+                        Ok(s) => {
+                            panic!(
+                                "Failed to compile translation {}. 'msgfmt' exited with status: {}.",
+                                path.display(),
+                                s
+                            );
+                        }
+                        Err(e) => {
+                            println!(
+                                "cargo:warning=Unable to execute 'msgfmt' for {}: {}. Check that the 'gettext' package is installed.",
+                                path.display(),
+                                e
+                            );
+                        }
                     }
                 }
             }
