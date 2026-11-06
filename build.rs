@@ -11,14 +11,15 @@ use std::process::Command;
 
 fn main() {
     println!("cargo:rerun-if-changed=po");
+    println!("cargo:rerun-if-env-changed=TARGET_LOCALE_DIR");
 
     // Automatically rebuild .po to .mo files while rebuilding the project
     let po_dir = Path::new("po");
     if po_dir.exists() {
-        // Create target directory under target/. At packaging stage it should be installed
+        // Create target directory under `$OUT_DIR/target`. At packaging stage it should be installed
         // as $DATAROOTDIR/share/locale/$LANG/regreet.mo.
-        let target_locale_var =
-            env::var("TARGET_LOCALE_DIR").unwrap_or_else(|_| String::from("target/locale"));
+        let target_locale_var = env::var("TARGET_LOCALE_DIR")
+            .unwrap_or_else(|_| format!("{}/locale", env::var("OUT_DIR").unwrap()));
 
         let out_locale_dir = Path::new(&target_locale_var);
 
