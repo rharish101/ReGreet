@@ -452,10 +452,12 @@ log-level, so that you don't have to read the source code.
 ## Translations
 
 ReGreet now uses [GNU gettext](https://www.gnu.org/software/gettext/) for
-translating the user interface. It provides [a template file](./po/regreet.pot)
-with the suffix `.pot`, which contains the translatable strings collected from
-all the project sources, and translation files with the suffix `.po`; all live
-in the [`po` directory](./po).
+translating the user interface. It provides [a template file](./po/regreet.pot),
+which contains the translatable strings collected from all the project sources,
+and translation files with the suffix `.po`; all live in the [`po` directory](./po).
+Also there is a skeleton file, [`regreet_skeleton.pot`](.po/regreet_skeleton.pot),
+which contains a header and is a basis for creating the template file. If you need
+to create a new template, copy the skeleton file to it.
 
 ### Adding translations
 
@@ -471,12 +473,13 @@ This step can be skipped if you have no new strings to add. Then, you need to
 create a translation file `po/$LANG.po` using this template:
 
 ```
-msgmerge -U po/$LANG.po po/regreet.pot
+msgmerge --update --backup=none po/$LANG.po po/regreet.pot
 ```
 
 Substitute `$LANG` with your language. This step can be skipped if your language
 already has a translation file. Now, make edits in your language's translation
-file.
+file using a one of programs for translators, like [poedit](https://poedit.com/)
+or simply using any text editor.
 
 At build time, `msgfmt` will be called on each language `$LANG` as follows:
 
