@@ -58,6 +58,6 @@ msgstr "Uruchom ponownie"
 msgid "Power Off"
 msgstr "Wyłącz zasilanie"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Witaj z powrotem!"

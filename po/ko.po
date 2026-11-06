@@ -58,6 +58,6 @@ msgstr "재부팅"
 msgid "Power Off"
 msgstr "전원 끄기"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "환영합니다!"

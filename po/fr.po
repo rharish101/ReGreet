@@ -58,6 +58,6 @@ msgstr "Redémarrer"
 msgid "Power Off"
 msgstr "Éteindre"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Bon retour !"

@@ -58,6 +58,6 @@ msgstr "पुनर्प्रारंभ करें"
 msgid "Power Off"
 msgstr "बंद करें"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "आपका स्वागत है!"

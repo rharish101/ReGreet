@@ -58,6 +58,6 @@ msgstr "Washa upya"
 msgid "Power Off"
 msgstr "Zima"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Karibu tena!"

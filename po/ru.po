@@ -61,6 +61,6 @@ msgstr "Перезагрузка"
 msgid "Power Off"
 msgstr "Выключение"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Добро пожаловать!"

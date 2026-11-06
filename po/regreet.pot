@@ -60,6 +60,6 @@ msgstr ""
 msgid "Power Off"
 msgstr ""
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr ""
