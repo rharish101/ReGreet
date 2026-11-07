@@ -61,6 +61,34 @@ msgstr "Перезагрузка"
 msgid "Power Off"
 msgstr "Выключение"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Добро пожаловать!"
+
+#: src/cli.rs:17
+msgid "Clean and customizable greeter for greetd"
+msgstr "Чистый и настраиваемый экран входа для greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "Путь файлу журнала"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "Уровень подробности журналов"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "Выводить все журналы в stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "Путь к файлу настроек"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "Путь к пользовательской таблице стилей CSS"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "Запуск в режиме демонстрации"

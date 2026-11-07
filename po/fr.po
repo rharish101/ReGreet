@@ -58,6 +58,33 @@ msgstr "Redémarrer"
 msgid "Power Off"
 msgstr "Éteindre"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Bon retour !"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "Un greeter propre et personnalisable pour greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "Le chemin du fichier de journal"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "Le niveau de verbosité des journaux"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "Envoyer tous les journaux sur stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "Le chemin du fichier de configuration"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "Le chemin de la feuille de style CSS personnalisée"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "Exécuter en mode démo"

@@ -58,6 +58,33 @@ msgstr "إعادة التشغيل"
 msgid "Power Off"
 msgstr "إيقاف التشغيل"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "مرحبًا بعودتك!"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "محاكٍ نظيف وقابل للتخصيص لـ greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "المسار إلى ملف السجل"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "مستوى التفصيل للسجلات"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "إخراج جميع السجلات إلى stdout"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "المسار إلى ملف التكوين"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "المسار إلى ملف أنماط CSS المخصص"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "التشغيل في وضع العرض"

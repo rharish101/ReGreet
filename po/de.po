@@ -58,6 +58,33 @@ msgstr "Neu starten"
 msgid "Power Off"
 msgstr "Ausschalten"
 
-#: src/config.rs:125
+#: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Willkommen zurück!"
+
+msgid "Clean and customizable greeter for greetd"
+msgstr "Sauberes und anpassbares Greeter für greetd"
+
+#: src/cli.rs:21
+msgid "The path to the log file"
+msgstr "Der Pfad zur Protokolldatei"
+
+#: src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "Die Detailstufe der Protokolle"
+
+#: src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "Alle Protokolle an stdout ausgeben"
+
+#: src/cli.rs:33
+msgid "The path to the config file"
+msgstr "Der Pfad zur Konfigurationsdatei"
+
+#: src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "Der Pfad zur benutzerdefinierten CSS-Stylesheet"
+
+#: src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "Im Demo-Modus ausführen"
