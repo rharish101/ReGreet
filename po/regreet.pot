@@ -60,34 +60,50 @@ msgstr ""
 msgid "Power Off"
 msgstr ""
 
-#: src/config.rs:124
-msgid "Welcome back!"
-msgstr ""
-
-#: src/cli.rs:17
+#: src/cli.rs:13
 msgid "Clean and customizable greeter for greetd"
 msgstr ""
 
-#: src/cli.rs:21
+#: src/cli.rs:17
 msgid "The path to the log file"
 msgstr ""
 
-#: src/cli.rs:25
+#: src/cli.rs:21
 msgid "The verbosity level of the logs"
 msgstr ""
 
-#: src/cli.rs:29
+#: src/cli.rs:25
 msgid "Output all logs to stdout"
 msgstr ""
 
-#: src/cli.rs:33
+#: src/cli.rs:29
 msgid "The path to the config file"
 msgstr ""
 
-#: src/cli.rs:37
+#: src/cli.rs:33
 msgid "The path to the custom CSS stylesheet"
 msgstr ""
 
-#: src/cli.rs:41
+#: src/cli.rs:37
 msgid "Run in demo mode"
+msgstr ""
+
+#: src/cli.rs:86
+msgid "Print help"
+msgstr ""
+
+#: src/cli.rs:94
+msgid "Print version"
+msgstr ""
+
+#: src/cli.rs:102
+msgid "Usage:"
+msgstr ""
+
+#: src/cli.rs:103
+msgid "Options:"
+msgstr ""
+
+#: src/config.rs:124
+msgid "Welcome back!"
 msgstr ""

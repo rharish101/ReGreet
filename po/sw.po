@@ -58,33 +58,50 @@ msgstr "Washa upya"
 msgid "Power Off"
 msgstr "Zima"
 
-#: src/config.rs:124
-msgid "Welcome back!"
-msgstr "Karibu tena!"
-
+#: src/cli.rs:13
 msgid "Clean and customizable greeter for greetd"
 msgstr "Greeter safi na inayoweza kubadilishwa kwa ajili ya greetd"
 
-#: src/cli.rs:21
+#: src/cli.rs:17
 msgid "The path to the log file"
 msgstr "Njia ya faili ya logi"
 
-#: src/cli.rs:25
+#: src/cli.rs:21
 msgid "The verbosity level of the logs"
 msgstr "Kiwango cha maelezo ya logi"
 
-#: src/cli.rs:29
+#: src/cli.rs:25
 msgid "Output all logs to stdout"
 msgstr "Toa logi zote kwenye stdout"
 
-#: src/cli.rs:33
+#: src/cli.rs:29
 msgid "The path to the config file"
 msgstr "Njia ya faili ya usanidi"
 
-#: src/cli.rs:37
+#: src/cli.rs:33
 msgid "The path to the custom CSS stylesheet"
 msgstr "Njia ya mtindo wa CSS iliyorekebishwa"
 
-#: src/cli.rs:41
+#: src/cli.rs:37
 msgid "Run in demo mode"
 msgstr "Endesha katika hali ya demo"
+
+#: src/cli.rs:86
+msgid "Print help"
+msgstr "Chapisha msaada"
+
+#: src/cli.rs:94
+msgid "Print version"
+msgstr "Chapisha toleo"
+
+#: src/cli.rs:102
+msgid "Usage:"
+msgstr "Matumizi:"
+
+#: src/cli.rs:103
+msgid "Options:"
+msgstr "Chaguzi:"
+
+#: src/config.rs:124
+msgid "Welcome back!"
+msgstr "Karibu tena!"

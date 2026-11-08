@@ -58,33 +58,50 @@ msgstr "再起動"
 msgid "Power Off"
 msgstr "電源オフ"
 
-#: src/config.rs:124
-msgid "Welcome back!"
-msgstr "おかえりなさい！"
-
+#: src/cli.rs:13
 msgid "Clean and customizable greeter for greetd"
 msgstr "greetd 用のクリーンでカスタマイズ可能なグリーター"
 
-#: src/cli.rs:21
+#: src/cli.rs:17
 msgid "The path to the log file"
 msgstr "ログファイルのパス"
 
-#: src/cli.rs:25
+#: src/cli.rs:21
 msgid "The verbosity level of the logs"
 msgstr "ログの出力詳細レベル"
 
-#: src/cli.rs:29
+#: src/cli.rs:25
 msgid "Output all logs to stdout"
 msgstr "すべてのログを stdout に出力"
 
-#: src/cli.rs:33
+#: src/cli.rs:29
 msgid "The path to the config file"
 msgstr "設定ファイルのパス"
 
-#: src/cli.rs:37
+#: src/cli.rs:33
 msgid "The path to the custom CSS stylesheet"
 msgstr "カスタム CSS スタイルシートのパス"
 
-#: src/cli.rs:41
+#: src/cli.rs:37
 msgid "Run in demo mode"
 msgstr "デモモードで実行"
+
+#: src/cli.rs:86
+msgid "Print help"
+msgstr "ヘルプを表示"
+
+#: src/cli.rs:94
+msgid "Print version"
+msgstr "バージョンを表示"
+
+#: src/cli.rs:102
+msgid "Usage:"
+msgstr "使用法:"
+
+#: src/cli.rs:103
+msgid "Options:"
+msgstr "オプション:"
+
+#: src/config.rs:124
+msgid "Welcome back!"
+msgstr "おかえりなさい！"
