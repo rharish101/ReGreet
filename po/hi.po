@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: 0BSD
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: ReGreet\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-10-29 20:55+0300\n"
-"PO-Revision-Date: 2026-10-29 21:00+0300\n"
+"PO-Revision-Date: 2026-11-11 22:16+0300\n"
 "Last-Translator: AI Translator\n"
 "Language-Team: Hindi <LL@li.org>\n"
 "Language: hi\n"
@@ -24,7 +24,7 @@ msgstr "वन-टाइम पासवर्ड:"
 
 #: src/gui/model.rs:397
 msgid "Authentication failed"
-msgstr "प्रमाणीकरण विफल"
+msgstr "प्रमाणीकरण विफल रहा"
 
 #: src/gui/templates.rs:76
 msgid "User:"
@@ -36,11 +36,11 @@ msgstr "सत्र:"
 
 #: src/gui/templates.rs:123
 msgid "Manually enter username"
-msgstr "मैन्युअल रूप से उपयोगकर्ता नाम दर्ज करें"
+msgstr "उपयोगकर्ता नाम मैन्युअल रूप से दर्ज करें"
 
 #: src/gui/templates.rs:130
 msgid "Manually enter session command"
-msgstr "मैन्युअल रूप से सत्र कमांड दर्ज करें"
+msgstr "सत्र कमांड मैन्युअल रूप से दर्ज करें"
 
 #: src/gui/templates.rs:142
 msgid "Cancel"
@@ -48,60 +48,64 @@ msgstr "रद्द करें"
 
 #: src/gui/templates.rs:149
 msgid "Login"
-msgstr "लॉगिन"
+msgstr "लॉग इन करें"
 
 #: src/gui/templates.rs:217
 msgid "Reboot"
-msgstr "पुनर्प्रारंभ करें"
+msgstr "पुनः प्रारंभ करें"
 
 #: src/gui/templates.rs:222
 msgid "Power Off"
 msgstr "बंद करें"
 
-#: src/cli.rs:13
+#: src/cli.rs:13 src/cli.rs:17 src/main.rs:70 src/main.rs:72
 msgid "Clean and customizable greeter for greetd"
-msgstr "greetd के लिए एक स्वच्छ और अनुकूलन योग्य ग्रीटर"
+msgstr "greetd के लिए स्वच्छ और अनुकूलन योग्य ग्रीटर"
 
-#: src/cli.rs:17
+#: src/cli.rs:17 src/cli.rs:21
 msgid "The path to the log file"
 msgstr "लॉग फ़ाइल का पथ"
 
-#: src/cli.rs:21
+#: src/cli.rs:21 src/cli.rs:25
 msgid "The verbosity level of the logs"
-msgstr "लॉग की वर्बोसिटी स्तर"
+msgstr "लॉग का विवरण स्तर"
 
-#: src/cli.rs:25
+#: src/cli.rs:25 src/cli.rs:29
 msgid "Output all logs to stdout"
 msgstr "सभी लॉग stdout पर आउटपुट करें"
 
-#: src/cli.rs:29
+#: src/cli.rs:29 src/cli.rs:33
 msgid "The path to the config file"
 msgstr "कॉन्फ़िगरेशन फ़ाइल का पथ"
 
-#: src/cli.rs:33
+#: src/cli.rs:33 src/cli.rs:37
 msgid "The path to the custom CSS stylesheet"
 msgstr "कस्टम CSS स्टाइलशीट का पथ"
 
-#: src/cli.rs:37
+#: src/cli.rs:37 src/cli.rs:41
 msgid "Run in demo mode"
 msgstr "डेमो मोड में चलाएं"
 
-#: src/cli.rs:86
+#: src/cli.rs:86 src/main.rs:60 src/main.rs:61
 msgid "Print help"
-msgstr "सहायता प्रिंट करें"
+msgstr "सहायता दिखाएं"
 
-#: src/cli.rs:94
+#: src/cli.rs:94 src/main.rs:67 src/main.rs:69
 msgid "Print version"
-msgstr "संस्करण प्रिंट करें"
+msgstr "संस्करण दिखाएं"
 
-#: src/cli.rs:102
+#: src/cli.rs:102 src/main.rs:73 src/main.rs:75
 msgid "Usage:"
 msgstr "उपयोग:"
 
-#: src/cli.rs:103
+#: src/cli.rs:103 src/main.rs:74 src/main.rs:76
 msgid "Options:"
 msgstr "विकल्प:"
 
 #: src/config.rs:124
 msgid "Welcome back!"
-msgstr "आपका स्वागत है!"
+msgstr "पुनः स्वागत है!"
+
+#: src/main.rs:53
+msgid "OPTIONS"
+msgstr "विकल्प"

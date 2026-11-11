@@ -61,50 +61,54 @@ msgstr "Перезагрузка"
 msgid "Power Off"
 msgstr "Выключение"
 
-#: src/cli.rs:13
+#: src/cli.rs:13 src/cli.rs:17 src/main.rs:70 src/main.rs:72
 msgid "Clean and customizable greeter for greetd"
 msgstr "Чистый и настраиваемый экран входа для greetd"
 
-#: src/cli.rs:17
+#: src/cli.rs:17 src/cli.rs:21
 msgid "The path to the log file"
 msgstr "Путь файлу журнала"
 
-#: src/cli.rs:21
+#: src/cli.rs:21 src/cli.rs:25
 msgid "The verbosity level of the logs"
 msgstr "Уровень подробности журналов"
 
-#: src/cli.rs:25
+#: src/cli.rs:25 src/cli.rs:29
 msgid "Output all logs to stdout"
 msgstr "Выводить все журналы в stdout"
 
-#: src/cli.rs:29
+#: src/cli.rs:29 src/cli.rs:33
 msgid "The path to the config file"
 msgstr "Путь к файлу настроек"
 
-#: src/cli.rs:33
+#: src/cli.rs:33 src/cli.rs:37
 msgid "The path to the custom CSS stylesheet"
 msgstr "Путь к пользовательской таблице стилей CSS"
 
-#: src/cli.rs:37
+#: src/cli.rs:37 src/cli.rs:41
 msgid "Run in demo mode"
 msgstr "Запуск в режиме демонстрации"
 
-#: src/cli.rs:86
+#: src/cli.rs:86 src/main.rs:60 src/main.rs:61
 msgid "Print help"
 msgstr "Показать справку"
 
-#: src/cli.rs:94
+#: src/cli.rs:94 src/main.rs:67 src/main.rs:69
 msgid "Print version"
 msgstr "Показать версию"
 
-#: src/cli.rs:102
+#: src/cli.rs:102 src/main.rs:73 src/main.rs:75
 msgid "Usage:"
 msgstr "Использование:"
 
-#: src/cli.rs:103
+#: src/cli.rs:103 src/main.rs:74 src/main.rs:76
 msgid "Options:"
 msgstr "Параметры:"
 
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "Добро пожаловать!"
+
+#: src/main.rs:53
+msgid "OPTIONS"
+msgstr "АРГУМЕНТЫ"
