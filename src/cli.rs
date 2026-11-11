@@ -52,8 +52,11 @@ pub enum LogLevel {
 }
 
 #[derive(Parser, Debug)]
-#[command(author, version, about = about_text())]
-pub struct Args {
+#[command(author, version, about = about_text(),
+    disable_help_flag = true,
+    disable_version_flag = true
+)]
+pub struct CliArgs {
     #[arg(short = 'l', long, value_name = "PATH", default_value = LOG_PATH, help = logs_help())]
     pub logs: PathBuf,
 

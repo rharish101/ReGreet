@@ -58,33 +58,54 @@ msgstr "재부팅"
 msgid "Power Off"
 msgstr "전원 끄기"
 
+#: src/cli.rs:13 src/cli.rs:17 src/main.rs:70 src/main.rs:72
+msgid "Clean and customizable greeter for greetd"
+msgstr "greetd를 위한 깨끗하고 사용자 정의 가능한 greeter"
+
+#: src/cli.rs:17 src/cli.rs:21
+msgid "The path to the log file"
+msgstr "로그 파일 경로"
+
+#: src/cli.rs:21 src/cli.rs:25
+msgid "The verbosity level of the logs"
+msgstr "로그의 상세 수준"
+
+#: src/cli.rs:25 src/cli.rs:29
+msgid "Output all logs to stdout"
+msgstr "모든 로그를 stdout으로 출력"
+
+#: src/cli.rs:29 src/cli.rs:33
+msgid "The path to the config file"
+msgstr "설정 파일 경로"
+
+#: src/cli.rs:33 src/cli.rs:37
+msgid "The path to the custom CSS stylesheet"
+msgstr "사용자 정의 CSS 스타일시트 경로"
+
+#: src/cli.rs:37 src/cli.rs:41
+msgid "Run in demo mode"
+msgstr "데모 모드로 실행"
+
+#: src/cli.rs:86 src/main.rs:60 src/main.rs:61
+msgid "Print help"
+msgstr "도움말 출력"
+
+#: src/cli.rs:94 src/main.rs:67 src/main.rs:69
+msgid "Print version"
+msgstr "버전 출력"
+
+#: src/cli.rs:102 src/main.rs:73 src/main.rs:75
+msgid "Usage:"
+msgstr "사용법:"
+
+#: src/cli.rs:103 src/main.rs:74 src/main.rs:76
+msgid "Options:"
+msgstr "옵션:"
+
 #: src/config.rs:124
 msgid "Welcome back!"
 msgstr "환영합니다!"
 
-msgid "Clean and customizable greeter for greetd"
-msgstr "greetd를 위한 깨끗하고 사용자 정의 가능한 greeter"
-
-#: src/cli.rs:21
-msgid "The path to the log file"
-msgstr "로그 파일 경로"
-
-#: src/cli.rs:25
-msgid "The verbosity level of the logs"
-msgstr "로그의 상세 수준"
-
-#: src/cli.rs:29
-msgid "Output all logs to stdout"
-msgstr "모든 로그를 stdout으로 출력"
-
-#: src/cli.rs:33
-msgid "The path to the config file"
-msgstr "설정 파일 경로"
-
-#: src/cli.rs:37
-msgid "The path to the custom CSS stylesheet"
-msgstr "사용자 정의 CSS 스타일시트 경로"
-
-#: src/cli.rs:41
-msgid "Run in demo mode"
-msgstr "데모 모드로 실행"
+#: src/main.rs:53
+msgid "OPTIONS"
+msgstr "옵션"

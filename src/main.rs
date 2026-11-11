@@ -15,16 +15,16 @@ use std::fs::{OpenOptions, create_dir_all};
 use std::io::{Result as IoResult, Write};
 use std::path::Path;
 
-use clap::Parser;
+use clap::{Arg, ArgAction, Args, Command, FromArgMatches};
 use file_rotate::{ContentLimit, FileRotate, compression::Compression, suffix::AppendCount};
-use gettextrs::{LocaleCategory, bindtextdomain, setlocale, textdomain};
+use gettextrs::{LocaleCategory, bindtextdomain, gettext, setlocale, textdomain};
 use tracing::subscriber::set_global_default;
 use tracing_appender::{non_blocking, non_blocking::WorkerGuard};
 use tracing_subscriber::{
     filter::LevelFilter, fmt::layer, fmt::time::OffsetTime, layer::SubscriberExt,
 };
 
-use crate::cli::{Args, LogLevel};
+use crate::cli::{CliArgs, LogLevel};
 use crate::constants::{APP_ID, GREETER_NAME, LOCALE_DIR, LOG_PATH};
 use crate::gui::{Greeter, GreeterInit};
 
@@ -43,7 +43,43 @@ fn main() {
         textdomain(GREETER_NAME).unwrap();
     }
 
-    let args = Args::parse();
+    let cli = Command::new(env!("CARGO_PKG_NAME"))
+        .disable_help_flag(true)
+        .disable_version_flag(true)
+        .version(env!("CARGO_PKG_VERSION"))
+        .override_usage(format!(
+            "{} [{}]",
+            env!("CARGO_PKG_NAME"),
+            gettext("OPTIONS"),
+        ))
+        .arg(
+            Arg::new("help")
+                .short('h')
+                .long("help")
+                .action(ArgAction::Help)
+                .display_order(999)
+                .help(gettext("Print help")),
+        )
+        .arg(
+            Arg::new("version")
+                .short('V')
+                .long("version")
+                .action(ArgAction::Version)
+                .display_order(1000)
+                .help(gettext("Print version")),
+        )
+        // We don't use the description in Cargo.toml, to simplify translation
+        .about(gettext("Clean and customizable greeter for greetd"))
+        .help_template(format!(
+            "{{about-section}}\n{} {{usage}}\n{}\n{{options}}",
+            gettext("Usage:"),
+            gettext("Options:")
+        ));
+
+    let cliargs = CliArgs::augment_args(cli);
+    let matches = cliargs.get_matches();
+    let args = CliArgs::from_arg_matches(&matches).unwrap();
+
     // Keep the guard alive till the end of the function, since logging depends on this.
     let _guard = init_logging(&args.logs, &args.log_level, args.verbose);
 
